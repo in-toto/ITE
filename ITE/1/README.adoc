@@ -91,7 +91,7 @@ There are three kinds of ITE:
  recommendation, so users and implementers are free to ignore
  Informational ITEs or follow their advice. An example of an informational ITE 
  would be the recommendations for integrating in-toto and TUF.
-. A **Process** ITE describes a process surrounding the in-toto proejct, or
+. A **Process** ITE describes a process surrounding the in-toto project, or
  proposes a change to (or an event in) a process. Process ITEs are like
  Standards Track ITEs but apply to areas other than the in-toto specification
  itself. They may propose an implementation, but not for what would be
@@ -264,7 +264,7 @@ If in doubt, sponsors should split their ITE into several well-focused ones.
 [NOTE]
 ====
 Enhancements or patches which have a smaller impact often don’t need an ITE.
-These can be handled via the regular in-tot development workflow with a GitHub 
+These can be handled via the regular in-toto development workflow with a GitHub 
 issue and/or pull request to the appropriate repository.
 
 An ITE may still have an accompanying GitHub issue as a placeholder.  This
@@ -847,9 +847,9 @@ Overall, less chaos and more productivity is the rationale for ITE.
 
 == Reasoning
 
-=== Based on Python PEP, TAPS and JEP
+=== Based on Python PEP, TAPS, and JEP
 
-The process ITE is modeled after the python, TUF and Jenkins communities, who
+The process ITE is modeled after the python, TUF, and Jenkins communities, who
 have successfully navigated several large-scale reworkings of their codebases,
 specifications and processes over the past decade. This includes most notably
 the multi-year project of Python 3 (formerly Python 3000) and key format
@@ -866,14 +866,14 @@ their overlapping developer base, trying to maintain similarities with both
 processes is paramount.
 
 Finally, the Jenkins Enhancement Proposals were the main inspiration of this
-document, as JEP 01 was preceived as clearer, more thorough and less ambiguous
+document, as JEP 01 was perceived as clearer, more thorough and less ambiguous
 than their Python and TUF counterparts.
 
 === Differences from Jenkins's JEP
 
 The Jenkin's JEP proposes a BDFL figure as the ultimate source conflict
 resolution. Due to the horizontal nature of in-toto, this aspect of JEP 01 was
-ommited.
+omitted.
 
 === Differences from Python PEP
 
