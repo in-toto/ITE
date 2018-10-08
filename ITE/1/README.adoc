@@ -63,7 +63,7 @@ generally ensuring the ITE meets the style, format, and quality guidelines
 described below. An ITE may also have any number of <<Contributor,
 Contributors>> who help write, implement, discuss, or offer feedback about
 the ITE. One contributor might do only one or any combination of these things
-during any part of the life of a ITE.
+during any part of the life of an ITE.
 
 Because the ITEs are maintained as text files in a versioned
 repository, their revision history is the historical record of the
@@ -118,11 +118,11 @@ requests. Editors are members of a GitHub group called `ITE-editors`.
 
 ==== Contributor
 
-A ITE may have any number of `Contributors` who help write, implement, discuss,
+An ITE may have any number of `Contributors` who help write, implement, discuss,
 or offer feedback about that ITE. One contributor might do only one or any
-combination of these of these things during any part of the life of a ITE.
+combination of these of these things during any part of the life of an ITE.
 While we invite contributions by companies or other organizations, contributors
-listed in a ITE need to be specific people.
+listed in an ITE need to be specific people.
 
 ==== Sponsor
 
@@ -138,18 +138,18 @@ lifecycle. Their responsibilities include:
 * Maintaining the ITE after it is finalized
 * Setting and communicating the schedule as needed
 
-The Sponsor of a ITE may or may not do any of the tasks other contributors do.
+The Sponsor of an ITE may or may not do any of the tasks other contributors do.
 For example, one sponsor might write large portions of one ITE, while another
 sponsor might leave the writing to other contributors.
 
-Anyone may be Sponsor for a ITE, though it should be someone familiar enough
+Anyone may be Sponsor for an ITE, though it should be someone familiar enough
 with in-toto, the in-toto project, and the ITE workflow to effectively guide
 the ITE to completion.
 
-A ITE may have more than one Sponsor, especially after it has been finalized
+An ITE may have more than one Sponsor, especially after it has been finalized
 and is being maintained over time. For simplicity, this document uses the
 singular ("The ITE Sponsor", "a sponsor") when referring the one or more people
-in the role of "Sponsor" of a ITE.
+in the role of "Sponsor" of an ITE.
 
 Sponsors have committer/write access on the ITE repository, but should
 only approve and merge pull requests for ITEs to which they are assigned.
@@ -157,7 +157,7 @@ only approve and merge pull requests for ITEs to which they are assigned.
 ==== Reviewer
 
 The ITE Reviewer is the contributor who will make the final decision whether to
-accept a ITE. In all cases where this document refers to the `Reviewer`, it
+accept an ITE. In all cases where this document refers to the `Reviewer`, it
 means "an editor who will review this ITE."
 
 [[requirement-levels]]
@@ -206,7 +206,7 @@ look at how ITE might go.
   and a minimal prototype implementation sufficient to convey the viability of the design.
   She submits the ITE to the <<editor, ITE editors>> for
   <<approval, approval as a Draft ITE>>.
-  One of the editors checks the submission and determines it is ready to considered as a ITE.
+  One of the editors checks the submission and determines it is ready to considered as an ITE.
   They "approve" the submission, assigning the ITE a number,
   and the submission becomes a "<<draft, Draft>>" ITE.
 
@@ -249,7 +249,7 @@ it.
 
 IMPORTANT: The above is only a high-level overview of the ITE workflow.
 The full and complete description of the ITE workflow is provided below.
-Read the full description below before starting a ITE.
+Read the full description below before starting an ITE.
 
 [[start]]
 ==== Start with an idea for in-toto
@@ -288,7 +288,7 @@ the best way to go about this.
 [[discussion]]
 ==== Discuss the idea with the community
 
-Vetting an idea publicly before going as far as writing a ITE is meant
+Vetting an idea publicly before going as far as writing an ITE is meant
 to save the potential sponsor time. Many ideas have been brought
 forward for changing Jenkins that have been rejected for various
 reasons. Asking the in-toto community first if an idea is original
@@ -305,17 +305,17 @@ the ITE repository. The sponsor should needs to notify `@in-toto/ITE-editors`
 when they are ready to submit the ITE for <<approval, approval as Draft>>.
 
 [[submission]]
-==== Creating a ITE Submission
+==== Creating an ITE Submission
 
 Following a discussion on jenkinsci-dev@googlegroups.com,
-the proposal should be turned into as a ITE submission and submitted
+the proposal should be turned into as an ITE submission and submitted
 via a GitHub pull request to this repository footnoteref:[repo].
 
 IMPORTANT: All submissions must go through pull request,
 even those by editors or contributors with "git push" privileges
 for the ITE repository footnoteref:[repo].
 
-To submit a ITE for <<approval, approval as Draft>>, the ITE sponsor should:
+To submit an ITE for <<approval, approval as Draft>>, the ITE sponsor should:
 
 . Fork the ITE repository footnoteref:[repo].
 . Clone their forked repository locally.
@@ -338,16 +338,16 @@ with a comment asking for approval as draft.
 [[approval]]
 ==== Approval as Draft ITE
 
-A ITE editor will check the submission for conformance with ITE structure and
+An ITE editor will check the submission for conformance with ITE structure and
 formatting guidelines.  Editors may make minor changes to make the submission
-meet the requirements for approval as a Draft ITE. If a ITE requires major
+meet the requirements for approval as a Draft ITE. If an ITE requires major
 changes, editors will add specific feedback and send the submission back to the
 sponsor for revision.
 
 IMPORTANT: "Approval as Draft" is *not* the same as <<accepted, accepting the ITE>>.
 "Approval as Draft" is an initial conformance and viability check.
 
-The ITE editors will not unreasonably deny a ITE "Draft" status.
+The ITE editors will not unreasonably deny an ITE "Draft" status.
 Reasons for denying ITE "Draft" status include:
 
 * duplication of effort
@@ -379,7 +379,7 @@ for a Draft ITE.
 [[draft]]
 ==== Refining a Draft ITE
 
-The version of a ITE that is approved as a Draft ITE
+The version of an ITE that is approved as a Draft ITE
 is rarely the same as the final version that is reviewed and hopefully accepted.
 A Draft ITE often requires further refinement and expansion
 before it is sufficiently complete and represents the consensus of the community.
@@ -390,7 +390,7 @@ The prototype implementation should be co-developed with the ITE,
 as ideas that sound good in principle sometimes turn out to be impractical
 when subjected to the test of implementation.
 
-A ITE's sponsor is responsible for collecting community feedback on a ITE
+An ITE's sponsor is responsible for collecting community feedback on an ITE
 before submitting it for review.
 Potential changes to a draft ITE may be discussed further on in-toto-dev@googlegroups.com.
 The ITE sponsor may also ask ITE editors for further feedback regarding the
@@ -402,7 +402,7 @@ and submit pull requests targeting the `master` branch.
 [[review]]
 ==== ITE Review
 
-Once the sponsor believes a ITE meets at least the minimum criteria to be "<<Accepted, Accepted>>",
+Once the sponsor believes an ITE meets at least the minimum criteria to be "<<Accepted, Accepted>>",
 they request the ITE be reviewed for acceptance, usually via
 an email to the in-toto-dev@googlegroups.com mailing list.
 The ITE <<Reviewer>> and their chosen consultants then review the ITE.
@@ -417,9 +417,9 @@ appropriate alternative list where discussion, review and pronouncement on the
 ITE will occur.
 
 [[accepted]]
-==== Accepting a ITE
+==== Accepting an ITE
 
-For a ITE to be "Accepted" it must meet certain minimum criteria.
+For an ITE to be "Accepted" it must meet certain minimum criteria.
 It must:
 
 * provide a net improvement.
@@ -439,16 +439,16 @@ It must:
 
 By marking an ITE as "Accepted" the Reviewer indicates they believe that the
 ITE has clear scope, design completeness, community consensus, and (if
-applicable) in-progress implementation.  Without all of these a ITE cannot be
+applicable) in-progress implementation.  Without all of these an ITE cannot be
 accepted.  For this reason, it is not unusual for ITEs to remain in "Draft"
 state even after they have strong community support and progressing
 implementation.  They must still pass the other criteria, such as scoping and
 design completeness.
 
-Once a ITE has been accepted, the implementation must continue to progress
+Once an ITE has been accepted, the implementation must continue to progress
 and eventually be completed.
 
-Ideally, all changes to a ITE should be completed before it is "Accepted",
+Ideally, all changes to an ITE should be completed before it is "Accepted",
 but surprises may still occur.  Changes might be minor changes,
 such as clarifications or typo fixes, or major changes,
 which would alter the intent, scope, API, or core behavior of the ITE.
@@ -476,7 +476,7 @@ These ITEs are ongoing and never meant to be completed per se. E.g. ITE 1 (this 
 [[maintenance]]
 ==== ITE Maintenance
 
-Even after a ITE reaches "Final" status, it may need to be updated.
+Even after an ITE reaches "Final" status, it may need to be updated.
 
 In general, Standards track ITEs are not modified after they have
 reached the Final state. Once a Standards ITE has been completed, Jenkins developer
@@ -490,7 +490,7 @@ Replaced:: [[replaced]]
 Final ITEs may eventually also be "Replaced" - superseded by a different ITE -
 rendering the original obsolete.
 This is intended for Informational ITEs, where version 2 of an API can replace version 1.
-When a ITE is marked as replaced, the <<header-superseded-by, Superseded-by>> header
+When an ITE is marked as replaced, the <<header-superseded-by, Superseded-by>> header
 must be filled in with a link to the new ITE.
 
 ==== Other ITE Outcomes
@@ -498,12 +498,12 @@ must be filled in with a link to the new ITE.
 Not all ITEs will be accepted and finalized.
 
 Rejected:: [[rejected]]
-A ITE <<Reviewer>> may choose to reject a ITE.
+An ITE <<Reviewer>> may choose to reject an ITE.
 Perhaps after all is said and done it was not a good idea
 or perhaps a competing proposal is a better alternative.
 It is still important to have a record of this fact.
 +
-Rejecting a ITE is a very strong statement.
+Rejecting an ITE is a very strong statement.
 If the reviewer believes the ITE might eventually be accepted with sufficient modification,
 the reviewer will not reject the ITE.
 If a reviewer is confident ITE will never be accepted,
@@ -516,40 +516,40 @@ Upon the request of the sponsor, the reviewer may choose to return a
 Rejected ITE to Draft status, but this is at the discretion of the reviewer.
 
 Withdrawn:: [[withdrawn]]
-A ITE <<Sponsor>> may choose to withdraw a ITE.
+An ITE <<Sponsor>> may choose to withdraw an ITE.
 Similar to "Rejected", "Withdrawn" means that the ITE sponsor
 themselves has decided that the ITE is actually a bad idea,
 or agrees that a competing proposal is a better alternative.
 
 Deferred:: [[deferred]]
-A ITE can also be assigned a status of "Deferred". The ITE sponsor or an
+An ITE can also be assigned a status of "Deferred". The ITE sponsor or an
 editor can assign the ITE this status when no progress is being made
-on the ITE. Once a ITE is deferred, a ITE editor can re-assign it
+on the ITE. Once an ITE is deferred, an ITE editor can re-assign it
 to draft status.
 
 ==== Updating ITE Status and Resolution
 
-Whenever a ITE status changes, the "Status" field in the ITE document must be
+Whenever an ITE status changes, the "Status" field in the ITE document must be
 updated.
 
-The possible paths of a ITE's status are as shown in Figure 1:
+The possible paths of an ITE's status are as shown in Figure 1:
 
 .ITE Workflow
 image::workflow.png[ITE Workflow]
 
-When a ITE is Accepted, Rejected or Withdrawn,
+When an ITE is Accepted, Rejected or Withdrawn,
 a "<<header-resolution, Resolution>>" section must be added to the ITE Header
 with a link to the relevant post in the in-toto-dev@googlegroups.com mailing list archives or the GitHub issue tracker.
 
 ==== Resolving Disputes
 
-Except for decisions by a ITE's <<Reviewer>>,
+Except for decisions by an ITE's <<Reviewer>>,
 the ITE process is run by
 link:https://en.wikipedia.org/wiki/Consensus_decision-making[consensus].
 It is the responsibility of every contributor to respect other contributors,
 listen to their perspectives, and attempt to find solutions that work for everyone.
 
-If consensus cannot be achieved on a ITE,
+If consensus cannot be achieved on an ITE,
 contributors may request that the <<reviewer, ITE Reviewer>> intervene.
 The reviewer will consider the matter, and render their decision,
 including describing what actions will be taken and documenting their reasoning.
@@ -573,8 +573,8 @@ All ITEs MUST have the following parts to be "approved as Draft":
   that wants to change Jenkins or the Jenkins project.
   The motivation section should clearly explain why the existing
   code base or process is inadequate to address the problem that the ITE solves.
-  A ITE submission without sufficient discussion of its motivation
-  will not be approved as a ITE Draft.
+  An ITE submission without sufficient discussion of its motivation
+  will not be approved as an ITE Draft.
 . **Reasoning** - The reasoning describes why particular design decisions were
   made.  It should describe alternate designs that were considered and related
   work, e.g. how the feature is supported in other systems.
@@ -608,17 +608,17 @@ during discussion.
   implementation—but it should set out expectations for testability. If the ITE
   has no testing needs, the section must say that.
 . **Prototype Implementation** --
-  If a ITE will include code changes,
+  If an ITE will include code changes,
   this section will provide links to a an open source prototype implementation of those changes.
-  The prototype implementation must be present for a ITE to be approved as <<draft>>.
+  The prototype implementation must be present for an ITE to be approved as <<draft>>.
   The prototype implementation must be sufficient to convey the viability of the design
-  for a ITE to be <<accepted>>.
+  for an ITE to be <<accepted>>.
   While there is merit to the approach of reaching consensus on the
   specification and reasoning before writing code,
   the principle of "rough consensus and running code" is still useful
   when it comes to resolving many discussions of API details.
   ITEs which will not include code changes may omit this section.
-. **References** -- When moving a ITE from a Draft to "Accepted" or "Final" state,
+. **References** -- When moving an ITE from a Draft to "Accepted" or "Final" state,
   the references section must be updated to include links to the pull requests
   and mailing list discussions which were involved in the process. The ITE
   should self-document the process in which it was developed.
@@ -686,7 +686,7 @@ An **issue identifier** row is available to specify a linked placeholder for an
 issue in github, if any.
 
 Discussions-To:: [[header-discussions-to]]
-For a ITE where final pronouncement will be made on a list other than
+For an ITE where final pronouncement will be made on a list other than
 in-toto-dev@googlegroups.com or the github issue tracker, a **Discussions-To**
 row will indicate the mailing list or URL where the pronouncement will occur. A
 temporary Discussions-To header may also be used when a draft ITE is being
@@ -697,7 +697,7 @@ ITEs may have a **Requires** row, indicating the ITE numbers that this
 ITE depends on.
 
 Superseded-By:: [[header-superseded-by]]
-ITEs may also have a **Superseded-By** row indicating that a ITE has been
+ITEs may also have a **Superseded-By** row indicating that an ITE has been
 rendered obsolete by a later document; the value is the number of the ITE that
 replaces the current document. The newer ITE must have a **Replaces** row
 containing the number of the ITE that it rendered obsolete.
@@ -717,7 +717,7 @@ the directory with the `README.adoc` describing the ITE.
 
 === Reporting ITE Bugs, or Submitting ITE Updates
 
-The process for reporting a bug or submitting a ITE update depends on several factors,
+The process for reporting a bug or submitting an ITE update depends on several factors,
 such as the maturity of the ITE, the preferences of the ITE sponsor, and the nature
 of the comments. For the early draft stages of the ITE, it's probably best to
 send  comments and changes directly to the ITE sponsor. For more mature, or
@@ -728,7 +728,7 @@ in-toto developer, assign the bug/patch to them, otherwise assign it to an ITE
 editor.
 
 When in doubt about where to send changes, please check first with the ITE
-sponsor and/or a ITE editor.
+sponsor and/or an ITE editor.
 
 
 Even ITE sponsors with git push privileges for the ITE repository should submit
@@ -748,10 +748,10 @@ following through with the ITE process, or has fallen off the face of
 the 'net (i.e. is unreachable or not responding to email). A bad
 reason to transfer sponsorship is because the sponsor doesn't agree with the
 direction of the ITE. One aim of the ITE process is to try to build
-consensus around a ITE, but if that's not possible, a sponsor can always
+consensus around an ITE, but if that's not possible, a sponsor can always
 submit a competing ITE.
 
-Ownership of a ITE may also be assumed via pull request.
+Ownership of an ITE may also be assumed via pull request.
 Fork the ITE repository, footnoteref:[repo] make the sponsorship
 modification, and submit a pull request. At the same time, send a message asking
 to take over, addressed to both the original sponsor and the ITE editors via
@@ -762,7 +762,7 @@ decisions can't be reversed :)).
 [[editor-responsibilities]]
 === ITE Editor Responsibilities & Workflow
 
-A ITE editor must subscribe to the in-toto-dev@googlegroups.com list and must
+An ITE editor must subscribe to the in-toto-dev@googlegroups.com list and must
 watch the ITE repository footnoteref:[repo]. Most correspondence regarding ITE
 administration can be handled through GitHub issues and pull requests.
 
@@ -791,9 +791,9 @@ revision with specific instructions.
 
 ==== Approve as Draft
 
-Once the ITE is ready for the repository, a ITE editor will:
+Once the ITE is ready for the repository, an ITE editor will:
 
-. Assign a ITE number (almost always just the next available number, but
+. Assign an ITE number (almost always just the next available number, but
   may also be a special/joke number, like 666 or 3141).
 . Update the folder number to match the ITE number
 . Update the ITE number in the document.
@@ -804,9 +804,9 @@ Once the ITE is ready for the repository, a ITE editor will:
 ==== Permission group membership
 
 Editors add and remove Sponsors from the appropriate permission groups on the
-ITE repository. When a ITE includes a new Sponsor, an editor will add that
+ITE repository. When an ITE includes a new Sponsor, an editor will add that
 person to the "ITE Sponsors" or GitHub group respectively. When someone is no
-longer an active Sponsor, a ITE editor will remove them from the permission
+longer an active Sponsor, an ITE editor will remove them from the permission
 group.  Editors will clean up the the permission groups from time to time as
 they see the need or are asked to do so.
 
