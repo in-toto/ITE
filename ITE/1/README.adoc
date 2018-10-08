@@ -38,7 +38,7 @@ endif::[]
 == Abstract
 
 An in-toto Enhancement (ITE) is a design document that describes a new feature
-or aspect of the in-toto framework, a setup of its supply chain or an,
+or aspect of the in-toto framework, a setup of its supply chain, or an
 organizational aspect of the in-toto project.  This ITE describes the structure
 of ITE documents and details the process by which ITEs are created, submitted,
 reviewed, finalized, and maintained.
@@ -50,7 +50,7 @@ reviewed, finalized, and maintained.
 
 ITE stands for in-toto Enhancement. An ITE is a design document that describes
 a new feature or aspect of the in-toto framework, the in-toto supply chain, or
-the process within in-toto project. An ITE provides a concise technical
+the process within the in-toto project. An ITE provides a concise technical
 specification of the feature, describes the motivation for the change, and
 discusses the rationale behind the design.
 
@@ -84,10 +84,10 @@ There are three kinds of ITE:
  for the in-toto specification. It may also describe an interoperability or
  backwards-compatibility standard which will be supported for the feature in
  current versions of in-toto, moving forward.
-. An **Informational** ITE describes an in-totodesign issue, or
+. An **Informational** ITE describes an in-toto design issue, or
  provides general guidelines or information to the in-toto community,
  but does not propose a new feature. Informational ITEs do not
- necessarily represent a in-toto community consensus or
+ necessarily represent an in-toto community consensus or
  recommendation, so users and implementers are free to ignore
  Informational ITEs or follow their advice. An example of an informational ITE 
  would be the recommendations for integrating in-toto and TUF.
@@ -120,7 +120,7 @@ requests. Editors are members of a GitHub group called `ITE-editors`.
 
 An ITE may have any number of `Contributors` who help write, implement, discuss,
 or offer feedback about that ITE. One contributor might do only one or any
-combination of these of these things during any part of the life of an ITE.
+combination of these things during any part of the life of an ITE.
 While we invite contributions by companies or other organizations, contributors
 listed in an ITE need to be specific people.
 
@@ -163,7 +163,7 @@ means "an editor who will review this ITE."
 [[requirement-levels]]
 ==== Must/Should/May
 
-ITE documents _must_ follow link:https://tools.ietf.org/html/rfc2119[RFC 2119]
+ITE documents _must_ follow link:https://tools.ietf.org/html/rfc2119[RFC 2119],
 which defines key words to "indicate requirement levels". These are listed
 below:
 
@@ -193,7 +193,7 @@ the reasons behind that choice SHOULD be documented.
 Before delving into the details of the ITE workflow, let's take a high-level
 look at how ITE might go.
 
-. **<<start, Initial Discussion>>** - Andrea has an idea for new feature and emails it in-toto-dev@googlegroups.com.
+. **<<start, Initial Discussion>>** - Andrea has an idea for new feature and emails it to in-toto-dev@googlegroups.com.
   She discusses the idea with the group, determining that the idea is worth pursuing.
   She chooses to be the "<<Sponsor>>" for this potential ITE.
   She <<discussion, gathers initial feedback>> from the community, adjusts her design as needed,
@@ -206,7 +206,7 @@ look at how ITE might go.
   and a minimal prototype implementation sufficient to convey the viability of the design.
   She submits the ITE to the <<editor, ITE editors>> for
   <<approval, approval as a Draft ITE>>.
-  One of the editors checks the submission and determines it is ready to considered as an ITE.
+  One of the editors checks the submission and determines it is ready to be considered as an ITE.
   They "approve" the submission, assigning the ITE a number,
   and the submission becomes a "<<draft, Draft>>" ITE.
 
@@ -271,7 +271,7 @@ An ITE may still have an accompanying GitHub issue as a placeholder.  This
 might be useful, for example, if implementation of the ITE is later found to
 have introduced a bug; being able to link the `regression`-labelled GitHub issue
 to the placeholder is valuable for tracking purposes. In such a case be sure
-to specify a "<<header-issue, issue>>" section.
+to specify an "<<header-issue, issue>>" section.
 
 ====
 
@@ -357,7 +357,7 @@ Reasons for denying ITE "Draft" status include:
 The <<Reviewer>> for this ITE may be consulted during the approval phase,
 and is the final arbiter of a submission's approvability as a Draft ITE.
 
-Once ITE meets requirements for structure and formatting,
+Once an ITE meets requirements for structure and formatting,
 the editors will approve the submission as a draft ITE
 by following the steps outlined in the
 <<approve-as-draft, editors' "Approve as Draft" section>>.
@@ -403,7 +403,7 @@ and submit pull requests targeting the `master` branch.
 ==== ITE Review
 
 Once the sponsor believes an ITE meets at least the minimum criteria to be "<<Accepted, Accepted>>",
-they request the ITE be reviewed for acceptance, usually via
+they request the ITE to be reviewed for acceptance, usually via
 an email to the in-toto-dev@googlegroups.com mailing list.
 The ITE <<Reviewer>> and their chosen consultants then review the ITE.
 If the Reviewer agrees that ITE is ready, they mark the ITE as "<<Accepted, Accepted>>".
@@ -467,10 +467,10 @@ for more extensive discussion and eventual <<review, review again for acceptance
 ==== Finalizing an ITE
 When the implementation is complete and incorporated into the
 appropriate "main" code repository, the ITE sponsor will change
-the ITE's status changed to "Final".
+the ITE's status to "Final".
 
 Active:: [[active]]
-Some Informational and Process ITEs may have a status of "Active" instead of "Final"
+Some Informational and Process ITEs may have a status of "Active" instead of "Final".
 These ITEs are ongoing and never meant to be completed per se. E.g. ITE 1 (this ITE).
 
 [[maintenance]]
@@ -506,7 +506,7 @@ It is still important to have a record of this fact.
 Rejecting an ITE is a very strong statement.
 If the reviewer believes the ITE might eventually be accepted with sufficient modification,
 the reviewer will not reject the ITE.
-If a reviewer is confident ITE will never be accepted,
+If a reviewer is confident an ITE will never be accepted,
 they should inform the ITE sponsor as soon as possible to prevent wasted effort.
 On the other hand, even an <<accepted, Accepted>> ITE may ultimately be rejected
 at some point before it reaches "<<final, Final>>" status,
@@ -595,7 +595,7 @@ during discussion.
 . **Infrastructure Requirements** -
   All ITEs must include a section describing their impact on
   the in-toto project infrastructure and its supply chain,
-  including additions or changes, interactions with exiting components,
+  including additions or changes, interactions with existing components,
   potential instabilities, service-level agreements,
   and assigning responsibility for continuing maintenance.
   Each ITE must explain the scope of infrastructure changes with sufficient detail
@@ -807,7 +807,7 @@ Editors add and remove Sponsors from the appropriate permission groups on the
 ITE repository. When an ITE includes a new Sponsor, an editor will add that
 person to the "ITE Sponsors" or GitHub group respectively. When someone is no
 longer an active Sponsor, an ITE editor will remove them from the permission
-group.  Editors will clean up the the permission groups from time to time as
+group.  Editors will clean up the permission groups from time to time as
 they see the need or are asked to do so.
 
 == Motivation
@@ -857,10 +857,10 @@ changes after security audits, as it is in the case of TUF.
 
 Their Python Enhancement Proposals are largely consensus driven, which is
 _mostly_ how work is done presently in the in-toto project, making the PEP
-model relatively straightforward to graft onto our existing, processes for
+model relatively straightforward to graft onto our existing processes for
 making proposals and deciding upon changes.
 
-The TUF Augmentation Proposal model is a closer relative to ITE's due that
+The TUF Augmentation Proposal model is a closer relative to ITEs due that
 in-toto and TUF are sister projects. Given the closeness of the communities and
 their overlapping developer base, trying to maintain similarities with both
 processes is paramount.
@@ -869,9 +869,9 @@ Finally, the Jenkins Enhancement Proposals were the main inspiration of this
 document, as JEP 01 was perceived as clearer, more thorough and less ambiguous
 than their Python and TUF counterparts.
 
-=== Differences from Jenkins's JEP
+=== Differences from Jenkins' JEP
 
-The Jenkin's JEP proposes a BDFL figure as the ultimate source conflict
+The Jenkins' JEP proposes a BDFL figure as the ultimate source of conflict
 resolution. Due to the horizontal nature of in-toto, this aspect of JEP 01 was
 omitted.
 
@@ -884,8 +884,8 @@ confusion.
 
 === Differences from TUF's TAPs
 
-The TAP document is closer to a PEP than ITEs are, for ITE's adopted the
-organizational structure of JEPs. Furthermore, ITE's adopted asciidoc rather
+The TAP document is closer to a PEP than ITEs are, for ITEs adopted the
+organizational structure of JEPs. Furthermore, ITEs adopted asciidoc rather
 than markdown, as its syntax has less derivate dialects (e.g., github flavored)
 than markdown does. Furtermore, the repository structure of JEP was adopted, as
 it allows for the addition of self-hosted diagrams and supporting documents.
