@@ -290,7 +290,7 @@ the best way to go about this.
 
 Vetting an idea publicly before going as far as writing an ITE is meant
 to save the potential sponsor time. Many ideas have been brought
-forward for changing Jenkins that have been rejected for various
+forward for changing in-toto that have been rejected for various
 reasons. Asking the in-toto community first if an idea is original
 helps prevent too much time being spent on something that is
 guaranteed to be rejected based on prior discussions (searching the internet
@@ -307,7 +307,7 @@ when they are ready to submit the ITE for <<approval, approval as Draft>>.
 [[submission]]
 ==== Creating an ITE Submission
 
-Following a discussion on jenkinsci-dev@googlegroups.com,
+Following a discussion on in-toto-dev@googlegroups,
 the proposal should be turned into as an ITE submission and submitted
 via a GitHub pull request to this repository footnoteref:[repo].
 
@@ -479,7 +479,7 @@ These ITEs are ongoing and never meant to be completed per se. E.g. ITE 1 (this 
 Even after an ITE reaches "Final" status, it may need to be updated.
 
 In general, Standards track ITEs are not modified after they have
-reached the Final state. Once a Standards ITE has been completed, Jenkins developer
+reached the Final state. Once a Standards ITE has been completed, in-toto developer
 documentation must become the formal documentation of the expected behavior.
 
 Informational and Process ITEs may be updated over time to reflect changes
@@ -567,10 +567,10 @@ All ITEs MUST have the following parts to be "approved as Draft":
   being addressed.
 . **Specification** - The technical specification should describe the
   syntax and semantics of any new feature. The specification should be
-  sufficiently detailed to allow new or existing Jenkins developers to
+  sufficiently detailed to allow new or existing in-toto developers to
   reasonably understand the scope/impact of an implementation.
 . **Motivation** - A clear description of the motivation is critical for any ITE
-  that wants to change Jenkins or the Jenkins project.
+  that wants to change in-toto or the in-toto project.
   The motivation section should clearly explain why the existing
   code base or process is inadequate to address the problem that the ITE solves.
   An ITE submission without sufficient discussion of its motivation
@@ -627,7 +627,7 @@ WARNING: ITE submissions that do not adequately complete any of the above
 sections will not be approved as ITE Drafts.
 
 The final implementation must include test code and documentation
-appropriate for either the Jenkins user or developer documentation.
+appropriate for either the in-toto user or developer documentation.
 
 ==== ITE File Format
 
@@ -706,7 +706,7 @@ Resolution:: [[header-resolution]]
 A **Resolution** section will be added to ITEs when their status is set to
 Accepted, Rejected or Withdrawn.
 It will include a link to the relevant post in the
-jenkinsci-dev@googlegroups.com mailing list archives.
+in-toto-dev@googlegroups.com mailing list archives.
 
 
 ==== Auxiliary Files
