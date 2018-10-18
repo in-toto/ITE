@@ -701,6 +701,10 @@ Requires:: [[header-requires]]
 ITEs may have a **Requires** row, indicating the ITE numbers that this
 ITE depends on.
 
+Replaces:: [[header-replaces]]
+An ITE that replaces another ITE must have a **Replaces** row containing the
+number of the ITE that it rendered obsolete.
+
 Superseded-By:: [[header-superseded-by]]
 ITEs may also have a **Superseded-By** row indicating that an ITE has been
 rendered obsolete by a later document; the value is the number of the ITE that
@@ -844,11 +848,12 @@ without finding themselves mired in unspoken cultural norms within the project.
 === Benefits to future developers
 
 By providing clear, understandable, and bite-sized design documents which would
-explain various subsections of in-toto. ITEs also make it clearer how an
-ambitious new developer to the in-toto project can propose, and make progress
-upon, a new idea they have for in-toto.
+explain various subsections of in-toto, users and developers follow, support,
+and oppose design decisions. ITEs also make it clearer how an ambitious new
+developer to the in-toto project can propose, and make progress upon, a new
+idea they have for in-toto.
 
-Overall, less chaos and more productivity is the rationale for ITE. 
+Overall, less chaos and more productivity is the rationale for ITEs. 
 
 == Reasoning
 
@@ -913,6 +918,10 @@ There are no backwards compatibility concerns related to this proposal.
 == Security
 
 There are no security risks related to this proposal.
+
+== Testing
+
+There are no testing additions related to this ITE.
 
 == Infrastructure Requirements
 
