@@ -634,6 +634,22 @@ sections will not be approved as ITE Drafts.
 The final implementation must include test code and documentation
 appropriate for either the in-toto user or developer documentation.
 
+==== ITE scheduling and timelines
+
+ITE Editors are volunteers, and as such they will try to ensure timely response
+to new ITE proposals to the best of their availability. However, a delay of
+more than a week to reject or accept a new ITE as draft is to be expected.
+
+Once an ITE is accepted as a Draft, the Sponsor and the rest of the community
+is expected to do continuous progress towards a decision for acceptance. Given
+the nature of the process, it is possible that multiple iterations are done
+during the discussion period. Due to this there is not a concrete timeline for
+a draft to move from draft to accepted status. In contrast, a draft without
+activity for a month since the last comment is expected to be moved to deferred
+status. Likewise, An ITE SHALL spend no longer than two months in any given
+state other than deferred.
+
+
 ==== ITE File Format
 
 ITEs are UTF-8 encoded text files using the
