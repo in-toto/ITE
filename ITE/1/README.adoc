@@ -118,7 +118,7 @@ pull requests. Editors are members of a GitHub group called `ITE-editors`.
 
 ==== Contributor
 
-An ITE may have any number of `Contributors` who help write, implement, discuss,
+An ITE may have any number of Contributors who help write, implement, discuss,
 or offer feedback about that ITE. One contributor might do only one or any
 combination of these things during any part of the life of an ITE.
 While we invite contributions by companies or other organizations, contributors
@@ -161,7 +161,7 @@ only approve and merge pull requests for ITEs to which they are assigned.
 ==== Reviewer
 
 The ITE Reviewer is the contributor who will make the final decision whether to
-accept an ITE. In all cases where this document refers to the `Reviewer`, it
+accept an ITE. In all cases where this document refers to the Reviewer, it
 means "an Editor who will review this ITE."
 
 [[requirement-levels]]
