@@ -89,7 +89,7 @@ There are three kinds of ITE:
  but does not propose a new feature. Informational ITEs do not
  necessarily represent an in-toto community consensus or
  recommendation, so users and implementers are free to ignore
- Informational ITEs or follow their advice. An example of an Informational ITE 
+ Informational ITEs or follow their advice. An example of an Informational ITE
  would be the recommendations for integrating in-toto and TUF.
 . A **Process** ITE describes a process surrounding the in-toto project, or
  proposes a change to (or an event in) a process. Process ITEs are like
@@ -110,7 +110,7 @@ There are three kinds of ITE:
 The ITE Editors are individuals responsible for managing the administrative
 and editorial aspects of the ITE workflow (e.g. assigning ITE numbers and
 changing their status). See <<Editor-responsibilities, ITE Editor Responsibilities & Workflow>> for
-details. 
+details.
 
 ITE editorship is given by invitation of the current Editors. All of the ITE
 workflow can be conducted via the GitHub ITE Repository footnoteref:[repo] and
@@ -268,7 +268,7 @@ If in doubt, Sponsors should split their ITE into several well-focused ones.
 [NOTE]
 ====
 Enhancements or patches which have a smaller impact often don’t need an ITE.
-These can be handled via the regular in-toto development workflow with a GitHub 
+These can be handled via the regular in-toto development workflow with a GitHub
 issue and/or pull request to the appropriate repository.
 
 An ITE may still have an accompanying GitHub issue as a placeholder.  This
@@ -858,7 +858,7 @@ enhancements to in-toto.
 
 ITE provides a systematic approach for vetting and developing new proposals and
 ideas for in-toto. By encouraging "everybody to follow the rules" it will be
-easier for existing developers to get their ideas and changes into in-toto 
+easier for existing developers to get their ideas and changes into in-toto
 without finding themselves mired in unspoken cultural norms within the project.
 
 === Benefits to future developers
@@ -869,7 +869,7 @@ and oppose design decisions. ITEs also make it clearer how an ambitious new
 developer to the in-toto project can propose, and make progress upon, a new
 idea they have for in-toto.
 
-Overall, less chaos and more productivity is the rationale for ITEs. 
+Overall, less chaos and more productivity is the rationale for ITEs.
 
 == Reasoning
 
