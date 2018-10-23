@@ -704,11 +704,11 @@ ITE:
 
 Issue:: [[header-issue]]
 An **issue identifier** row is available to specify a linked placeholder for an
-issue in github, if any.
+issue in GitHub, if any.
 
 Discussions-To:: [[header-discussions-to]]
 For an ITE where final pronouncement will be made on a list other than
-in-toto-dev@googlegroups.com or the github issue tracker, a **Discussions-To**
+in-toto-dev@googlegroups.com or the GitHub issue tracker, a **Discussions-To**
 row will indicate the mailing list or URL where the pronouncement will occur. A
 temporary Discussions-To header may also be used when a draft ITE is being
 discussed prior to submission for pronouncement.
@@ -912,7 +912,7 @@ confusion.
 
 The TAP document is closer to a PEP than ITEs are, for ITEs adopted the
 organizational structure of JEPs. Furthermore, ITEs adopted asciidoc rather
-than markdown, as its syntax has less derivate dialects (e.g., github flavored)
+than markdown, as its syntax has less derivate dialects (e.g., GitHub flavored)
 than markdown does. Furthermore, the repository structure of JEP was adopted, as
 it allows for the addition of self-hosted diagrams and supporting documents.
 
