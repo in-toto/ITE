@@ -286,7 +286,7 @@ style and format described below, shepherds the discussions in the appropriate
 forums, and attempts to build community consensus around the idea. The ITE
 Sponsor should first attempt to ascertain whether the idea is ITE-able.
 Posting to the in-toto-dev@googlegroups.com mailing list or opening an issue in
-the specification repository footnoteref:[docs https://github.com/in-toto/docs]
+the specification repository footnoteref:[docs, https://github.com/in-toto/docs]
 is the best way to go about this.
 
 [[discussion]]
