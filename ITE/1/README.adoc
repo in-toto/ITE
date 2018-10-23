@@ -244,7 +244,7 @@ look at how ITE might go.
   Andrea makes changes as needed or hands off sponsorship to someone else.
   Updates follow the same basic ITE workflow.  For extensive changes or
   additions, Andrea will start a whole new ITE instead of updating the original
-  ITE.  This new ITE might expand on the orginal or might <<replaced, replace>>
+  ITE.  This new ITE might expand on the original or might <<replaced, replace>>
 it.
 
 . **<<Other ITE Outcomes, Other Outcomes>>** - Not all ITEs will be accepted and finalized.
@@ -429,9 +429,9 @@ It must:
 
 * provide a net improvement.
 * represent the consensus of the community, including documentation of
-  dissenting opions.
+  dissenting opinions.
 * clearly define the scope and features of the proposed enhancement.
-* describe a completed design that addesses any major design questions.
+* describe a completed design that addresses any major design questions.
 
 For ITEs that include implementation based on the proposal,
 the implementation must meet certain minimum criteria.
@@ -913,7 +913,7 @@ confusion.
 The TAP document is closer to a PEP than ITEs are, for ITEs adopted the
 organizational structure of JEPs. Furthermore, ITEs adopted asciidoc rather
 than markdown, as its syntax has less derivate dialects (e.g., github flavored)
-than markdown does. Furtermore, the repository structure of JEP was adopted, as
+than markdown does. Furthermore, the repository structure of JEP was adopted, as
 it allows for the addition of self-hosted diagrams and supporting documents.
 
 === Asciidoc style and linter
