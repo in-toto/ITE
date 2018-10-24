@@ -89,7 +89,7 @@ There are three kinds of ITE:
  but does not propose a new feature. Informational ITEs do not
  necessarily represent an in-toto community consensus or
  recommendation, so users and implementers are free to ignore
- Informational ITEs or follow their advice. An example of an Informational ITE 
+ Informational ITEs or follow their advice. An example of an Informational ITE
  would be the recommendations for integrating in-toto and TUF.
 . A **Process** ITE describes a process surrounding the in-toto project, or
  proposes a change to (or an event in) a process. Process ITEs are like
@@ -110,7 +110,7 @@ There are three kinds of ITE:
 The ITE Editors are individuals responsible for managing the administrative
 and editorial aspects of the ITE workflow (e.g. assigning ITE numbers and
 changing their status). See <<Editor-responsibilities, ITE Editor Responsibilities & Workflow>> for
-details. 
+details.
 
 ITE editorship is given by invitation of the current Editors. All of the ITE
 workflow can be conducted via the GitHub ITE Repository footnoteref:[repo] and
@@ -118,7 +118,7 @@ pull requests. Editors are members of a GitHub group called `ITE-editors`.
 
 ==== Contributor
 
-An ITE may have any number of `Contributors` who help write, implement, discuss,
+An ITE may have any number of Contributors who help write, implement, discuss,
 or offer feedback about that ITE. One contributor might do only one or any
 combination of these things during any part of the life of an ITE.
 While we invite contributions by companies or other organizations, contributors
@@ -161,7 +161,7 @@ only approve and merge pull requests for ITEs to which they are assigned.
 ==== Reviewer
 
 The ITE Reviewer is the contributor who will make the final decision whether to
-accept an ITE. In all cases where this document refers to the `Reviewer`, it
+accept an ITE. In all cases where this document refers to the Reviewer, it
 means "an Editor who will review this ITE."
 
 [[requirement-levels]]
@@ -244,7 +244,7 @@ look at how ITE might go.
   Andrea makes changes as needed or hands off sponsorship to someone else.
   Updates follow the same basic ITE workflow.  For extensive changes or
   additions, Andrea will start a whole new ITE instead of updating the original
-  ITE.  This new ITE might expand on the orginal or might <<replaced, replace>>
+  ITE.  This new ITE might expand on the original or might <<replaced, replace>>
 it.
 
 . **<<Other ITE Outcomes, Other Outcomes>>** - Not all ITEs will be accepted and finalized.
@@ -268,7 +268,7 @@ If in doubt, Sponsors should split their ITE into several well-focused ones.
 [NOTE]
 ====
 Enhancements or patches which have a smaller impact often don’t need an ITE.
-These can be handled via the regular in-toto development workflow with a GitHub 
+These can be handled via the regular in-toto development workflow with a GitHub
 issue and/or pull request to the appropriate repository.
 
 An ITE may still have an accompanying GitHub issue as a placeholder.  This
@@ -286,7 +286,7 @@ style and format described below, shepherds the discussions in the appropriate
 forums, and attempts to build community consensus around the idea. The ITE
 Sponsor should first attempt to ascertain whether the idea is ITE-able.
 Posting to the in-toto-dev@googlegroups.com mailing list or opening an issue in
-the specification repository footnoteref:[docs https://github.com/in-toto/docs]
+the specification repository footnoteref:[docs, https://github.com/in-toto/docs]
 is the best way to go about this.
 
 [[discussion]]
@@ -297,7 +297,7 @@ to save the potential Sponsor time. Many ideas have been brought
 forward for changing in-toto that have been rejected for various
 reasons. Asking the in-toto community first if an idea is original
 helps prevent too much time being spent on something that is
-guaranteed to be rejected based on prior discussions (searching the internet
+guaranteed to be rejected based on prior discussions (searching the Internet
 does not always do the trick). It also helps to make sure the idea is
 applicable to the entire community and not just the Sponsor. Just because an
 idea sounds good to the Sponsor does not mean it will work for most people in
@@ -429,9 +429,9 @@ It must:
 
 * provide a net improvement.
 * represent the consensus of the community, including documentation of
-  dissenting opions.
+  dissenting opinions.
 * clearly define the scope and features of the proposed enhancement.
-* describe a completed design that addesses any major design questions.
+* describe a completed design that addresses any major design questions.
 
 For ITEs that include implementation based on the proposal,
 the implementation must meet certain minimum criteria.
@@ -692,23 +692,23 @@ ITE:
 
 
 . **ITE** -- ITE number, given by the ITE Editors. Use `0000` until one is assigned.
-. **Title** -- Brief title explaining the proposal in fewer than 50 characters
+. **Title** -- Brief title explaining the proposal in fewer than 50 characters.
 . **Sponsor** -- <<Sponsor>> of the ITE, in essence, the individual
   responsible for seeing the ITE through the process.
 . **Status** -- Draft :speech_balloon:, Deferred :hourglass:, Accepted :ok_hand:,
   Rejected :no_entry:, Withdrawn :hand:, Final :lock:, Replaced :dagger:, Active :smile:.
-. **Type** -- Describes the type of ITE: Standards, Informational, Process
+. **Type** -- Describes the type of ITE: Standards, Informational, Process.
 . **Created** -- Date (`%Y-%m-%d`) when the document was first created.
 
 =====  Additional Header Rows
 
 Issue:: [[header-issue]]
 An **issue identifier** row is available to specify a linked placeholder for an
-issue in github, if any.
+issue in GitHub, if any.
 
 Discussions-To:: [[header-discussions-to]]
 For an ITE where final pronouncement will be made on a list other than
-in-toto-dev@googlegroups.com or the github issue tracker, a **Discussions-To**
+in-toto-dev@googlegroups.com or the GitHub issue tracker, a **Discussions-To**
 row will indicate the mailing list or URL where the pronouncement will occur. A
 temporary Discussions-To header may also be used when a draft ITE is being
 discussed prior to submission for pronouncement.
@@ -770,7 +770,7 @@ a co-Sponsor of the transferred ITE, but that's really up to the
 original Sponsor. A good reason to transfer sponsorship is because the
 original Sponsor no longer has the time or interest in updating it or
 following through with the ITE process, or has fallen off the face of
-the internet (i.e. is unreachable or not responding to email). A bad
+the Internet (i.e. is unreachable or not responding to email). A bad
 reason to transfer sponsorship is because the Sponsor doesn't agree with the
 direction of the ITE. One aim of the ITE process is to try to build
 consensus around an ITE, but if that's not possible, a Sponsor can always
@@ -820,10 +820,10 @@ Once the ITE is ready for the repository, an ITE Editor will:
 
 . Assign an ITE number (almost always just the next available number, but
   may also be a special/joke number, like 666 or 3141).
-. Update the folder number to match the ITE number
+. Update the folder number to match the ITE number.
 . Update the ITE number in the document.
 . Update the ITE status using the to draft.
-. Commit all changes and push them to the branch in the PR
+. Commit all changes and push them to the branch in the PR.
 . "Squash and merge" the PR into the `master` branch.
 
 ==== Permission group membership
@@ -858,7 +858,7 @@ enhancements to in-toto.
 
 ITE provides a systematic approach for vetting and developing new proposals and
 ideas for in-toto. By encouraging "everybody to follow the rules" it will be
-easier for existing developers to get their ideas and changes into in-toto 
+easier for existing developers to get their ideas and changes into in-toto
 without finding themselves mired in unspoken cultural norms within the project.
 
 === Benefits to future developers
@@ -869,7 +869,7 @@ and oppose design decisions. ITEs also make it clearer how an ambitious new
 developer to the in-toto project can propose, and make progress upon, a new
 idea they have for in-toto.
 
-Overall, less chaos and more productivity is the rationale for ITEs. 
+Overall, less chaos and more productivity is the rationale for ITEs.
 
 == Reasoning
 
@@ -912,8 +912,8 @@ confusion.
 
 The TAP document is closer to a PEP than ITEs are, for ITEs adopted the
 organizational structure of JEPs. Furthermore, ITEs adopted asciidoc rather
-than markdown, as its syntax has less derivate dialects (e.g., github flavored)
-than markdown does. Furtermore, the repository structure of JEP was adopted, as
+than markdown, as its syntax has less derivate dialects (e.g., GitHub flavored)
+than markdown does. Furthermore, the repository structure of JEP was adopted, as
 it allows for the addition of self-hosted diagrams and supporting documents.
 
 === Asciidoc style and linter

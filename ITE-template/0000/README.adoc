@@ -59,13 +59,13 @@ Here, describe why the decisions you made in the specification make sense.
 [[backwards-compatibility]]
 == Backwards Compatibility
 
-Describe how these changes will affect backwards compatibility and how do you
-plan on mitigating the effects of these.
+Describe how these changes will affect backwards compatibility and how you plan
+on mitigating the effects of these.
 
 [[security]]
 == Security
 
-Provide a security analisis of these changes including the threat model
+Provide a security analysis of these changes including the threat model
 considered (and how it differs from the existing threat model for in-toto).
 Mention the security impact of adding these changes to in-toto.
 
