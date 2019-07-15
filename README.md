@@ -8,20 +8,15 @@
 
 * [ITE-2: Using TUF and in-toto to build compromise-resilient CI/CD](ITE/2/README.adoc)
 
-## License
-
-This work is [dual-licensed](https://en.wikipedia.org/wiki/Multi-licensing) and
-distributed under the (1) MIT License and (2) Apache License, Version 2.0.
-Please see [LICENSE-MIT.txt](LICENSE-MIT.txt) and
-[LICENSE-APACHE.txt](LICENSE-APACHE.txt).
-
 ## Acknowledgements
 
 This project is managed by Prof. Justin Cappos and other members of the [Secure
-Systems Lab](https://ssl.engineering.nyu.edu/) at NYU.
+Systems Lab](https://ssl.engineering.nyu.edu/) at NYU, and the NJIT
+Cybersecurity Research Center.
 
-This material is based upon work supported by the National Science Foundation
-under Grant Nos. CNS-1801430 and DGE-1565478. Any opinions, findings, and
-conclusions or recommendations expressed in this material are those of the
-author(s) and do not necessarily reflect the views of the National Science
-Foundation.
+This research was supported by the Defense Advanced Research Projects Agency
+(DARPA) and the Air Force Research Laboratory (AFRL). Any opinions, findings,
+and conclusions or recommendations expressed in this material are those of the
+authors and do not necessarily reflect the views of DARPA and AFRL. The United
+States Government is authorized to reproduce and distribute reprints
+notwithstanding any copyright notice herein.
