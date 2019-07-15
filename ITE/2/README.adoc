@@ -1,0 +1,681 @@
+= ITE-2: Using TUF and in-toto to build compromise-resilient CI/CD
+:source-highlighter: pygments
+:toc: preamble
+:toclevels: 4
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| ITE
+| 2
+
+| Title
+| in-toto Enhancement format
+
+| Sponsor
+| link:https://github.com/trishankatdatadog[Trishank Karthik Kuppusamy]
+
+| Status
+| Draft :pensive:
+
+| Type
+| Process
+
+| Created
+| 2019-07-15
+
+|===
+
+[[abstract]]
+== Abstract
+
+We discuss a standard for using The Update Framework (TUF) as a
+higher-level protocol for securely distributing in-toto layout and link
+metadata as well as the software packages described in the in-toto
+metadata. Assuming that critical signing keys are kept offline from the
+CI/CD pipeline, combining TUF with in-toto provides the pipeline with a
+desirable property called _compromise-resilience_: that is, even if the
+pipeline is compromised anywhere between developers and end-users, then
+attackers should not be able to cause end-users to install malicious
+versions of packages that were never released by developers.
+
+[[motivation]]
+== Motivation
+
+Whereas in-toto provides end-to-end verification of a software supply
+chain, it does not solve a crucial problem that arises in practice: how
+to securely distribute, revoke, and replace the public keys used to
+verify the in-toto layout. This mechanism must be
+_compromise-resilient_, and resistant to a compromise of the software
+repository or server used to serve files. While SSL / TLS protects users
+from man-in-the-middle (MitM) attacks, it is not compromise-resilient,
+because attackers who compromise the repository can simply switch the
+public keys used to verify in-toto layout undetected, and thus defeat
+end-to-end verification. Likewise, other solutions, such as X.509
+certificates do not support necessary features such as in-band key
+revocation and key rotation.
+
+TUF provides precisely this type of compromise-resilient mechanism, as
+well as in-band key revocation and key rotation. To do so, TUF adds a
+higher layer of signed metadata to the repository carefully designed to
+follow several design principles. These principles, two of which are
+discussed here, also inspired the in-toto design. The first is the use
+of roles in a similar fashion to in-toto, so that a key compromise does
+not necessarily affect all targets (i.e., any Python wheels, or even
+in-toto metadata). The second principle is minimizing the risk of a key
+compromise using offline keys, or signing keys that are kept off the
+repository and pipeline in a cold storage mechanism, such as safe
+deposit boxes, so that attackers who compromise the infrastructure are
+unable to find these keys.
+
+We use TUF to distribute several artifacts in a compromise-resilient
+manner:
+
+[arabic]
+. The root of trust for all packages as well as TUF and in-toto
+metadata.
+. The software supply chain defined using in-toto.
+. The public keys used to verify this supply chain.
+
+TUF also guarantees that MitM attackers cannot tamper with the
+consistency, authenticity, and integrity of these files, nor rollback or
+indefinitely replay metadata. The key point is that this offline
+bootstrapping of trust with TUF is what gives in-toto meaningful
+security guarantees.
+
+== Specification
+
+=== Glossary
+
+Please consult Sections 1-2 of the TUF and in-toto specifications
+respectively.
+
+The keywords MUST, MUST NOT, REQUIRED, SHALL, SHALL NOT, SHOULD, SHOULD
+NOT, RECOMMENDED, MAY, and OPTIONAL in this document are to be
+interpreted as described in https://tools.ietf.org/html/rfc2119[RFC
+2119].
+
+[[security-models]]
+=== Security models
+
+Neither in-toto or TUF themselves mandate the security models required
+to work. That is, it is possible for a deployment to use only online
+keys and a single online-signed layout to secure their supply chain.
+However, such a deployment will have marginal security benefits. In
+contrast, the security models proposed below aim to provide strong
+security guarantees in the event of infrastructure compromise,
+misbehaving functionaries, and even project owners, while maintaining
+reasonable operational overhead for most cases.
+
+This section discusses how the reader SHOULD combine TUF and in-toto in
+order to build-compromise resilience. Two examples are presented: a
+minimum viable product (MVP), and a running example using Datadog Agent
+integrations. The reader is assumed to be familiar with the concepts and
+terminology of public-key cryptography as well as to have thoroughly
+read and understood the
+https://github.com/theupdateframework/specification[TUF] and
+https://github.com/in-toto/docs[in-toto] specifications. Finally, the
+reader is also assumed to have access to implementations of TUF (e.g.,
+for https://github.com/theupdateframework/tuf[Python],
+https://github.com/theupdateframework/notary[Docker],
+https://github.com/flynn/go-tuf[Go], and
+https://github.com/heartsucker/rust-tuf[Rust]) and in-toto (e.g., for
+https://github.com/in-toto/in-toto[Python],
+https://github.com/in-toto/in-toto-java[Java], and
+https://github.com/in-toto/in-toto-golang[Go]) that are capable of
+meeting the following requirements.
+
+[[basic-security-model]]
+==== Basic security model
+
+This subsection describes the requirements that MUST be met in order for
+an integration of TUF and in-toto to be said to be compromise-resilient.
+
+The in-toto root layout MUST consist of at least two steps:
+
+[arabic]
+. The ``developer'' step corresponds to a developer who signs source
+code. Typically, it receives no materials, and outputs source code as
+products. Its link metadata MUST be signed by developers using (m, n)
+offline keys, where m >= 1, and n is the number of currently trusted
+developers. It is OPTIONAL but RECOMMENDED to protect these keys using
+hardware such as https://github.com/DataDog/yubikey[YubiKeys].
+. The ``packager'' step corresponds to the CI/CD pipeline which
+transforms this source code into packages (e.g., tarballs, binaries).
+Typically, it receives source code from the ``developer'' step, and
+outputs packages as products. It SHOULD use (1, 1) online keys.
+
+The in-toto root layout itself MUST be signed by administrators using
+(m, n) offline keys, where n >= 2, and m >= ceiling(n / 2). This means
+that administrators are responsible for distributing, revoking, and
+rotating developer keys corresponding to the first step. Alternatively,
+administrators MAY use a
+https://github.com/in-toto/docs/blob/master/in-toto-spec.md#214-third-party-sublayouts[sublayout]
+to outsource this responsibility. In that case, the functionary who
+signs the sublayout MUST use the same (m, n) threshold of offline keys.
+The root layout and sublayout, if any, SHOULD expire in 1 year.
+
+image:tuf-in-toto-figure-1.png[Figure 1]
+
+*Figure 1*: An illustration of a minimum TUF security model that
+provides compromise-resilience.
+
+The TUF security model, illustrated in Figure 1, MUST be configured as
+follows, which we discuss using an ``inside-out'', layered approach.
+
+The delegated ``package-and-in-toto-metadata-signer'' targets metadata
+role signs targets metadata about the latest available packages. Besides
+cryptographic hashes and file sizes, each package listed in the targets
+metadata is also associated with custom targets metadata: specifically,
+the _complete_ set of in-toto metadata associated with the production of
+that particular package. In our basic security model, this means: (1)
+the in-toto root layout metadata file, (2) the ``developer'' step link
+metadata file, and (3) the ``package'' step link metadata file. There
+are three important considerations regarding the targets metadata signed
+by this role:
+
+[arabic]
+. Since each package is typically produced independently of other
+packages, this means that the complete set of in-toto _link_ metadata
+for a package SHOULD be different, and therefore isolated, from that for
+another package. (The in-toto root layout metadata SHOULD be the same
+for every package.) This MAY be done in a number of different ways, but
+perhaps the simplest is to use directories with unique names to isolate
+different in-toto link metadata for different packages, where the name
+MAY be the SHA-256 hash of the ``developer'' step link metadata file for
+a particular package.
+. The targets metadata MUST also list the targets metadata of all
+in-toto link metadata files associated with all available packages. Note
+that as the number of packages grows, so will the size of this metadata
+file. Bandwidth considerations will be discussed in the next subsection.
+. Since packages can be added on demand, this role SHOULD use (1, 1)
+online keys, and its metadata SHOULD expire in 1 day.
+
+See Table 1 for an example of a complete set of targets metadata for a
+particular package signed by this role.
+
+image:tuf-in-toto-table-1.png[Table 1]
+
+*Table 1*: An example of the targets metadata for a package signed by
+the ``package-and-in-toto-metadata-signer'' role.
+
+The targets role signs targets metadata about the in-toto root layout,
+and all of the public keys used to verify the layout itself. Finally, it
+makes a terminating delegation of all packages ("*``) to the
+“package-and-in-toto-metadata-signer'' role. It MUST use a different set
+of (m, n) offline keys from the root role, where n >= 2, and m >=
+ceiling(n / 2), and its metadata SHOULD expire in 1 year. See Table 2
+for an example.
+
+image:tuf-in-toto-table-2.png[Table 2]
+
+*Table 2*: An example of the delegations and targets signed by the
+targets role. Note that it lists the in-toto root layout, and all of the
+public keys used to verify the layout itself.
+
+The snapshot and timestamp roles SHOULD use (1, 1) online keys, and
+their metadata SHOULD expire in 1 day. The in-toto ``packager''
+functionary as well as the TUF timestamp, snapshot, and
+``package-and-in-toto-metadata-signer'' roles MAY share the same (1, 1)
+online keys. Furthermore, these online TUF roles MAY share the same
+metadata expiration period (e.g., 1 day). Online keys are used so that
+robots can use the key to sign new metadata on demand. When the in-toto
+or TUF implementation supports it, it is RECOMMENDED that online keys
+are protected from being exfiltrated using a Hardware Security Module
+(HSM).
+
+Finally, the root role MUST use a different set of (m, n) offline keys
+from both the in-toto root layout and the targets role, where n >= 2,
+and m >= ceiling(n / 2). Its metadata SHOULD expire in 1 year. All TUF
+metadata and targets MUST be written using
+https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#7-consistent-snapshots[consistent
+snapshots], which is set using the root metadata, so that the repository
+is able to concurrently write new files while package managers are
+reading old ones, and also rotate package managers from old root
+metadata to the latest one. Table 3 summarizes the security model
+discussed in this subsection.
+
+image:tuf-in-toto-table-3.png[Table 3]
+
+*Table 3*: A summary of the security model discussed in this subsection.
+
+[[datadog-agent-integrations]]
+==== Real-world example: Datadog Agent integrations
+
+Datadog is a monitoring service for cloud-scale applications, providing
+monitoring of servers, databases, tools, and services, through a
+software-as-a-service-based data analytics platform. It supports
+multiple cloud service providers, including Amazon Web Services,
+Microsoft Azure, Google Cloud Platform, and Red Hat OpenShift. At the
+time of writing, it has over 8,000 customers, and collects trillions of
+monitoring record points per day.
+
+The Datadog __https://docs.datadoghq.com/agent/?tab=agentv6[agen*t] is
+software that runs on hosts. It collects events and metrics from hosts
+and sends them to Datadog, where customers can analyze their monitoring
+and performance data. The agent
+__https://docs.datadoghq.com/getting_started/integrations/[integration*s]
+are plug-ins that collect metrics from services running on customer
+infrastructure. Presently, there are more than one hundred integrations
+that come installed out-of-the-box with the Agent.
+
+This subsection discusses the TUF security model used to distribute the
+Datadog Agent integrations in a compromise-resilient manner.
+
+image:tuf-in-toto-figure-2.png[Figure 2]
+
+*Figure 2*: The Datadog Agent integrations software supply chain.
+
+The Datadog agent integrations supply chain, shown in Figure 2,
+presently has three steps:
+
+[arabic]
+. The first ``tag'' step outputs Python source code as products. Every
+integration consists of Python source code and several
+https://yaml.org/[YAML] configuration files. The step uses (1, n)
+Yubikeys, where n is the current number of Datadog Agent integrations
+developers, and this is an
+https://dd-integrations-core-wheels-build-stable.datadoghq.com/targets/in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/tag.c295cf63.link[example]
+of ``tag'' link metadata file.
+. In the second ``wheels-builder'' step, the pipeline must receive the
+same source code from the ``tag'' step and produce a Python
+https://pythonwheels.com/[wheel], as well as its updated Python metadata
+(https://www.python.org/dev/peps/pep-0503/[simple indices]). Each wheel
+is a ZIP file and its metadata is an HTML file that points to all the
+available _versions_ of an integration. This step uses (1,1) online
+keys, and this is an
+https://dd-integrations-core-wheels-build-stable.datadoghq.com/targets/in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/wheels-builder.9fc6e62d.link[example]
+of the ``wheels-builder'' link metadata file.
+. In the third ``wheels-signer'' step, the pipeline must receive, as
+materials, the same products as the ``wheels-builder'' step. This steps
+signs for all wheels using the TUF security model described shortly. It
+can be dangerous packaging Python source code, because arbitrary code
+can be executed during the packaging process, which can be inserted by
+compromising the GitHub
+https://github.com/DataDog/integrations-core[repository]. Therefore,
+this step is separate from the ``wheels-builder'' step, so that a
+compromise of the former does not yield the signing keys of this step.
+This step uses (1, 1) online keys, and this is an
+https://dd-integrations-core-wheels-build-stable.datadoghq.com/targets/in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/wheels-signer.20585de1.link[example]
+of the ``wheels-signer'' link metadata file.
+
+Finally, there is an inspection which first ensures that a given wheel
+matches the materials of the ``wheels-signer'' step. It then extracts
+files from the wheel and checks that they correspond to exactly the same
+Python source code and YAML configuration files as the products of the
+``tag'' step. Thus, this layout provides end-to-end verification: it
+prevents a compromised pipeline from causing users to trust wheels with
+source code that was never released by Datadog developers. This is an
+https://dd-integrations-core-wheels-build-stable.datadoghq.com/targets/in-toto-metadata/root.layout[example]
+of the
+https://dd-integrations-core-wheels-build-stable.datadoghq.com/targets/in-toto-metadata/root.layout[root
+layout] metadata file, which is signed using (2, 3) offline keys, and
+expires in 1 year. (The layout also tracks previously built Python
+metadata and wheels as well as their corresponding in-toto link metadata
+files as they move through the CI/CD pipeline, but they are largely out
+of the scope of this document.)
+
+image:tuf-in-toto-figure-3.png[Figure 3]
+
+*Figure 3*: The TUF security model that distributes in-toto metadata and
+Datadog Agent integrations in a compromise-resilient manner.
+
+The TUF security model, illustrated in Figure 3, is configured as
+follows, which we discuss using an ``inside-out'', layered approach. A
+key difference from the <<<basic-security-model, basic security model>>>
+is that we use delegations extensively in order to split metadata
+bandwidth costs.
+
+The ``wheels-signer'' delegated targets role makes a terminating
+delegation of all Python metadata and wheels for integrations beginning
+with the letter ``a'' to the ``wheels-signer-a'' role, all Python
+metadata and wheels for integrations beginning with the letter ``b'' to
+the ``wheels-signer-b'' role, and so on until all Python metadata and
+wheels for integrations beginning with the letter ``z'' to the
+``wheels-signer-z'' role. Thus, there are 26 of these roles. This role
+uses (2, 3) offline keys, does not directly sign for any Python metadata
+or wheel, and its metadata expires in 1 year. This is an
+https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/wheels-signer.json[example]
+of its metadata file (see Table 4).
+
+image:tuf-in-toto-table-4.png[Table 4]
+
+*Table 4*: An example of the delegations signed by the ``wheels-signer''
+role.
+
+Each ``wheels-signer-[a-z]'' role signs targets metadata about a certain
+subset of Python metadata and wheels beginning with a particular letter.
+Each Python wheel is associated with custom targets metadata that point
+to all of the in-toto metadata required to verify that particular wheel,
+as described in the <<<basic-security-model, basic security model>>>.
+In particular, each directory containing in-toto link metadata
+for one or more associated wheels is named directly using the SHA-256
+hexadecimal digest of the ``tag'' link metadata file associated with
+these wheels. Each role uses (1,1) online keys, does not delegate any
+Python metadata or wheel, and its metadata expires in 1 week. This is an
+https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/wheels-signer-a.json[example]
+of the ``wheels-signer-a'' metadata file (see Table 5).
+
+image:tuf-in-toto-table-5.png[Table 5]
+
+*Table 5*: An example of the targets signed by the ``wheels-signer-a''
+role.
+
+The ``in-toto-metadata-signer'' delegated targets role makes a
+terminating delegation of all in-toto link metadata in directories
+beginning with the letter ``0'' to the ``in-toto-metadata-signer-0''
+role, all in-toto link metadata in directories beginning with the letter
+``1'' to the ``in-toto-metadata-signer-1'' role, and so on until all
+in-toto link metadata in directories beginning with the letter ``f'' to
+the ``in-toto-metadata-signer-f'' role. Thus, there are 16 of these
+roles (since there are 16 hexadecimal characters in the SHA-256 digests
+used to uniquely name these directories). This role uses (2, 3) offline
+keys, does not directly sign for any in-toto link metadata file, and its
+metadata expires in 1 year. This is an
+https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/in-toto-metadata-signer.json[example]
+of its metadata file (see Table 6).
+
+image:tuf-in-toto-table-6.png[Table 6]
+
+*Table 6*: An example of the delegations signed by the
+``in-toto-metadata-signer'' role.
+
+Each ``in-toto-metadata-singer-[0-f]'' role signs targets metadata about
+a certain subset of in-toto-link metadata files inside directories
+beginning with a particular letter. Each role uses (1,1) online keys,
+does not delegate any in-toto link metadata file, and its metadata
+expires in 1 week. This is an
+https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/in-toto-metadata-signer-3.json[example]
+of the ``in-toto-metadata-signer-3'' metadata file (see Table 7).
+
+image:tuf-in-toto-table-7.png[Table 7]
+
+*Table 7*: An example of the targets signed by the
+``in-toto-metadata-signer-3'' role.
+
+The targets role signs targets metadata about the in-toto root layout,
+and all of the public keys used to verify the layout itself. It also
+makes a terminating delegation of all Python metadata and wheels to the
+``wheels-signer'' role. Finally, it makes a terminating delegation of
+all in-toto link metadata to the ``in-toto-metadata-signer'' role. It
+uses a different set of (2, 3) offline keys from the in-toto root
+layout, and its metadata expires in 1 year, too. However, it does share
+its keys with the ``wheels-signer'' and ``in-toto-metadata-signer''
+roles. This is an
+https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/targets.json[example]
+of the targets metadata file (see Table 8).
+
+image:tuf-in-toto-table-8.png[Table 8]
+
+*Table 8*: An example of the delegations and targets signed by the
+targets role.
+
+All online roles (``wheels-signer-[a-z]'',
+``in-toto-metadata-signer-[0-f]'', snapshot, and timestamp) share the
+same (1, 1) online keys. This is an example of the
+https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/snapshot.json[snapshot]
+metadata file, and this is an example the
+https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/timestamp.json[timestamp]
+metadata file.
+
+The root role uses a different set (2, 3) offline keys from both the
+in-toto root layout and the targets role, and its metadata expires in 1
+year. This is an
+https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/root.json[example]
+the root metadata file. All TUF metadata and targets are written using
+https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#7-consistent-snapshots[consistent
+snapshots]. Table 9 summarizes the security model discussed in this
+subsection.
+
+image:tuf-in-toto-table-9.png[Table 9]
+
+*Table 9*: A summary of the security model discussed in this subsection.
+
+In summary, the Datadog pipeline uses TUF to appropriately bootstrap the
+root of the trust for the entire system, and in-toto to guarantee that
+the pipeline packaged exactly the source code signed by one of the
+Datadog developers inside universal Python wheels. By tightly
+integrating TUF and in-toto, Datadog’s users obtain the
+compromise-resilience of both systems combined.
+
+[[workflows]]
+=== Workflows
+
+This subsection discusses the workflow that Datadog developers, CI/CD
+pipeline, and end-users follow.
+
+==== Developer
+
+Datadog developers sign integrations using Yubikeys, which are trusted,
+and support the on-card generation and storage of GPG signing keys.
+
+There are three levels of protection on these keys:
+
+[arabic]
+. Assuming that the Yubikey firmware works correctly, private keys
+cannot be exported outside of the card.
+. Each Yubikey requires a secret user PIN to unlock the signing key.
+. Every developer must touch the Yubikey to authorize any signing
+operation.
+
+The developers use a command-line tool which transparently
+https://github.com/DataDog/integrations-core/blob/master/datadog_checks_dev/datadog_checks/dev/tooling/signing.py[calls]
+in-toto, which in turn calls GPG, to sign integrations. Thus, using
+Yubikeys, we are able to significantly minimize the risk of a key
+compromise without hampering usability.
+
+==== CI/CD
+
+When developers merge source code for new and / or updated integrations
+into the GitHub
+https://github.com/DataDog/integrations-core[repository], the internal
+CI/CD pipeline is triggered, which consists of the following steps:
+
+[arabic]
+. Fetch source code from the GitHub repository corresponding to these
+integrations. Also fetch previously built Python metadata and wheels.
+. Record this source code and previously built Python metadata and
+wheels as materials for the ``wheels-builder'' step. Build Python
+metadata and wheels for these integrations. Record all old and new
+Python metadata and wheels as products of the ``wheels-builder'' step.
+. Fetch previously signed TUF and in-toto metadata.
+. Record all old and new Python metadata and wheels as materials for the
+``wheels-signer'' step. Verify all previously signed TUF and in-toto
+metadata as well as previously built Python metadata and wheels. Produce
+a new consistent snapshot of TUF metadata for all Python metadata and
+wheels as well as in-toto link metadata. Record no products for the the
+``wheels-signer'' step.
+. Test that the Datadog agent is able to download and verify with TUF
+and in-toto, as described in the next subsection, the latest wheel for
+every integration.
+. Perform garbage collection of expired consistent snapshots of TUF
+metadata.
+. Upload the latest consistent snapshot of TUF metadata, new Python
+metadata as well as wheels, and new in-toto link metadata to the
+repository.
+
+==== End-users
+
+Finally, to install or update integrations, customers use the Datadog
+agent, which transparently
+https://github.com/DataDog/integrations-core/tree/master/datadog_checks_downloader[calls]
+TUF and in-toto libraries on their behalf. The download and verification
+workflow is roughly as follows:
+
+[arabic]
+. Use TUF to download and verify the wheel for a given integration name
+and version number.
+. Use TUF to download and verify the in-toto metadata for the given
+wheel.
+. Use TUF to download and verify public keys for the in-toto root
+layout.
+. Use in-toto to verify that the given wheel matches the rules specified
+in the in-toto root layout.
+. If all of the above checks pass, return the wheel to the Datadog
+agent.
+
+Customers see no difference in their experience, except if an attack is
+caught by TUF or in-toto. In that case, installation of the integration
+will be denied, and users will see an error message indicating why TUF
+or in-toto failed to verify the installation.
+
+=== Deployment considerations
+
+Deployment considerations, such as designing and securely performing the
+offline key generation and rotation ceremony, are discussed in a
+separate document.
+
+[[backwards-compatibility]]
+== Backwards compatibility
+
+The changes discussed here require considering _at least_ the following
+issues of backwards compatibility:
+
+* *If previous package managers already use in-toto but not TUF, then
+the filesystem structure for in-toto metadata and packages should be
+preserved for package managers that have not yet been updated to use
+TUF.* These package managers should be updated to newer versions which
+use both TUF and in-toto.
+* *When rotating TUF root keys, all versions of the root TUF metadata
+from version 1 to N, where N is the latest version, should be preserved
+so that package managers can update from one version to the next.* This
+assumes that any version N+1 is signed by at least a threshold of root
+keys listed in version N.
+* *Package managers should use
+https://github.com/theupdateframework/taps/blob/master/tap6.md[TAP **6]*
+to determine how to respond when a TUF repository has significantly
+updated its specification version.**
+* *Neither a TUF nor in-toto implementation should make
+backward-incompatible changes to how signatures are generated, so that
+previous package managers are able to continue to install new packages.*
+Note that TUF can otherwise be used to safely rotate the keys for the
+entire system, including those using different key types, key sizes,
+signature schemes, and cryptographic hashes.
+
+[[security]]
+== Security
+
+The exact security guarantees delivered by a TUF and in-toto security
+model depends on the specifics of the model, but we can discuss the
+guarantees delivered by the models discussed above.
+
+We assume that an attacker can:
+
+[arabic]
+. Compromise any part of the infrastructure between, but not including,
+developers and end-users. Thus, attackers can tamper with any files and
+keys stored on the infrastructure, including those situations where the
+key itself is unknown (e.g., due to hardware protection), but where the
+attacker is nevertheless able to sign malicious packages using the key.
+. Respond to user requests. This can be done either by acting as a
+man-in-the-middle, or compromising the infrastructure as above.
+
+We assume that attackers cannot access or reverse-engineer offline keys,
+which are protected using hardware and / or operations security.
+Weaknesses in implementations of cryptography are outside the scope of
+this document, although implementers may be able to hedge their bets by
+using a diversity of cryptographic hashing and signing algorithms.
+
+An attack will be successful if the attacker can change the contents of
+a package that a user installs (e.g., to insert a backdoor).
+
+=== Basic security model
+
+Table 10 presents a detailed security analysis for the
+<<<basic-security-model, basic security model>>>, featuring only the
+most significant security attacks.
+
+image:tuf-in-toto-table-10.png[Table 10]
+
+*Table 10*: A security analysis showing which security attacks are
+possible for the basic security model, depending on which in-toto
+functionary or TUF role keys are compromised. in-toto functionaries and
+TUF roles are listed as rows in increasing order of difficulty to
+compromise. Security attacks are listed as columns in increasing order
+of severity. The result of combining two or more functionaries / roles
+is that ``Yes'' overrides ``No'' or ``N/A''.
+
+=== Real-world example: Datadog Agent integrations
+
+Table 11 presents a detailed security analysis for
+<<datadog-agent-integrations, Datadog agent integrations>>, featuring
+only the most significant security attacks.
+
+image:tuf-in-toto-table-11.png[Table 11]
+
+*Table 11*: A security analysis showing which security attacks are
+possible for Datadog agent integrations, depending on which in-toto
+functionary or TUF role keys are compromised. in-toto functionaries and
+TUF roles are listed as rows in increasing order of difficulty to
+compromise. Security attacks are listed as columns in increasing order
+of severity. The result of combining two or more functionaries / roles
+is that ``Yes'' overrides ``No'' or ``N/A''.
+
+[[testing]]
+== Testing
+
+N/A.
+
+[[infrastructure-requirements]]
+== Infrastructure requirements
+
+The changes discussed here require adding _at least_ the following
+infrastructure and resources:
+
+* *An offline key ceremony to generate and rotate all private and public
+keys for TUF and in-toto.* Operations security (OPSEC) is extremely
+important here to ensure that offline private keys are not leaked or
+exported by accident. Enough backups should also be made to ensure that
+the keys for the entire system can be rotated when necessary, such as
+removing or adding developer keys, which is an additional cost.
+* *Provisioning developers with signing keys (possibly with GPG on
+Yubikeys as discussed below) and developer tools with which they can
+sign their own code.* Costs include ease-of-use, and protecting keys
+from being exfiltrated, possibly using HSMs.
+* *Instrumenting every step in the CI/CD pipeline to generate signed
+in-toto metadata.* Costs include protecting keys from being exfiltrated,
+possibly using HSMs.
+* *Adding or instrumenting a last step in the CI/CD pipeline to bundle
+and sign using TUF all in-toto metadata and packages.* There should be a
+scheduled task that automatically runs at fixed intervals in order to
+renew signatures and prevent expiration of TUF metadata.
+* *Instrumenting package managers to download and verify metadata using
+TUF and in-toto before installing new code.*
+* *Time to test the entire pipeline end-to-end between developers and
+end-users, and providing support for unforeseen issues.* Costs include
+updating the package managers in order to fix these issues.
+
+[[references]]
+== References
+
+[arabic]
+. https://ssl.engineering.nyu.edu/papers/samuel_tuf_ccs_2010.pdf[Survivable
+Key Compromise in Software Update Systems]
+. https://github.com/theupdateframework/specification/blob/master/tuf-spec.md[The
+Update Framework Specification]
+. https://www.python.org/dev/peps/pep-0458/[PEP 458 – Surviving a
+Compromise of PyPI]
+. https://www.python.org/dev/peps/pep-0480/[PEP 480 – Surviving a
+Compromise of PyPI: The Maximum Security Model]
+. https://www.usenix.org/node/194973[Diplomat: Using Delegations to
+Protect Community Repositories]
+. https://www.usenix.org/conference/atc17/technical-sessions/presentation/kuppusamy[Mercury:
+Bandwidth-Effective Prevention of Rollback Attacks Against Community
+Repositories]
+. https://ssl.engineering.nyu.edu/papers/kuppusamy_escar_16.pdf[Securing
+Software Updates for Automobiles]
+. https://uptane.github.io/uptane-standard/uptane-standard.html[Uptane
+IEEE-ISTO Standard for Design and Implementation]
+. https://www.usenix.org/conference/usenixsecurity19/presentation/torres-arias[in-toto:
+providing farm-to-table security properties for bits and bytes]
+. https://www.datadoghq.com/blog/engineering/secure-publication-of-datadog-agent-integrations-with-tuf-and-in-toto/[Secure
+Publication of Datadog Agent Integrations with TUF and in-toto]
+. https://youtu.be/XAlvd4QXngs[Deep Dive: TUF at Kubecon North America
+2018]
