@@ -141,15 +141,15 @@ an integration of TUF and in-toto to be said to be compromise-resilient.
 The in-toto root layout MUST consist of at least two steps:
 
 [arabic]
-. The ``developer'' step corresponds to a developer who signs source
+. The "`developer`" step corresponds to a developer who signs source
 code. Typically, it receives no materials, and outputs source code as
 products. Its link metadata MUST be signed by developers using (m, n)
 offline keys, where m >= 1, and n is the number of currently trusted
 developers. It is OPTIONAL but RECOMMENDED to protect these keys using
 hardware such as https://github.com/DataDog/yubikey[YubiKeys].
-. The ``packager'' step corresponds to the CI/CD pipeline which
+. The "`packager`" step corresponds to the CI/CD pipeline which
 transforms this source code into packages (e.g., tarballs, binaries).
-Typically, it receives source code from the ``developer'' step, and
+Typically, it receives source code from the "`developer`" step, and
 outputs packages as products. It SHOULD use (1, 1) online keys.
 
 The in-toto root layout itself MUST be signed by administrators using
@@ -170,13 +170,13 @@ provides compromise-resilience.
 The TUF security model, illustrated in Figure 1, MUST be configured as
 follows, which we discuss using an ``inside-out'', layered approach.
 
-The delegated ``package-and-in-toto-metadata-signer'' targets metadata
+The delegated "`package-and-in-toto-metadata-signer`" targets metadata
 role signs targets metadata about the latest available packages. Besides
 cryptographic hashes and file sizes, each package listed in the targets
 metadata is also associated with custom targets metadata: specifically,
 the _complete_ set of in-toto metadata associated with the production of
 that particular package. In our basic security model, this means: (1)
-the in-toto root layout metadata file, (2) the ``developer'' step link
+the in-toto root layout metadata file, (2) the "`developer`" step link
 metadata file, and (3) the ``package'' step link metadata file. There
 are three important considerations regarding the targets metadata signed
 by this role:
@@ -189,7 +189,7 @@ another package. (The in-toto root layout metadata SHOULD be the same
 for every package.) This MAY be done in a number of different ways, but
 perhaps the simplest is to use directories with unique names to isolate
 different in-toto link metadata for different packages, where the name
-MAY be the SHA-256 hash of the ``developer'' step link metadata file for
+MAY be the SHA-256 hash of the "`developer`" step link metadata file for
 a particular package.
 . The targets metadata MUST also list the targets metadata of all
 in-toto link metadata files associated with all available packages. Note
@@ -204,7 +204,7 @@ particular package signed by this role.
 image:tuf-in-toto-table-1.png[Table 1]
 
 *Table 1*: An example of the targets metadata for a package signed by
-the ``package-and-in-toto-metadata-signer'' role.
+the "`package-and-in-toto-metadata-signer`" role.
 
 The targets role signs targets metadata about the in-toto root layout,
 and all of the public keys used to verify the layout itself. Finally, it
@@ -221,9 +221,9 @@ targets role. Note that it lists the in-toto root layout, and all of the
 public keys used to verify the layout itself.
 
 The snapshot and timestamp roles SHOULD use (1, 1) online keys, and
-their metadata SHOULD expire in 1 day. The in-toto ``packager''
+their metadata SHOULD expire in 1 day. The in-toto "`packager`"
 functionary as well as the TUF timestamp, snapshot, and
-``package-and-in-toto-metadata-signer'' roles MAY share the same (1, 1)
+"`package-and-in-toto-metadata-signer`" roles MAY share the same (1, 1)
 online keys. Furthermore, these online TUF roles MAY share the same
 metadata expiration period (e.g., 1 day). Online keys are used so that
 robots can use the key to sign new metadata on demand. When the in-toto
@@ -257,11 +257,11 @@ Microsoft Azure, Google Cloud Platform, and Red Hat OpenShift. At the
 time of writing, it has over 8,000 customers, and collects trillions of
 monitoring record points per day.
 
-The Datadog __https://docs.datadoghq.com/agent/?tab=agentv6[agen*t] is
+The Datadog https://docs.datadoghq.com/agent/?tab=agentv6[agent] is
 software that runs on hosts. It collects events and metrics from hosts
 and sends them to Datadog, where customers can analyze their monitoring
 and performance data. The agent
-__https://docs.datadoghq.com/getting_started/integrations/[integration*s]
+https://docs.datadoghq.com/getting_started/integrations/[integrations]
 are plug-ins that collect metrics from services running on customer
 infrastructure. Presently, there are more than one hundred integrations
 that come installed out-of-the-box with the Agent.
@@ -277,40 +277,40 @@ The Datadog agent integrations supply chain, shown in Figure 2,
 presently has three steps:
 
 [arabic]
-. The first ``tag'' step outputs Python source code as products. Every
+. The first "`tag`" step outputs Python source code as products. Every
 integration consists of Python source code and several
 https://yaml.org/[YAML] configuration files. The step uses (1, n)
 Yubikeys, where n is the current number of Datadog Agent integrations
 developers, and this is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/targets/in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/tag.c295cf63.link[example]
-of ``tag'' link metadata file.
-. In the second ``wheels-builder'' step, the pipeline must receive the
-same source code from the ``tag'' step and produce a Python
+of "`tag`" link metadata file.
+. In the second "`wheels-builder`" step, the pipeline must receive the
+same source code from the "`tag`" step and produce a Python
 https://pythonwheels.com/[wheel], as well as its updated Python metadata
 (https://www.python.org/dev/peps/pep-0503/[simple indices]). Each wheel
 is a ZIP file and its metadata is an HTML file that points to all the
 available _versions_ of an integration. This step uses (1,1) online
 keys, and this is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/targets/in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/wheels-builder.9fc6e62d.link[example]
-of the ``wheels-builder'' link metadata file.
-. In the third ``wheels-signer'' step, the pipeline must receive, as
-materials, the same products as the ``wheels-builder'' step. This steps
+of the "`wheels-builder`" link metadata file.
+. In the third "`wheels-signer`" step, the pipeline must receive, as
+materials, the same products as the "`wheels-builder`" step. This steps
 signs for all wheels using the TUF security model described shortly. It
 can be dangerous packaging Python source code, because arbitrary code
 can be executed during the packaging process, which can be inserted by
 compromising the GitHub
 https://github.com/DataDog/integrations-core[repository]. Therefore,
-this step is separate from the ``wheels-builder'' step, so that a
+this step is separate from the "`wheels-builder`" step, so that a
 compromise of the former does not yield the signing keys of this step.
 This step uses (1, 1) online keys, and this is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/targets/in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/wheels-signer.20585de1.link[example]
-of the ``wheels-signer'' link metadata file.
+of the "`wheels-signer`" link metadata file.
 
 Finally, there is an inspection which first ensures that a given wheel
-matches the materials of the ``wheels-signer'' step. It then extracts
+matches the materials of the "`wheels-signer`" step. It then extracts
 files from the wheel and checks that they correspond to exactly the same
 Python source code and YAML configuration files as the products of the
-``tag'' step. Thus, this layout provides end-to-end verification: it
+"`tag`" step. Thus, this layout provides end-to-end verification: it
 prevents a compromised pipeline from causing users to trust wheels with
 source code that was never released by Datadog developers. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/targets/in-toto-metadata/root.layout[example]
@@ -333,7 +333,7 @@ key difference from the <<<basic-security-model, basic security model>>>
 is that we use delegations extensively in order to split metadata
 bandwidth costs.
 
-The ``wheels-signer'' delegated targets role makes a terminating
+The "`wheels-signer`" delegated targets role makes a terminating
 delegation of all Python metadata and wheels for integrations beginning
 with the letter ``a'' to the ``wheels-signer-a'' role, all Python
 metadata and wheels for integrations beginning with the letter ``b'' to
@@ -347,17 +347,17 @@ of its metadata file (see Table 4).
 
 image:tuf-in-toto-table-4.png[Table 4]
 
-*Table 4*: An example of the delegations signed by the ``wheels-signer''
+*Table 4*: An example of the delegations signed by the "`wheels-signer`"
 role.
 
-Each ``wheels-signer-[a-z]'' role signs targets metadata about a certain
+Each "`wheels-signer-[a-z]`" role signs targets metadata about a certain
 subset of Python metadata and wheels beginning with a particular letter.
 Each Python wheel is associated with custom targets metadata that point
 to all of the in-toto metadata required to verify that particular wheel,
 as described in the <<<basic-security-model, basic security model>>>.
 In particular, each directory containing in-toto link metadata
 for one or more associated wheels is named directly using the SHA-256
-hexadecimal digest of the ``tag'' link metadata file associated with
+hexadecimal digest of the "`tag`" link metadata file associated with
 these wheels. Each role uses (1,1) online keys, does not delegate any
 Python metadata or wheel, and its metadata expires in 1 week. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/wheels-signer-a.json[example]
@@ -403,11 +403,11 @@ image:tuf-in-toto-table-7.png[Table 7]
 The targets role signs targets metadata about the in-toto root layout,
 and all of the public keys used to verify the layout itself. It also
 makes a terminating delegation of all Python metadata and wheels to the
-``wheels-signer'' role. Finally, it makes a terminating delegation of
+"`wheels-signer`" role. Finally, it makes a terminating delegation of
 all in-toto link metadata to the ``in-toto-metadata-signer'' role. It
 uses a different set of (2, 3) offline keys from the in-toto root
 layout, and its metadata expires in 1 year, too. However, it does share
-its keys with the ``wheels-signer'' and ``in-toto-metadata-signer''
+its keys with the "`wheels-signer`" and ``in-toto-metadata-signer''
 roles. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/targets.json[example]
 of the targets metadata file (see Table 8).
@@ -417,8 +417,8 @@ image:tuf-in-toto-table-8.png[Table 8]
 *Table 8*: An example of the delegations and targets signed by the
 targets role.
 
-All online roles (``wheels-signer-[a-z]'',
-``in-toto-metadata-signer-[0-f]'', snapshot, and timestamp) share the
+All online roles ("`wheels-signer-[a-z]`",
+"`in-toto-metadata-signer-[0-f]`", snapshot, and timestamp) share the
 same (1, 1) online keys. This is an example of the
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/snapshot.json[snapshot]
 metadata file, and this is an example the
@@ -482,16 +482,16 @@ CI/CD pipeline is triggered, which consists of the following steps:
 . Fetch source code from the GitHub repository corresponding to these
 integrations. Also fetch previously built Python metadata and wheels.
 . Record this source code and previously built Python metadata and
-wheels as materials for the ``wheels-builder'' step. Build Python
+wheels as materials for the "`wheels-builder`" step. Build Python
 metadata and wheels for these integrations. Record all old and new
-Python metadata and wheels as products of the ``wheels-builder'' step.
+Python metadata and wheels as products of the "`wheels-builder`" step.
 . Fetch previously signed TUF and in-toto metadata.
 . Record all old and new Python metadata and wheels as materials for the
-``wheels-signer'' step. Verify all previously signed TUF and in-toto
+"`wheels-signer`" step. Verify all previously signed TUF and in-toto
 metadata as well as previously built Python metadata and wheels. Produce
 a new consistent snapshot of TUF metadata for all Python metadata and
 wheels as well as in-toto link metadata. Record no products for the the
-``wheels-signer'' step.
+"`wheels-signer`" step.
 . Test that the Datadog agent is able to download and verify with TUF
 and in-toto, as described in the next subsection, the latest wheel for
 every integration.
@@ -600,7 +600,7 @@ functionary or TUF role keys are compromised. in-toto functionaries and
 TUF roles are listed as rows in increasing order of difficulty to
 compromise. Security attacks are listed as columns in increasing order
 of severity. The result of combining two or more functionaries / roles
-is that ``Yes'' overrides ``No'' or ``N/A''.
+is that "`Yes`" overrides "`No`" or ``N/A''.
 
 === Real-world example: Datadog Agent integrations
 
@@ -616,7 +616,7 @@ functionary or TUF role keys are compromised. in-toto functionaries and
 TUF roles are listed as rows in increasing order of difficulty to
 compromise. Security attacks are listed as columns in increasing order
 of severity. The result of combining two or more functionaries / roles
-is that ``Yes'' overrides ``No'' or ``N/A''.
+is that "`Yes`" overrides "`No`" or ``N/A''.
 
 [[testing]]
 == Testing
