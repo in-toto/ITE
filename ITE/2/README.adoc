@@ -317,12 +317,12 @@ https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#7-co
 snapshots], which is set using the root metadata, so that the repository
 is able to concurrently write new files while package managers are
 reading old ones, and also rotate package managers from old root
-metadata to the latest one. Table 3 summarizes the security model
+metadata to the latest one. Figure 2 summarizes the security model
 discussed in this subsection.
 
-image:tuf-in-toto-table-3.png[Table 3]
+image:tuf-in-toto-figure-2.png[Figure 2]
 
-*Table 3*: A summary of the security model discussed in this subsection.
+*Figure 2*: A summary of the security model discussed in this subsection.
 
 [[datadog-agent-integrations]]
 ==== Real-world example: Datadog Agent integrations
@@ -347,11 +347,11 @@ that come installed out-of-the-box with the Agent.
 This subsection discusses the TUF security model used to distribute the
 Datadog Agent integrations in a compromise-resilient manner.
 
-image:tuf-in-toto-figure-2.png[Figure 2]
+image:tuf-in-toto-figure-3.png[Figure 3]
 
-*Figure 2*: The Datadog Agent integrations software supply chain.
+*Figure 3*: The Datadog Agent integrations software supply chain.
 
-The Datadog agent integrations supply chain, shown in Figure 2,
+The Datadog agent integrations supply chain, shown in Figure 3,
 presently has three steps:
 
 [arabic]
@@ -400,12 +400,12 @@ metadata and wheels as well as their corresponding in-toto link metadata
 files as they move through the CI/CD pipeline, but they are largely out
 of the scope of this document.)
 
-image:tuf-in-toto-figure-3.png[Figure 3]
+image:tuf-in-toto-figure-4.png[Figure 4]
 
-*Figure 3*: The TUF security model that distributes in-toto metadata and
+*Figure 4*: The TUF security model that distributes in-toto metadata and
 Datadog Agent integrations in a compromise-resilient manner.
 
-The TUF security model, illustrated in Figure 3, is configured as
+The TUF security model, illustrated in Figure 4, is configured as
 follows, which we discuss using an "`inside-out`", layered approach. A
 key difference from the <<<basic-security-model, basic security model>>>
 is that we use delegations extensively in order to split metadata
@@ -729,12 +729,12 @@ year. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/root.json[example]
 the root metadata file. All TUF metadata and targets are written using
 https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#7-consistent-snapshots[consistent
-snapshots]. Table 9 summarizes the security model discussed in this
+snapshots]. Figure 5 summarizes the security model discussed in this
 subsection.
 
-image:tuf-in-toto-table-9.png[Table 9]
+image:tuf-in-toto-figure-5.png[Figure 5]
 
-*Table 9*: A summary of the security model discussed in this subsection.
+*Figure 5*: A summary of the security model discussed in this subsection.
 
 In summary, the Datadog pipeline uses TUF to appropriately bootstrap the
 root of the trust for the entire system, and in-toto to guarantee that
@@ -886,13 +886,13 @@ a package that a user installs (e.g., to insert a backdoor).
 
 === Basic security model
 
-Table 10 presents a detailed security analysis for the
+Figure 6 presents a detailed security analysis for the
 <<<basic-security-model, basic security model>>>, featuring only the
 most significant security attacks.
 
-image:tuf-in-toto-table-10.png[Table 10]
+image:tuf-in-toto-figure-6.png[Figure 6]
 
-*Table 10*: A security analysis showing which security attacks are
+*Figure 6*: A security analysis showing which security attacks are
 possible for the basic security model, depending on which in-toto
 functionary or TUF role keys are compromised. in-toto functionaries and
 TUF roles are listed as rows in increasing order of difficulty to
@@ -902,13 +902,13 @@ is that "`Yes`" overrides "`No`" or "`N/A`".
 
 === Real-world example: Datadog Agent integrations
 
-Table 11 presents a detailed security analysis for
+Figure 7 presents a detailed security analysis for
 <<datadog-agent-integrations, Datadog agent integrations>>, featuring
 only the most significant security attacks.
 
-image:tuf-in-toto-table-11.png[Table 11]
+image:tuf-in-toto-figure-7.png[Figure 7]
 
-*Table 11*: A security analysis showing which security attacks are
+*Figure 7*: A security analysis showing which security attacks are
 possible for Datadog agent integrations, depending on which in-toto
 functionary or TUF role keys are compromised. in-toto functionaries and
 TUF roles are listed as rows in increasing order of difficulty to
