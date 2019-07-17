@@ -188,10 +188,10 @@ file. Bandwidth considerations will be discussed in the next subsection.
 . Since packages can be added on demand, this role SHOULD use (1, 1)
 online keys, and its metadata SHOULD expire in 1 day.
 
-See Table 1 for an example of a complete set of targets metadata for a
-particular package signed by this role.
+See `package-and-in-toto-metadata-signer.json` for an example of a complete set
+of targets metadata for a particular package signed by this role.
 
-.table-1.json
+.package-and-in-toto-metadata-signer.json
 [source,json]
 ----
 {
@@ -238,10 +238,10 @@ and all of the public keys used to verify the layout itself. Finally, it
 makes a terminating delegation of all packages ("`*`") to the
 “package-and-in-toto-metadata-signer'' role. It MUST use a different set
 of (m, n) offline keys from the root role, where n >= 2, and m >=
-ceiling(n / 2), and its metadata SHOULD expire in 1 year. See Table 2
+ceiling(n / 2), and its metadata SHOULD expire in 1 year. See `targets.json`
 for an example.
 
-.table-2.json
+.targets.json
 [source,json]
 ----
 {
@@ -421,9 +421,9 @@ wheels for integrations beginning with the letter "`z`" to the
 uses (2, 3) offline keys, does not directly sign for any Python metadata
 or wheel, and its metadata expires in 1 year. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/wheels-signer.json[example]
-of its metadata file (see Table 4).
+of its metadata file (see `wheels-signer.json`).
 
-.table-4.json
+.wheels-signer.json
 [source,json]
 ----
 {
@@ -489,9 +489,9 @@ hexadecimal digest of the "`tag`" link metadata file associated with
 these wheels. Each role uses (1,1) online keys, does not delegate any
 Python metadata or wheel, and its metadata expires in 1 week. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/wheels-signer-a.json[example]
-of the "`wheels-signer-a`" metadata file (see Table 5).
+of the "`wheels-signer-a`" metadata file (see `wheels-signer-a.json`).
 
-.table-5.json
+.wheels-signer-a.json
 [source,json]
 ----
 {
@@ -532,9 +532,9 @@ used to uniquely name these directories). This role uses (2, 3) offline
 keys, does not directly sign for any in-toto link metadata file, and its
 metadata expires in 1 year. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/in-toto-metadata-signer.json[example]
-of its metadata file (see Table 6).
+of its metadata file (see `in-toto-metadata-signer.json`).
 
-.table-6.json
+.in-toto-metadata-signer.json
 [source,json]
 ----
 {
@@ -591,9 +591,9 @@ beginning with a particular letter. Each role uses (1,1) online keys,
 does not delegate any in-toto link metadata file, and its metadata
 expires in 1 week. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/in-toto-metadata-signer-3.json[example]
-of the "`in-toto-metadata-signer-3`" metadata file (see Table 7).
+of the "`in-toto-metadata-signer-3`" metadata file (see `in-toto-metadata-signer-3.json`).
 
-.table-7.json
+.in-toto-metadata-signer-3.json
 [source,json]
 ----
 {
@@ -638,9 +638,9 @@ layout, and its metadata expires in 1 year, too. However, it does share
 its keys with the "`wheels-signer`" and "`in-toto-metadata-signer`"
 roles. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/targets.json[example]
-of the targets metadata file (see Table 8).
+of the targets metadata file (see `targets.json`).
 
-.table-8.json
+.targets.json
 [source,json]
 ----
 {
