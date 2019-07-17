@@ -746,10 +746,12 @@ compromise-resilience of both systems combined.
 [[workflows]]
 === Workflows
 
+=== Real-world example: Datadog Agent integrations
+
 This subsection discusses the workflow that Datadog developers, CI/CD
 pipeline, and end-users follow.
 
-==== Developer
+===== Developer
 
 Datadog developers sign integrations using Yubikeys, which are trusted,
 and support the on-card generation and storage of GPG signing keys.
@@ -769,7 +771,7 @@ in-toto, which in turn calls GPG, to sign integrations. Thus, using
 Yubikeys, we are able to significantly minimize the risk of a key
 compromise without hampering usability.
 
-==== CI/CD
+===== CI/CD
 
 When developers merge source code for new and / or updated integrations
 into the GitHub
@@ -799,7 +801,7 @@ metadata.
 metadata as well as wheels, and new in-toto link metadata to the
 repository.
 
-==== End-users
+===== End-users
 
 Finally, to install or update integrations, customers use the Datadog
 agent, which transparently
