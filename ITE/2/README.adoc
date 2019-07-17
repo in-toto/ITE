@@ -748,9 +748,9 @@ compromise-resilience of both systems combined.
 
 ==== Real-world example: Datadog Agent integrations
 
-This subsection discusses the workflow that
-<<Datadog, datadog-agent-integrations>> developers, CI/CD pipeline, and
-end-users follow.
+This subsection discusses the workflow followed by developers, the CI/CD
+pipeline, and end-users for the
+<<datadog-agent-integrations, Datadog Agent integrations>>.
 
 ===== Developer
 
