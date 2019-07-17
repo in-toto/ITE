@@ -213,7 +213,7 @@ of targets metadata for a particular package signed by this role.
         },
         "length": 7206
       },
-      "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/tag.87d52666.link": {
+      "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/developer.87d52666.link": {
         "hashes": {
           "sha256": "0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289",
           "sha512": "848188de9c1ec1d855ed88d62114f0d4f0f13df6fb5aae77716276a1240cefbe7cf03c1b664e43dc93c3438c82e88f3d910ab3d10d55bfc31a759b7997c4b6cb"
@@ -748,8 +748,9 @@ compromise-resilience of both systems combined.
 
 ==== Real-world example: Datadog Agent integrations
 
-This subsection discusses the workflow that Datadog developers, CI/CD
-pipeline, and end-users follow.
+This subsection discusses the workflow that
+<<Datadog, datadog-agent-integrations>> developers, CI/CD pipeline, and
+end-users follow.
 
 ===== Developer
 
