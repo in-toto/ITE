@@ -1,7 +1,7 @@
 = ITE-2: Using TUF and in-toto to build compromise-resilient CI/CD
 :source-highlighter: pygments
 :toc: preamble
-:toclevels: 4
+:toclevels: 5
 ifdef::env-github[]
 :tip-caption: :bulb:
 :note-caption: :information_source:
@@ -746,7 +746,7 @@ compromise-resilience of both systems combined.
 [[workflows]]
 === Workflows
 
-=== Real-world example: Datadog Agent integrations
+==== Real-world example: Datadog Agent integrations
 
 This subsection discusses the workflow that Datadog developers, CI/CD
 pipeline, and end-users follow.
