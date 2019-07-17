@@ -191,10 +191,47 @@ online keys, and its metadata SHOULD expire in 1 day.
 See Table 1 for an example of a complete set of targets metadata for a
 particular package signed by this role.
 
-image:tuf-in-toto-table-1.png[Table 1]
-
-*Table 1*: An example of the targets metadata for a package signed by
-the "`package-and-in-toto-metadata-signer`" role.
+.table-1.json
+[source,json]
+----
+{
+  "signatures": {...},
+  "signed": {
+    ...,
+    "targets": {
+      "foobar-1.0.0.tar.gz": {
+        "custom": {
+          "in-toto": [
+            "in-toto-metadata/root.layout",
+            "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/developer.87d52666.link",
+            "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/packager.20585de1.link"
+          ]
+        },
+        "hashes": {
+          "sha256": "eb4189fc29d97463822ecd6409677e9a4fcb9d66d9bee392e9f9aece0917fc09",
+          "sha512": "059358c3ecfd97af4b392c384a44d2349d7d5e6f1a78736d891a6eb105a088fff64571fe21c998dfbad113bfcb4ab6ff65a35259fd24fa958f8b17151ff4aefb"
+        },
+        "length": 7206
+      },
+      "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/tag.87d52666.link": {
+        "hashes": {
+          "sha256": "0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289",
+          "sha512": "848188de9c1ec1d855ed88d62114f0d4f0f13df6fb5aae77716276a1240cefbe7cf03c1b664e43dc93c3438c82e88f3d910ab3d10d55bfc31a759b7997c4b6cb"
+        },
+        "length": 132251
+      },
+      "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/packager.20585de1.link": {
+        "hashes": {
+          "sha256": "e5076f59e2096fb64deae6b13384575d3d63c1c4f7a42f48d0a238097a8823eb",
+          "sha512": "7f8c1496abca669c3e8cdbfd315e2383bb4fc3386d06258d961a5fe059b2ea9afa410f9924462933ec3c6570f2c3744f13882f61394687bf9de1156e7c6c2357"
+        },
+        "length": 57495
+      }
+    }
+    ...,
+  }
+}
+----
 
 The targets role signs targets metadata about the in-toto root layout,
 and all of the public keys used to verify the layout itself. Finally, it
@@ -204,11 +241,62 @@ of (m, n) offline keys from the root role, where n >= 2, and m >=
 ceiling(n / 2), and its metadata SHOULD expire in 1 year. See Table 2
 for an example.
 
-image:tuf-in-toto-table-2.png[Table 2]
+.table-2.json
+[source,json]
+----
+{
+  "signatures": {...},
+  "signed": {
+    ...,
+    "delegations": {
+      "keys": {...},
+      "roles": [
+        {
+          "keyids": [...],
+          "name": "packages-and-in-toto-metadata-signer",
+          "paths": [
+            "*"
+          ],
+          "terminating": true,
+          "threshold": 1
+        }
+      ]
+    },
+    "targets": {
+      "in-toto-metadata/root.layout": {
+        "hashes": {
+          "sha256": "930c48fa182d14835febd6a7f9129e34b83246f74238b9747fef7fc12147184d",
+          "sha512": "6fb781b534266411d0c424626b728b57e6c0a39b21798729efc63ff73556dfd19ebeddf7612da272936dad890d71b7e3caa65735ab6ac293740f2c5d29795590"
+        },
+        "length": 101047
+      },
+      "in-toto-pubkeys/298f37401f0b526a708967b7f708bc9c938fe0ad4bfe50d66837c20a57084e84.pub": {
+        "hashes": {
+          "sha256": "a19b11a130b35fb205e8cf8ab2f2488f387332be56857968785ce9899a521b05",
+          "sha512": "b7e48526cdde5c879e710c9542b4cc6b36de91ed93d709d2f5be4ec45d719e77397f69b6b8c117826987418d334eb01e9d27b37874c66157b536a77035b44048"
+        },
+        "length": 799
+      },
+      "in-toto-pubkeys/3e82bcdc71b29999340ceaadf3dc4193f8b06572d1c20612e9acdd7b52fa4b90.pub": {
+        "hashes": {
+          "sha256": "3560de9da223ac51b5cdbf25acf9f8e8f9f7b699eeda912c7a26a68c5f01ce12",
+          "sha512": "65aa1c2e7114714224142812bfc7bb8b2e6a37f54ebdbcbe20cc6e8f1504d73df17747a3ccc5acbdbefbe4df58065f88c72e4c4dac7e50c067c05b8b2ee25f4f"
+        },
+        "length": 799
+      },
+      "in-toto-pubkeys/e847f58ca5e83fc48d1d2388ddd8f1a168b205a3fe7978ad015dee3ae7b2ecf7.pub": {
+        "hashes": {
+          "sha256": "8cb4a254ae123a8bd91b1c9abdd99e719aa8349ff7eafd168988ce8a935d51a1",
+          "sha512": "e259f98b766537ed2893c1b1e25d171d8ab374702f29d0fbe3708b13a4456e153b29e36722f136bc963e4a85fa7581dfbbf40ebd3e1538227ec30874264ddd2b"
+        },
+        "length": 799
+      }
+    }
+    ...,
 
-*Table 2*: An example of the delegations and targets signed by the
-targets role. Note that it lists the in-toto root layout, and all of the
-public keys used to verify the layout itself.
+  }
+}
+----
 
 The snapshot and timestamp roles SHOULD use (1, 1) online keys, and
 their metadata SHOULD expire in 1 day. The in-toto "`packager`"
@@ -335,10 +423,60 @@ or wheel, and its metadata expires in 1 year. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/wheels-signer.json[example]
 of its metadata file (see Table 4).
 
-image:tuf-in-toto-table-4.png[Table 4]
-
-*Table 4*: An example of the delegations signed by the "`wheels-signer`"
-role.
+.table-4.json
+[source,json]
+----
+{
+  "signatures": {...},
+  "signed": {
+    ...,
+    "delegations": {
+      "keys": {...},
+      "roles": [
+        {
+          "keyids": [
+            "20585de1ca258adecd3ab82dac4c1a3f22866a926015d89c0e14ccc37d1577c5"
+          ],
+          "name": "wheels-signer-a",
+          "paths": [
+            "simple/index.html",
+            "simple/datadog-a*/index.html",
+            "simple/datadog-a*/datadog_a*-*-py2.py3-none-any.whl"
+          ],
+          "terminating": true,
+          "threshold": 1
+        },
+        {
+          "keyids": [
+            "20585de1ca258adecd3ab82dac4c1a3f22866a926015d89c0e14ccc37d1577c5"
+          ],
+          "name": "wheels-signer-b",
+          "paths": [
+            "simple/datadog-b*/index.html",
+            "simple/datadog-b*/datadog_b*-*-py2.py3-none-any.whl"
+          ],
+          "terminating": true,
+          "threshold": 1
+        },
+        ...,
+        {
+          "keyids": [
+            "20585de1ca258adecd3ab82dac4c1a3f22866a926015d89c0e14ccc37d1577c5"
+          ],
+          "name": "wheels-signer-z",
+          "paths": [
+            "simple/datadog-z*/index.html",
+            "simple/datadog-z*/datadog_z*-*-py2.py3-none-any.whl"
+          ],
+          "terminating": true,
+          "threshold": 1
+        }
+      ]
+    }
+    ...,
+  }
+}
+----
 
 Each "`wheels-signer-[a-z]`" role signs targets metadata about a certain
 subset of Python metadata and wheels beginning with a particular letter.
@@ -353,10 +491,34 @@ Python metadata or wheel, and its metadata expires in 1 week. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/wheels-signer-a.json[example]
 of the "`wheels-signer-a`" metadata file (see Table 5).
 
-image:tuf-in-toto-table-5.png[Table 5]
-
-*Table 5*: An example of the targets signed by the "`wheels-signer-a`"
-role.
+.table-5.json
+[source,json]
+----
+{
+  "signatures": {...},
+  "signed": {
+    ...,
+    "targets": {
+      "simple/datadog-active-directory/datadog_active_directory-1.2.0-py2.py3-none-any.whl": {
+        "custom": {
+          "in-toto": [
+            "in-toto-metadata/root.layout",
+            "in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/wheels-signer.20585de1.link",
+            "in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/wheels-builder.9fc6e62d.link",
+            "in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/tag.c295cf63.link"
+          ]
+        },
+        "hashes": {
+          "sha256": "2e5e1e32070e9ef032af3345f9529f18a852f8c2019b286565175c65e0787327",
+          "sha512": "c9c2a2185d1903c181587df5a4bc11d76e4d5ed33af0a2f254e6dbe2c9369b1cd70956718e1eb1f3ada78af3d1a37a1a8c068368687ab392c92becc32c2a7c58"
+        },
+        "length": 4524
+      }
+    }
+    ...,
+  }
+}
+----
 
 The "`in-toto-metadata-signer`" delegated targets role makes a
 terminating delegation of all in-toto link metadata in directories
@@ -372,10 +534,56 @@ metadata expires in 1 year. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/in-toto-metadata-signer.json[example]
 of its metadata file (see Table 6).
 
-image:tuf-in-toto-table-6.png[Table 6]
-
-*Table 6*: An example of the delegations signed by the
-"`in-toto-metadata-signer`" role.
+.table-6.json
+[source,json]
+----
+{
+  "signatures": {...},
+  "signed": {
+    ...,
+    "delegations": {
+      "keys": {...},
+      "roles": [
+        {
+          "keyids": [
+            "20585de1ca258adecd3ab82dac4c1a3f22866a926015d89c0e14ccc37d1577c5"
+          ],
+          "name": "in-toto-metadata-signer-0",
+          "paths": [
+            "in-toto-metadata/0*/*.link"
+          ],
+          "terminating": true,
+          "threshold": 1
+        },
+        {
+          "keyids": [
+            "20585de1ca258adecd3ab82dac4c1a3f22866a926015d89c0e14ccc37d1577c5"
+          ],
+          "name": "in-toto-metadata-signer-1",
+          "paths": [
+            "in-toto-metadata/1*/*.link"
+          ],
+          "terminating": true,
+          "threshold": 1
+        },
+        ...,
+        {
+          "keyids": [
+            "20585de1ca258adecd3ab82dac4c1a3f22866a926015d89c0e14ccc37d1577c5"
+          ],
+          "name": "in-toto-metadata-signer-f",
+          "paths": [
+            "in-toto-metadata/f*/*.link"
+          ],
+          "terminating": true,
+          "threshold": 1
+        }
+      ]
+    }
+    ...,
+  }
+}
+----
 
 Each "`in-toto-metadata-singer-[0-f]`" role signs targets metadata about
 a certain subset of in-toto-link metadata files inside directories
@@ -385,10 +593,40 @@ expires in 1 week. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/in-toto-metadata-signer-3.json[example]
 of the "`in-toto-metadata-signer-3`" metadata file (see Table 7).
 
-image:tuf-in-toto-table-7.png[Table 7]
-
-*Table 7*: An example of the targets signed by the
-"`in-toto-metadata-signer-3`" role.
+.table-7.json
+[source,json]
+----
+{
+  "signatures": {...},
+  "signed": {
+    ...,
+    "targets": {
+      "in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/tag.c295cf63.link": {
+        "hashes": {
+          "sha256": "3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e",
+          "sha512": "1f02d145705358732c06e9d0fc197a87563643aafb30407ff15f2ede07991ebee141adaf28ac05e1544184ba36d5b84bec202be73cad494848ff0c224a8b0d48"
+        },
+        "length": 118063
+      },
+      "in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/wheels-builder.9fc6e62d.link": {
+        "hashes": {
+          "sha256": "502529aa88feafbdb6d7f61d99e5c677ae16a365ac0d4994b765a2e62044ece5",
+          "sha512": "eaa849159f95f54af67a256301a9a90409e3e5c7826e6e052aa772fb8ad23c4a74e7a12448b6658b74654caa2c224ba356f0fc3dcf214f93bf354c6cc25ed63f"
+        },
+        "length": 195232
+      },
+      "in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/wheels-signer.20585de1.link": {
+        "hashes": {
+          "sha256": "4ae4538b43047e1a44e65cc5cd27d0fd398abe86bdcc4d4bb2f2ea56dce237af",
+          "sha512": "6bee61135531f3f77017266f86815acd2e6e57d5efa4767bc651f2ff7ad6ccb89d4c3357e6b9069a17c8d26aa48043096cbf79da191d751e9dfae46b7ab509d3"
+        },
+        "length": 41084
+      }
+    }
+    ...,
+  }
+}
+----
 
 The targets role signs targets metadata about the in-toto root layout,
 and all of the public keys used to verify the layout itself. It also
@@ -402,10 +640,80 @@ roles. This is an
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/targets.json[example]
 of the targets metadata file (see Table 8).
 
-image:tuf-in-toto-table-8.png[Table 8]
-
-*Table 8*: An example of the delegations and targets signed by the
-targets role.
+.table-8.json
+[source,json]
+----
+{
+  "signatures": {...},
+  "signed": {
+    ...,
+    "delegations": {
+      "keys": {...},
+      "roles": [
+        {
+          "keyids": [
+            "55ab70a7aa25265397ce6995a085d3ab57d7a9f25dc581f4ab52a9ca69e2045b",
+            "e2cd3b1ab9e2f2c3b94be7a938b54cfe246ae2aa4bd8a89006fa083548b1cd2e",
+            "aeec26293d275857dc46df87a2cf4ca14451d7226f6b99238af1df285a9a48c0"
+          ],
+          "name": "wheels-signer",
+          "paths": [
+            "simple/index.html",
+            "simple/datadog-*/index.html",
+            "simple/datadog-*/datadog_*-*-py2.py3-none-any.whl"
+          ],
+          "terminating": true,
+          "threshold": 2
+        },
+        {
+          "keyids": [
+            "55ab70a7aa25265397ce6995a085d3ab57d7a9f25dc581f4ab52a9ca69e2045b",
+            "e2cd3b1ab9e2f2c3b94be7a938b54cfe246ae2aa4bd8a89006fa083548b1cd2e",
+            "aeec26293d275857dc46df87a2cf4ca14451d7226f6b99238af1df285a9a48c0"
+          ],
+          "name": "in-toto-metadata-signer",
+          "paths": [
+            "in-toto-metadata/*/*.link"
+          ],
+          "terminating": true,
+          "threshold": 2
+        }
+      ]
+    },
+    "targets": {
+      "in-toto-metadata/root.layout": {
+        "hashes": {
+          "sha256": "930c48fa182d14835febd6a7f9129e34b83246f74238b9747fef7fc12147184d",
+          "sha512": "6fb781b534266411d0c424626b728b57e6c0a39b21798729efc63ff73556dfd19ebeddf7612da272936dad890d71b7e3caa65735ab6ac293740f2c5d29795590"
+        },
+        "length": 101047
+      },
+      "in-toto-pubkeys/298f37401f0b526a708967b7f708bc9c938fe0ad4bfe50d66837c20a57084e84.pub": {
+        "hashes": {
+          "sha256": "a19b11a130b35fb205e8cf8ab2f2488f387332be56857968785ce9899a521b05",
+          "sha512": "b7e48526cdde5c879e710c9542b4cc6b36de91ed93d709d2f5be4ec45d719e77397f69b6b8c117826987418d334eb01e9d27b37874c66157b536a77035b44048"
+        },
+        "length": 799
+      },
+      "in-toto-pubkeys/3e82bcdc71b29999340ceaadf3dc4193f8b06572d1c20612e9acdd7b52fa4b90.pub": {
+        "hashes": {
+          "sha256": "3560de9da223ac51b5cdbf25acf9f8e8f9f7b699eeda912c7a26a68c5f01ce12",
+          "sha512": "65aa1c2e7114714224142812bfc7bb8b2e6a37f54ebdbcbe20cc6e8f1504d73df17747a3ccc5acbdbefbe4df58065f88c72e4c4dac7e50c067c05b8b2ee25f4f"
+        },
+        "length": 799
+      },
+      "in-toto-pubkeys/e847f58ca5e83fc48d1d2388ddd8f1a168b205a3fe7978ad015dee3ae7b2ecf7.pub": {
+        "hashes": {
+          "sha256": "8cb4a254ae123a8bd91b1c9abdd99e719aa8349ff7eafd168988ce8a935d51a1",
+          "sha512": "e259f98b766537ed2893c1b1e25d171d8ab374702f29d0fbe3708b13a4456e153b29e36722f136bc963e4a85fa7581dfbbf40ebd3e1538227ec30874264ddd2b"
+        },
+        "length": 799
+      }
+    },
+    ...,
+  }
+}
+----
 
 All online roles ("`wheels-signer-[a-z]`",
 "`in-toto-metadata-signer-[0-f]`", snapshot, and timestamp) share the
