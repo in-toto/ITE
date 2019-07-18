@@ -158,7 +158,7 @@ image:tuf-in-toto-figure-1.png[Figure 1]
 provides compromise-resilience.
 
 The TUF security model, illustrated in Figure 1, MUST be configured as
-follows, which we discuss using an "`inside-out`," layered approach.
+follows, which we discuss using an "`inside-out,`" layered approach.
 
 The targets metadata for the delegated "`package-and-in-toto-metadata-signer`"
 role signs targets metadata about the latest available packages. Besides
@@ -400,7 +400,7 @@ image:tuf-in-toto-figure-4.png[Figure 4]
 Datadog Agent integrations in a compromise-resilient manner.
 
 The TUF security model, illustrated in Figure 4, is configured as
-follows. It is discussed here using an "`inside-out`," layered approach. A
+follows. It is discussed here using an "`inside-out,`" layered approach. A
 key difference from the <<<basic-security-model, basic security model>>>
 is that we use delegations extensively in order to split metadata
 bandwidth costs.
