@@ -6,7 +6,7 @@
 
 ## Draft
 
-* [ITE-2: Using TUF and in-toto to build compromise-resilient CI/CD](ITE/2/README.adoc)
+* [ITE-2: Combining TUF and in-toto to build compromise-resilient CI/CD in general](ITE/2/README.adoc)
 
 ## Acknowledgements
 
