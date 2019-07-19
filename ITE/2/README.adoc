@@ -828,33 +828,6 @@ Deployment considerations, such as designing and securely performing the
 offline key generation and rotation ceremony, are discussed in a
 separate document.
 
-[[backwards-compatibility]]
-== Backwards compatibility
-
-The changes discussed here require considering _at least_ the following
-issues of backwards compatibility:
-
-* *If previous package managers already use in-toto but not TUF, then
-the filesystem structure for in-toto metadata and packages should be
-preserved for package managers that have not yet been updated to use
-TUF.* These package managers should be updated to newer versions which
-use both TUF and in-toto.
-* *When rotating TUF root keys, all versions of the root TUF metadata
-from version 1 to N, where N is the latest version, should be preserved
-so that package managers can update from one version to the next.* This
-assumes that any version N+1 is signed by at least a threshold of root
-keys listed in version N.
-* *Package managers should use
-https://github.com/theupdateframework/taps/blob/master/tap6.md[TAP **6]*
-to determine how to respond when a TUF repository has significantly
-updated its specification version.**
-* *Neither a TUF nor in-toto implementation should make
-backward-incompatible changes to how signatures are generated, so that
-previous package managers are able to continue to install new packages.*
-Note that TUF can otherwise be used to safely rotate the keys for the
-entire system, including those using different key types, key sizes,
-signature schemes, and cryptographic hashes.
-
 [[security]]
 == Security
 
@@ -914,11 +887,6 @@ compromise. Security attacks are listed as columns in increasing order
 of severity. The result of combining two or more functionaries / roles
 is that "`Yes`" overrides "`No`" or "`N/A`".
 
-[[testing]]
-== Testing
-
-N/A.
-
 [[infrastructure-requirements]]
 == Infrastructure requirements
 
@@ -947,6 +915,38 @@ TUF and in-toto before installing new code.*
 * *Time to test the entire pipeline end-to-end between developers and
 end-users, and providing support for unforeseen issues.* Costs include
 updating the package managers in order to fix these issues.
+
+[[backwards-compatibility]]
+== Backwards compatibility
+
+The changes discussed here require considering _at least_ the following
+issues of backwards compatibility:
+
+* *If previous package managers already use in-toto but not TUF, then
+the filesystem structure for in-toto metadata and packages should be
+preserved for package managers that have not yet been updated to use
+TUF.* These package managers should be updated to newer versions which
+use both TUF and in-toto.
+* *When rotating TUF root keys, all versions of the root TUF metadata
+from version 1 to N, where N is the latest version, should be preserved
+so that package managers can update from one version to the next.* This
+assumes that any version N+1 is signed by at least a threshold of root
+keys listed in version N.
+* *Package managers should use
+https://github.com/theupdateframework/taps/blob/master/tap6.md[TAP **6]*
+to determine how to respond when a TUF repository has significantly
+updated its specification version.**
+* *Neither a TUF nor in-toto implementation should make
+backward-incompatible changes to how signatures are generated, so that
+previous package managers are able to continue to install new packages.*
+Note that TUF can otherwise be used to safely rotate the keys for the
+entire system, including those using different key types, key sizes,
+signature schemes, and cryptographic hashes.
+
+[[testing]]
+== Testing
+
+N/A.
 
 [[references]]
 == References
