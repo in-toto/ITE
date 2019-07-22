@@ -36,20 +36,22 @@ endif::[]
 [[abstract]]
 == Abstract
 
-Datadog is a monitoring service for cloud-scale applications that monitors
+Datadog is a monitoring service for cloud-scale applications that monitor
 servers, databases, tools, and services through a
 software-as-a-service-based data analytics platform. It supports
 multiple cloud service providers, including Amazon Web Services,
-Microsoft Azure, Google Cloud Platform, and Red Hat OpenShift.
+Microsoft Azure, Google Cloud Platform, and Red Hat OpenShift. At the
+time of this writing, the company serves more than 8,000 customers, and
+collects trillions of monitoring record points on a daily basis.
 
 The Datadog https://docs.datadoghq.com/agent/?tab=agentv6[agent] is the
 software that runs on virtual machines or containers. It collects events and
 metrics from these virtual machines or containers and sends them to Datadog,
 where customers can analyze their monitoring and performance data. The agent
 https://docs.datadoghq.com/getting_started/integrations/[integrations]
-are plug-ins that collect metrics from services running on customer
-infrastructure. Presently, there are more than one hundred integrations
-that come installed out-of-the-box with the Agent.
+is A plug-in that collects metrics from services running on customer
+infrastructure. Presently, there are more than one hundred integrations, all of which
+come out-of-the-box with the Agent installed.
 
 This ITE discusses the TUF security model used to distribute the Datadog Agent
 integrations in a compromise-resilient manner.
@@ -68,7 +70,7 @@ xref:../2/README.adoc#motivation-and-reasoning[ITE-2].
 
 image:tuf-in-toto-figure-1.png[Figure 1]
 
-*Figure 1*: The Datadog Agent integrations software supply chain.
+*Figure 1*: The Datadog Agent integration software supply chain.
 
 The Datadog agent integrations supply chain, shown in Figure 1,
 presently has three steps:
@@ -132,12 +134,12 @@ The "`wheels-signer`" delegated targets role makes a terminating
 delegation of all Python metadata and wheels for integrations beginning
 with the letter "`a`" to the "`wheels-signer-a`" role, all Python
 metadata and wheels for integrations beginning with the letter "`b`" to
-the "`wheels-signer-b`" role, and so on until all Python metadata and
+the "`wheels-signer-b`" role, and so on until it finishes sending all Python metadata and
 wheels for integrations beginning with the letter "`z`" to the
-"`wheels-signer-z`" role. Thus, there are 26 of these roles. This role
-uses (2, 3) offline keys for the same reasons as the root layout, does
-not directly sign for any Python metadata or wheel, and its metadata
-expires in 1 year. The following is an excerpt of the
+"`wheels-signer-z`" role. Thus, there are 26 of these roles, all of which 
+use (2, 3) offline keys for the same reasons as the root layout, and do not
+directly sign for any Python metadata or wheel. Metadata expires for these
+wheels-signer roles expire in 1 year. The following is an excerpt of the
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/wheels-signer.json[example]
 metadata file:
 
@@ -356,8 +358,8 @@ makes a terminating delegation of all Python metadata and wheels to the
 "`wheels-signer`" role. Finally, it makes a terminating delegation of
 all in-toto link metadata to the "`in-toto-metadata-signer`" role. It
 uses a different set of (2, 3) offline keys from the in-toto root
-layout to maintain the principle of separation of duties, and its
-metadata expires in 1 year, too. However, it does share
+layout to maintain the principle of separation of duties, but its
+metadata also expires in 1 year. In addition, it shares
 its keys with the "`wheels-signer`" and "`in-toto-metadata-signer`"
 roles. The following is an excerpt of the
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/targets.json[example]
@@ -515,7 +517,7 @@ Python metadata and wheels as products of the "`wheels-builder`" step.
 "`wheels-signer`" step. Verify all previously signed TUF and in-toto
 metadata, as well as previously built Python metadata and wheels. Produce
 a new consistent snapshot of TUF metadata for all Python metadata and
-wheels as well as in-toto link metadata. Record no products for the
+wheels, as well as in-toto link metadata. Record no products for the
 "`wheels-signer`" step.
 . Test that the Datadog agent is able to download and verify with TUF
 and in-toto the latest wheel for every integration, as described in the next
