@@ -1,4 +1,4 @@
-= ITE-2: Combining TUF and in-toto to build compromise-resilient CI/CD in general
+= ITE-2: A general overview of combining TUF and in-toto to build compromise-resilient CI/CD
 :source-highlighter: pygments
 :toc: preamble
 :toclevels: 5
@@ -328,15 +328,45 @@ pipeline, and end-users.
 
 ==== Developer
 
-TODO.
+As discussed in the <<basic-security-model, basic security model>>, a
+threshold of developers specified in the in-toto root layout SHOULD sign their
+respective "`developer`" link metadata files. It is OPTIONAL but RECOMMENDED to
+protect these developer keys using hardware such as
+https://github.com/DataDog/yubikey[YubiKeys]. These link metadata files SHOULD
+be made available to the CI/CD for subsequent steps in the workflow to work.
 
 ==== CI/CD
 
-TODO.
+The "`packager`" step, typically performed by automation, SHOULD:
+
+* Transform developer-signed source code into packages.
+* Sign in-toto link metadata about materials (expected to be the same as the
+source code from the "`developer`" step) and products (the packages produced in
+this step).
+* Produce updated TUF timestamp, snapshot, and
+"`package-and-in-toto-metadata-signer`" metadata about new packages and
+associated in-toto metadata.
+* Upload the latest consistent snapshot of TUF metadata, new packages, and new
+in-toto link metadata to the repository.
 
 ==== End-users
 
-TODO.
+Finally, to install or update packages, end-users SHOULD use a package manager
+which transparently calls TUF and in-toto libraries on their behalf. The
+download and verification workflow is roughly as follows:
+
+[arabic]
+. Use TUF to download and verify a given package.
+. Use TUF to download and verify the in-toto metadata for the given package.
+. Use TUF to download and verify public keys for the in-toto root layout.
+. Use in-toto to verify that the given package matches the rules specified in
+the in-toto root layout.
+. If all of the above checks pass, return the package to the package manager.
+
+End-users SHOULD see no difference in their experience, unless an attack is
+caught by TUF or in-toto. In that case, installation of the package SHOULD be
+denied, and end-users SHOULD see an error message indicating why TUF or in-toto
+failed to verify the package.
 
 === Deployment considerations
 
@@ -372,7 +402,7 @@ The worst attack happens when the attacker can change the contents of
 a package that a user installs (e.g., to insert a backdoor).
 
 Figure 3 presents a detailed security analysis for the
-<<<basic-security-model, basic security model>>>, featuring only the
+<<basic-security-model, basic security model>>, featuring only the
 most significant security attacks.
 
 image:tuf-in-toto-figure-3.png[Figure 3]
@@ -397,9 +427,8 @@ important here into ensuring that offline private keys are not leaked or
 exported by accident. Enough backups should also be made to ensure that
 the keys for the entire system can be rotated when necessary, such as
 removing or adding developer keys, which is an additional cost.
-* *Provisioning developers with signing keys (possibly with GPG on
-Yubikeys as discussed below) and developer tools with which they can
-sign their own code.* Costs include ease-of-use, and protecting keys
+* *Provisioning developers with signing keys and developer tools with which they
+can sign their own code.* Costs include ease-of-use, and protecting keys
 from being exfiltrated, possibly using HSMs.
 * *Instrumenting every step in the CI/CD pipeline to generate signed
 in-toto metadata.* Costs include protecting keys from being exfiltrated,
