@@ -454,7 +454,7 @@ image:tuf-in-toto-figure-3.png[Figure 3]
 
 *Figure 3*: A summary of the security model discussed in this subsection.
 
-In summary, the Datadog pipeline uses TUF to appropriately bootstrap the
+In summary, the Datadog pipeline uses TUF to bootstrap the
 root of trust for the entire system, and in-toto to guarantee that
 the pipeline packaged exactly the source code signed by one of the
 Datadog developers inside universal Python wheels. By tightly
