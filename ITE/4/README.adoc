@@ -1,0 +1,230 @@
+= ITE-4: Generic URI Schemes for in-toto
+:source-highlighter: pygments
+:toc: preamble
+:toclevels: 2
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| ITE
+| 4
+
+| Title
+| Generic URI Schemes for in-toto
+
+| Sponsor
+| link:https://github.com/santiagotorres[Santiago Torres-Arias]
+
+| Status
+| Draft :speech_balloon:
+
+| Type
+| Standards
+
+| Created
+| 2019-09-30
+
+|===
+
+[[abstract]]
+== Abstract
+
+This ITE proposes a generic Unique Resource Identifier (URI) scheme for in-toto
+artifacts. Currently, the in-toto specification only allows for files in the
+local filesystem to be the artifacts of link metadata. This ITE also defines the
+scheme for a generic URI and analyzes the impact of intriducing generic URIs on
+the larger in-toto specification.
+
+[[specification]]
+== Specification
+
+in-toto link metadata files currently look like this:
+
+```
+{
+    "_type": "link",
+    "_name": "<NAME>",
+    "command": "<COMMAND>",
+    "materials": {
+        "<PATH>": <HASH>,
+        "...": ...
+    },
+    "products": {
+        "<PATH>": <HASH>,
+        "...": ...
+    },
+    "byproducts": {
+        "stderr": "<STDERR>",
+        "stdout": "<STDOUT>",
+        "return-value": "<RETURN-VALUE>"
+    },
+    "environment": {
+        "variables": "<ENV>",
+        "filesystem": "<FS>",
+        "workdir": "<PWD>"
+    }
+}
+```
+
+The `materials` and `products` fields contain key-value pairs. The URI for each
+artifact is its path in the filesystem. With this ITE active, the artifact could
+instead have a generic URI which can be resolved to some external resource that
+is part of the supply chain. The URI must have a fixed structure and must
+contain all the information necessary for any verifier to obtain the resource it
+refers to. Therefore, any verifier must be able to take the URI in isolation and
+know how and where to find the artifact.
+
+This ITE proposes the following structure for the URI.
+
+`<URI Identifier/Token>+<Transport Protocol>://<Location>`
+
+The URI Identifier must be unique and the verifier must know how to resolve all
+relevant identifiers. Let's take the example of a GitHub specific artifact. If
+the artifact is a pull request, the URI could be as simple as:
+
+`github+https://github.com/in-toto/in-toto/pull/250`
+
+Inspections are carried out during the verification workflow but essentially
+make use of the in-toto run workflow. Therefore, the system must know how to
+resolve these URIs and appropriately record them in the link metadata generated
+for the inspection. To that end, a resolver must be capable of:
+
+- `compute_hash` - This operation must know how to use the transport and
+location specified in the URI to serialize the target artifact and compute its
+hash. The implementation of this is very specific to each individual type of
+entity.
+
+The above operations can be expanded to fetch SPDX licenses and entire
+documents. An SPDX license URI can be used to directly fetch the corresponding
+license file from the SPDX website. On the other hand, SPDX documents must be
+fetched from wherever the document publisher has made it available, and the
+verification process should validate if the document matches a particular
+version of the SPDX specification. These are implementation specific details.
+
+This ITE doesn't limit the available operations - it merely specifies the
+mandatory operations a resolver must provide to allow all conforming in-toto
+verification implementations to be able to verify metadata. Additional methods
+can be provided which custom in-toto implementations can use for their specific
+purposes.
+
+==== Implications for the existing in-toto specification
+
+The current in-toto specification must be modified to provide support for the
+generic URI schemes. The current specification allows only for files in the
+local filesystem to be set as artifacts. With the addition of other entities,
+the parts of the specification that directly interact or handle the artifacts
+must be updated.
+
+Artifact Rules are a means to specify what artifacts the project owner expects
+in every step of the supply chain. Here is the analysis of the impact on each:
+
+- `MATCH <pattern> [IN <source-path-prefix>] WITH (MATERIALS|PRODUCTS) [IN
+<destination-path-prefix>] FROM <step>` - The Match rule is a convenient way to
+match artifacts (either in materials or products depending on where the rule is
+specified) with artifacts from other steps in the supply chain, allowing owners
+to establish a flow of artifacts between steps in the software supply chain.
+The proposal in this ITE would not affect the current functioning of the Match
+rule as the verification workflow only works with the prefixes and patterns, and
+isn't affected by what they directly represent - in the filesystem or otherwise.
+- `ALLOW <pattern>` - The Allow rule specifies an artifact matched by the rule
+is allowed as a material or product of the particular step. This rule is not
+affected by this ITE.
+- `DISALLOW <pattern>` - The Disallow rule specifies an artifact matched by the
+Rule is not allowed as a material or product of the particular step. This rule
+is not affected by this ITE.
+- `CREATE <pattern>` - The Create rule specifies that an artifact matched by
+this rule must not appear as a material of the particular step - it must instead
+be created as part of executing this step of the supply chain. This rule is not
+affected by this ITE.
+- `DELETE <pattern>` - The Delete rule specifies that an artifact matched by
+this rule must not appear as a product of the particular step - it must instead
+be deleted as part of executing this step of the supply chain. This rule is not
+affected by this ITE.
+- `REQUIRE <pattern>` - The Require rule specifies that an artifact matched by
+this rule must appear as a material or product of the particular step. This rule
+is not affected by this ITE.
+- `MODIFY <pattern>` - The Modify rule specifies that an artifact matched by
+this rule must appear as both a material and product of the step, and the hash
+of the artifact must differ indicating the execution of the step changed the
+artifact.
+
+[[motivation]]
+== Motivation
+
+ITE 4 is motivated by the following use cases.
+
+==== Use Case 1: SPDX License Identifiers
+
+The Software Package Data Exchange (SPDX) specification allows developers and
+maintainers to tag their packages with a specific license, which allows them to
+easily communicate the licensing information to all stakeholders of the package.
+By allowing generic URI schemes in in-toto, we can then allow developers to tag
+their in-toto metadata with an SPDX identifier.
+
+==== Use Case 2: GitHub Entities
+
+GitHub has more abstract entities such as Pull Requests and Issues. These
+entities can be referred to directly using the URI schemes proposed in this ITE
+and help provide attestations about this data.
+
+[[reasoning]]
+== Reasoning
+
+The changes proposed in this ITE allow for additional support for abstract
+entities as highlighted in the motivation section above. The in-toto
+specification primarily emphasizes how the verification workflow for in-toto
+metadata works, while briefly indicating how inspections must be executed. The
+inspection execution workflow is impacted as the tooling must be aware of how
+to resolve the URI tokens. A non conformant in-toto verification implementation
+can still verify if the link and layout metadata match, but will be unable to
+perform inspections if they involve abstract entities.
+
+[[backwards-compatibility]]
+== Backwards Compatibility
+
+If an implementation of in-toto does not conform to this ITE, there will be no
+backward incompatibility. It will, however, be incapable of handling metadata
+that was generated using an implementation conformant to this ITE.
+
+[[security]]
+== Security
+
+For the most part, the changes this ITE proposes don't affect the security
+guarantees made by the in-toto specification. The verification workflow is
+mostly unaffected by the changes in the metadata that conform to this ITE. A
+point of concern that needs to be further established or checked is the
+execution of commands for inspections and how they interact with non filesystem
+entities.
+
+[[infrastructure-requirements]]
+== Infrastructure Requirements
+
+There may be infrastructure costs involved in creating and maintaining a set of
+whitelisted URI tokens and their resolvers. This can also grow into a full
+fledged databse of approved or blessed resolvers that in-toto supports.
+
+[[testing]]
+== Testing
+
+If your implementation includes code, include this section describing how your
+changes will be tested.
+
+This ITE currently proposes no code changes.
+
+[[prototype-implementation]]
+== Prototype Implementation
+
+This ITE currently proposes no prototypes.
+
+[[references]]
+== References
+
+* link:https://tools.ietf.org/html/rfc3986[Uniform Resource Identifier (URI): Generic Syntax]
+* link:https://github.com/in-toto/docs/blob/master/in-toto-spec.md[in-toto Specification]
