@@ -56,7 +56,7 @@ in-toto link metadata files currently look like this:
 ```
 {
     "_type": "link",
-    "_name": "<NAME>",
+    "name": "<NAME>",
     "command": "<COMMAND>",
     "materials": {
         "<PATH>": <HASH>,
@@ -92,7 +92,7 @@ This ITE proposes the following structure for the URI.
 `<scheme>:<hier-part>`
 
 This structure is derived from RFC 3986. The `scheme` defines the token or
-identifier for the type of resource the URI refers to . It can also contain
+identifier for the type of resource the URI refers to. It can also contain
 other relevant information that indicates how the resource can be accessed. The
 `hier-part` identifies the path or location of the resource.
 
@@ -134,7 +134,7 @@ documents, the URI can also be used to refer to other entities elsewhere in the
 document.
 
 Artifact Rules are a means to specify what artifacts the project owner expects
-in every step of the supply chain in the in-toto layout. in-toto povides the
+in every step of the supply chain in the in-toto layout. in-toto provides the
 following rules that together attempt to describe the different types of
 operations or actions that supply chain functionaries carry out.
 
@@ -245,7 +245,7 @@ It's important to note that filepaths are a form of URIs too, and can be
 represented with the `scheme` `file://`. We have also discovered that `MATCH`
 and other artifact rules use only the URI strings themselves to find the
 appropriate entries in the link metadata. The changes proposed in this ITE,
-therefore, have no effect on the security guarantees made by th in-toto
+therefore, have no effect on the security guarantees made by the in-toto
 specification.
 
 Implementing systems that conform to this ITE must, however, be careful with how
