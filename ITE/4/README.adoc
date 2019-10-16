@@ -138,7 +138,7 @@ in every step of the supply chain in the in-toto layout. in-toto provides the
 following rules that together attempt to describe the different types of
 operations or actions that supply chain functionaries carry out.
 
-=== `MATCH <pattern> [IN <source-path-prefix>] WITH (MATERIALS|PRODUCTS) [IN <destination-path-prefix>] FROM <step>`
+==== `MATCH <pattern> [IN <source-path-prefix>] WITH (MATERIALS|PRODUCTS) [IN <destination-path-prefix>] FROM <step>`
 
 The Match rule is a convenient way to match artifacts (either in materials or
 products depending on where the rule is specified) with artifacts from other
@@ -156,41 +156,13 @@ is as follows:
 `MATCH pull/250 IN github+https://github.com/in-toto/in-toto/ WITH PRODUCTS IN
 github+https://github.com/in-toto/in-toto-golang/pull/ FROM merge-go-repository`
 
-=== `ALLOW <pattern>`
+==== Other artifact rules
 
-The Allow rule specifies an artifact matched by the rule is allowed as a
-material or product of the particular step. This rule is not affected by this
-ITE.
-
-=== `DISALLOW <pattern>`
-
-The Disallow rule specifies an artifact matched by the Rule is not allowed as a
-material or product of the particular step. This rule is not affected by this
-ITE.
-
-=== `CREATE <pattern>`
-
-The Create rule specifies that an artifact matched by this rule MUST not appear
-as a material of the particular step - it MUST instead be created as part of
-executing this step of the supply chain. This rule is not affected by this ITE.
-
-=== `DELETE <pattern>`
-
-The Delete rule specifies that an artifact matched by this rule MUST not appear
-as a product of the particular step - it MUST instead be deleted as part of
-executing this step of the supply chain. This rule is not affected by this ITE.
-
-=== `REQUIRE <pattern>`
-
-The Require rule specifies that an artifact matched by this rule MUST appear as
-a material or product of the particular step. This rule is not affected by this
-ITE.
-
-=== `MODIFY <pattern>`
-
-The Modify rule specifies that an artifact matched by this rule MUST appear as
-both a material and product of the step, and the hash of the artifact MUST
-differ indicating the execution of the step changed the artifact.
+in-toto provides several other artifact rules - specifically `ALLOW`,
+`DISALLOW`, `CREATE`, `DELETE`, `REQUIRE`, and `MODIFY`. All these rules merely
+check that the provided pattern exists are does not exist in the relevant link
+metadata, without ever resolving the pattern into the artifact itself.
+Therefore, this ITE does not affect the working of these rules.
 
 [[motivation]]
 == Motivation
