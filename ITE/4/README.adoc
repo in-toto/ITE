@@ -42,6 +42,26 @@ local filesystem to be the artifacts of link metadata. This ITE also defines the
 scheme for a generic URI and provides a behaviour of in-toto implementations
 that support generic URIs.
 
+[[motivation]]
+== Motivation
+
+ITE 4 is motivated by the following use cases.
+
+==== Use Case 1: SPDX Document Identifiers
+
+The Software Package Data Exchange (SPDX) is an open standard for communicating
+software bill of material information such as components, licenses, copyrights,
+and security references. Each document is a comprehensive report that describes
+a software package in detail. They're composed of several entities that have
+unique identifiers. These identifiers can be used in in-toto metadata embedded
+in SPDX documents to refer to the respective entities.
+
+==== Use Case 2: GitHub Entities
+
+GitHub has more abstract entities such as Pull Requests and Issues. These
+entities can be referred to directly using the URI schemes proposed in this ITE
+and help provide attestations about this data.
+
 [[specification]]
 == Specification
 
@@ -83,9 +103,8 @@ The `materials` and `products` fields contain key-value pairs. The URI for each
 artifact is its path in the filesystem. With this ITE active, the artifact could
 instead have a generic URI which can be resolved to some external resource that
 is part of the supply chain. The URI MUST have a fixed structure and MUST
-contain all the information necessary for any verifier to obtain the resource it
-refers to. Therefore, any verifier MUST be able to take the URI in isolation and
-know how and where to find the artifact.
+contain all the information necessary for the verifier to resolve if any part of
+the verification workflow requires it.
 
 This ITE proposes the following structure for the URI.
 
@@ -112,10 +131,6 @@ This can also instead use GitHub's API specific URI to refer to the same data.
 
 `github+https://api.github.com/repos/in-toto/in-toto/pulls/250`
 
-The in-toto system generating link metadata for this artifact MUST be capable
-of recognizing that it possesses a generic URI, and the system MUST be able to
-resolve this resource and compute its cryptographic hash information. 
-
 An example of the product field for link metadata with a generic URI is as
 follows:
 
@@ -131,12 +146,19 @@ follows:
 Similarly, an SPDX URI can be used to directly fetch the corresponding documents
 from a specified location. For in-toto metadata that exist within SPDX
 documents, the URI can also be used to refer to other entities elsewhere in the
-document.
+document. Resolving such URIs that point to local entities elsewhere in the SPDX
+document is an implementation level detail - but it's clear that the URI
+contains all the information necessary to identify the entity in that context.
 
-Artifact Rules are a means to specify what artifacts the project owner expects
-in every step of the supply chain in the in-toto layout. in-toto provides the
-following rules that together attempt to describe the different types of
-operations or actions that supply chain functionaries carry out.
+It is important to note that this ITE doesn't mandate any specific generic URI
+tokens that all conforming implementations MUST support. Instead, it merely
+specifies what any generic URI must look like, and what rules the system MUST
+follow.
+
+in-toto artifact rules are a means to specify what artifacts the project owner
+expects in every step of the supply chain in the in-toto layout. in-toto
+provides the following rules that together attempt to describe the different
+types of operations or actions that supply chain functionaries carry out.
 
 ==== `MATCH <pattern> [IN <source-path-prefix>] WITH (MATERIALS|PRODUCTS) [IN <destination-path-prefix>] FROM <step>`
 
@@ -163,26 +185,6 @@ in-toto provides several other artifact rules - specifically `ALLOW`,
 check that the provided pattern exists are does not exist in the relevant link
 metadata, without ever resolving the pattern into the artifact itself.
 Therefore, this ITE does not affect the working of these rules.
-
-[[motivation]]
-== Motivation
-
-ITE 4 is motivated by the following use cases.
-
-==== Use Case 1: SPDX Document Identifiers
-
-The Software Package Data Exchange (SPDX) is an open standard for communicating
-software bill of material information such as components, licenses, copyrights,
-and security references. Each document is a comprehensive report that describes
-a software package in detail. They're composed of several entities that have
-unique identifiers. These identifiers can be used in in-toto metadata embedded
-in SPDX documents to refer to the respective entities.
-
-==== Use Case 2: GitHub Entities
-
-GitHub has more abstract entities such as Pull Requests and Issues. These
-entities can be referred to directly using the URI schemes proposed in this ITE
-and help provide attestations about this data.
 
 [[reasoning]]
 == Reasoning
