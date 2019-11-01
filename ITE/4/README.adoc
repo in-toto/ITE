@@ -186,6 +186,80 @@ check that the provided pattern exists are does not exist in the relevant link
 metadata, without ever resolving the pattern into the artifact itself.
 Therefore, this ITE does not affect the working of these rules.
 
+[[example-uses]]
+== Example Uses
+
+==== GitHub: Attestations for merging a pull request into `master`
+
+A pull request is a proposal to make changes to a repository. Changes are either
+made on a separate branch on the same repository or a branch on a fork of the
+repository and the pull request is a proposal to merge these changes into the
+main repository. The act of merging a pull request is performed by an authorized
+member of the development team of the repository.
+
+By default, the commits that make up the change are integrated into the target
+branch and an additional merge commit is created to indicate the act of merging.
+It's also possible to merge a pull request without creating a separate merge
+commit. The attestation could look something like:
+
+```
+{
+    "_type": "link",
+    "name": "merge-pull-request-250",
+    "command": "<COMMAND>",
+    "materials": {
+        "github+https://github.com/in-toto/in-toto/pull/250": <HASH>
+    },
+    "products": {
+        "github+https://github.com/in-toto/in-toto/commit/f1c5d201887e226cadac5792a203ac3eae347add": <HASH>
+    },
+    "byproducts": {
+        "stderr": "",
+        "stdout": "",
+        "return-value": ""
+    },
+    "environment": {
+        "variables": "",
+        "filesystem": "",
+        "workdir": ""
+    }
+}
+```
+
+This step is accepting the pull request as a material and is recording the merge
+commit as a product.
+
+==== GitHub: Attestations for GitHub Actions building from a merge commit
+
+GitHub Actions can be used to set up a workflow for continuous integration (CI).
+Workflows can be triggered on push and an attestation can be generated for the
+build that as a result.
+
+
+```
+{
+    "_type": "link",
+    "name": "github-actions-build-pull-request-250",
+    "command": "<COMMAND>",
+    "materials": {
+        "github+https://github.com/in-toto/in-toto/commit/f1c5d201887e226cadac5792a203ac3eae347add": <HASH>
+    },
+    "products": {
+        "github+https://github.com/in-toto/in-toto/commit/f1c5d201887e226cadac5792a203ac3eae347add/checks?check_suite_id=<ID>": <HASH>
+    },
+    "byproducts": {
+        "stderr": "",
+        "stdout": "",
+        "return-value": ""
+    },
+    "environment": {
+        "variables": "",
+        "filesystem": "",
+        "workdir": ""
+    }
+}
+```
+
 [[reasoning]]
 == Reasoning
 
