@@ -205,7 +205,7 @@ commit. The attestation could look something like:
 {
     "_type": "link",
     "name": "merge-pull-request-250",
-    "command": "<COMMAND>",
+    "command": "",
     "materials": {
         "github+https://github.com/in-toto/in-toto/pull/250": <HASH>
     },
@@ -239,7 +239,7 @@ build that as a result.
 {
     "_type": "link",
     "name": "github-actions-build-pull-request-250",
-    "command": "<COMMAND>",
+    "command": "",
     "materials": {
         "github+https://github.com/in-toto/in-toto/commit/f1c5d201887e226cadac5792a203ac3eae347add": <HASH>
     },
