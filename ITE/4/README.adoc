@@ -182,6 +182,38 @@ a software package in detail. They're composed of several entities that have
 unique identifiers. These identifiers can be used in in-toto metadata embedded
 in SPDX documents to refer to the respective entities.
 
+===== in-toto link attestation for packaging SPDX files into an SPDX package
+
+An in-toto attestation can be bundled into an SPDX document to show the chain of
+custody for the elements the SPDX document refers to. Here, we see how
+provenance can be attested to for File and Package entities in an SPDX document.
+
+```
+{
+    "_type": "link",
+    "name": "package-ghostscript-9.21.tar.gz",
+    "command": "<COMMAND>",
+    "materials": {
+        "spdx:SPDXRef-141-File-83pv-RKSJ-H-d51620a4d7d9aeca3a1cbe5ef201513f98d65f98": <HASH>,
+        "spdx:SPDXRef-271-File-AUTHORS.md-109c93392646b4d55e3ca62c5b578a9ac7cc159f": <HASH>,
+        "...": "..."
+    },
+    "products": {
+        "spdx:SPDXRef-Pkg-ghostscript-9.21.tar.gz-6f60d7fcb5eef6a8bec5abedf21c6a7008a8c0c7": <HASH>
+    },
+    "byproducts": {
+        "stderr": "",
+        "stdout": "",
+        "return-value": ""
+    },
+    "environment": {
+        "variables": "",
+        "filesystem": "",
+        "workdir": ""
+    }
+}
+```
+
 ==== Use Case 2: GitHub Entities
 
 GitHub has more abstract entities such as Pull Requests and Issues. These
