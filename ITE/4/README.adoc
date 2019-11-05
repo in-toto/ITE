@@ -188,7 +188,7 @@ GitHub has more abstract entities such as Pull Requests and Issues. These
 entities can be referred to directly using the URI schemes proposed in this ITE
 and help provide attestations about these artifacts. Consider:
 
-===== Attestations for merging a pull request into `master`
+===== in-toto link attestations for merging a pull request into `master`
 
 A pull request is a proposal to make changes to a repository. Changes are either
 made on a separate branch on the same repository or a branch on a fork of the
@@ -228,7 +228,7 @@ commit. The attestation could look something like:
 This step is accepting the pull request as a material and is recording the merge
 commit as a product.
 
-===== Attestations for GitHub Actions building from a merge commit
+===== in-toto link attesations for GitHub Actions building from a merge commit
 
 GitHub Actions can be used to set up a workflow for continuous integration (CI).
 Workflows can be triggered on push and an attestation can be generated for the
