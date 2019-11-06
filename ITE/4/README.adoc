@@ -265,7 +265,7 @@ commit as a product.
 
 GitHub Actions can be used to set up a workflow for continuous integration (CI).
 Workflows can be triggered on push and an attestation can be generated for the
-build that as a result.
+resulting build and CI report.
 
 
 ```
