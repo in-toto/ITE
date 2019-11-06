@@ -163,10 +163,11 @@ github+https://github.com/in-toto/in-toto-golang/pull/ FROM merge-go-repository`
 *Other artifact rules*
 
 in-toto provides several other artifact rules - specifically `ALLOW`,
-`DISALLOW`, `CREATE`, `DELETE`, `REQUIRE`, and `MODIFY`. All these rules merely
-check that the provided pattern exists are does not exist in the relevant link
-metadata, without ever resolving the pattern into the artifact itself.
-Therefore, this ITE does not affect the working of these rules.
+`DISALLOW`, `CREATE`, `DELETE`, `REQUIRE`, and `MODIFY`. These rules perform
+different checks by verifying if artifacts matching the pattern occur or do not
+occur in the materials or products sections of the relevant link. This does not
+involve resolving the pattern or URI into the artifact itself, and so this ITE
+does not affect the working of these rules.
 
 [[motivation]]
 == Motivation
