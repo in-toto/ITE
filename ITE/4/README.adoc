@@ -296,7 +296,7 @@ build that as a result.
 
 This ITE proposes a change in the URI scheme of artifacts in in-toto metadata.
 The proposed change closely matches the URI structure laid out in RFC 3986. The
-URI structure propsed in that document is widely accepted and is versatile
+URI structure proposed in that document is widely accepted and is versatile
 enough to allow for a wide variety of references. It is also easy to implement
 and extend support for due to the presence of a large number of standard
 libraries.
