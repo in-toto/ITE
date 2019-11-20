@@ -99,17 +99,23 @@ A compliant in-toto system must be capable of generating link metadata with
 artifacts that have generic URI references. Therefore, this system must also be
 capable of resolving this URI and calculating cryptographic hashes of these
 artifacts. It's important to note that the contents of the resource are hashed,
-as opposed to the URI itself.
+as opposed to the URI itself. This ITE doesn't specify how the contents are
+resolved and hashed by the system generating the metadata for the relevant
+abstract entities. All it specifies is that the resolution and the URI itself
+must be consistent in all metadata.
 
-To that end, it's important for a URI scheme to have a single mapping for the
-service it refers to. Consider an example of a GitHub specific resource - a pull
-request or an issue.
+Consider an example of a GitHub specific resource - a pull request or an issue.
 
 `github+https://github.com/in-toto/in-toto/pull/250`
 
 This can also instead use GitHub's API specific URI to refer to the same data.
 
 `github+https://api.github.com/repos/in-toto/in-toto/pulls/250`
+
+Both the above URIs refer to the same abstract entity - pull request 250 to
+in-toto's reference implementation. However, taken directly, they correspond to
+different data. Therefore, the implementing system must resolve the URI and use
+it consistently.
 
 An example of the product field for link metadata with a generic URI is as
 follows:
@@ -142,7 +148,8 @@ types of operations or actions that supply chain functionaries carry out.
 
 *MATCH Rule*
 
-`MATCH <pattern> [IN <source-path-prefix>] WITH (MATERIALS|PRODUCTS) [IN <destination-path-prefix>] FROM <step>`
+`MATCH <pattern> [IN <source-path-prefix>] WITH (MATERIALS|PRODUCTS) [IN
+<destination-path-prefix>] FROM <step>`
 
 The Match rule is a convenient way to match artifacts (either in materials or
 products depending on where the rule is specified) with artifacts from other
@@ -157,8 +164,8 @@ subtracted from the URI strings. Therefore, we conclude that the functioning of
 the rule doesn't change with this ITE. An example `MATCH` rule with generic URIs
 is as follows:
 
-`MATCH pull/250 IN github+https://github.com/in-toto/in-toto/ WITH PRODUCTS IN
-github+https://github.com/in-toto/in-toto-golang/pull/ FROM merge-go-repository`
+`MATCH commit/* IN github+https://github.com/in-toto/in-toto/ WITH PRODUCTS IN
+github+https://github.com/in-toto/in-toto FROM merge-pull-request-250`
 
 *Other artifact rules*
 
@@ -332,7 +339,9 @@ therefore, have no effect on the security guarantees made by the in-toto
 specification.
 
 Implementing systems that conform to this ITE must, however, be careful with how
-they compute cryptographic hashes of abstract entities.
+they compute cryptographic hashes of abstract entities. The implementors must
+understand the abstract entities they are hashing so as to be able to do so
+consistently.
 
 [[infrastructure-requirements]]
 == Infrastructure Requirements
