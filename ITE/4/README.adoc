@@ -229,13 +229,47 @@ GitHub has more abstract entities such as Pull Requests and Issues. These
 entities can be referred to directly using the URI schemes proposed in this ITE
 and help provide attestations about these artifacts. Consider:
 
-===== in-toto link attestation for merging a pull request into `master`
+===== in-toto link attestation for creating a pull request
 
 A pull request is a proposal to make changes to a repository. Changes are either
 made on a separate branch on the same repository or a branch on a fork of the
 repository and the pull request is a proposal to merge these changes into the
-main repository. The act of merging a pull request is performed by an authorized
-member of the development team of the repository.
+main repository.
+
+```
+{
+    "_type": "link",
+    "name": "pull-request-250",
+    "command": "",
+    "materials": {
+        "github+https://github.com/in-toto/in-toto/commit/3371c93699785ba5907411a321ce82c59cb127fa": <HASH>,
+        "...": "..."
+    },
+    "products": {
+        "github+https://github.com/in-toto/in-toto/pull/250": <HASH>
+    },
+    "byproducts": {
+        "stderr": "",
+        "stdout": "",
+        "return-value": ""
+    },
+    "environment": {
+        "variables": "",
+        "filesystem": "",
+        "workdir": ""
+    }
+}
+```
+
+The materials aren't limited to the commits that make up a pull request, but can
+also contain other elements such as reviews or other comments that make up a
+discussion, as well as approvals from maintainers. It really depends on how the
+implementor, perhaps GitHub, chooses to define the components of a pull request.
+
+===== in-toto link attestation for merging a pull request into `master`
+
+The act of merging a pull request is performed by an authorized member of the
+development team of the repository.
 
 By default, the commits that make up the change are integrated into the target
 branch and an additional merge commit is created to indicate the act of merging.
