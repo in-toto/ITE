@@ -314,16 +314,15 @@ libraries.
 == Backwards Compatibility
 
 If in-toto metadata is generated using an implementation of in-toto conforming
-to this ITE, verification using a non-conforming implementation will likely
-fail. It is still possible for verification to continue if the inspections don't
-use generic URIs. This is because the layout may contain inspections that use
-generic URIs.
+to this ITE, verification using a non-conforming implementation can fail. It is
+possible for the verification workflow to progress if the inspections don't
+use generic URIs.
 
 However, a conforming implementation should be capable of verifying in-toto
 metadata generated using a non-conforming implementation, as an ITE-4 conforming
 system must also conform to the actual in-toto specification.
 
-It's also possible two conforming systems are unable to verify the other's
+It's also possible two conforming systems may be unable to verify the other's
 in-toto metadata as they're unaware of how to resolve certain URI tokens used by
 the other. This is again because of the possibility of inspections containing
 URIs that the other system is unable to resolve and calculate cryptographic
