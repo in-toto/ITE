@@ -129,12 +129,13 @@ follows:
 }
 ```
 
-Similarly, an SPDX URI can be used to directly fetch the corresponding documents
-from a specified location. For in-toto metadata that exist within SPDX
+Similarly, a generic URI can be used to refer to other abstrat entities like an
+SPDX element. The URI can be used to directly fetch the corresponding documents
+from a specified location. For in-toto metadata that are embedded within SPDX
 documents, the URI can also be used to refer to other entities elsewhere in the
 document. Resolving such URIs that point to local entities elsewhere in the SPDX
-document is an implementation level detail - but it's clear that the URI
-contains all the information necessary to identify the entity in that context.
+document is an implementation level detail - but it's clear that the URI must
+contain all the information necessary to identify the entity in that context.
 
 It is important to note that this ITE doesn't mandate any specific generic URI
 tokens that all conforming implementations MUST support. Instead, it merely
