@@ -185,11 +185,11 @@ ITE 4 is motivated by the following use cases.
 ==== Use Case 1: SPDX Document Identifiers
 
 The Software Package Data Exchange (SPDX) is an open standard for communicating
-software bill of material information such as components, licenses, copyrights,
-and security references. Each document is a comprehensive report that describes
-a software package in detail. They're composed of several entities that have
-unique identifiers. These identifiers can be used in in-toto metadata embedded
-in SPDX documents to refer to the respective entities.
+software bill of materials (SBoM) information such as components, licenses,
+copyrights, and security references. Each document is a comprehensive report
+that describes a software package in detail. They're composed of several
+entities that have unique identifiers. These identifiers can be used in in-toto
+metadata embedded in SPDX documents to refer to the respective entities.
 
 ===== in-toto link attestation for packaging SPDX files into an SPDX package
 
