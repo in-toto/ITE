@@ -38,14 +38,14 @@ endif::[]
 
 This ITE proposes a generic Unique Resource Identifier (URI) scheme for in-toto
 artifacts. Currently, the in-toto specification only allows for files in the
-local filesystem to be the artifacts of link metadata. This ITE also defines the
-scheme for a generic URI and provides a behaviour of in-toto implementations
-that support generic URIs.
+local filesystem to be the artifacts of link metadata. This ITE defines the
+scheme for a generic URI and provides a description of the expected behaviour of
+in-toto implementations that support generic URIs.
 
 [[specification]]
 == Specification
 
-The current in-toto specification must be modified to provide support for the
+The current in-toto specification must be modified to provide support for
 generic URI schemes. The current specification allows only for files in the
 local filesystem to be set as artifacts. With the addition of other entities,
 the parts of the specification that directly interact or handle the artifacts
@@ -114,8 +114,8 @@ This can also instead use GitHub's API specific URI to refer to the same data.
 
 Both the above URIs refer to the same abstract entity - pull request 250 to
 in-toto's reference implementation. However, taken directly, they correspond to
-different data. Therefore, the implementing system must resolve the URI and use
-it consistently.
+different data. Therefore, the implementing system must resolve the URI and thus
+the artifact in a consistent manner.
 
 An example of the product field for link metadata with a generic URI is as
 follows:
@@ -354,7 +354,7 @@ use generic URIs.
 
 However, a conforming implementation should be capable of verifying in-toto
 metadata generated using a non-conforming implementation, as an ITE-4 conforming
-system must also conform to the actual in-toto specification.
+system MUST also conform to the actual in-toto specification.
 
 It's also possible two conforming systems may be unable to verify the other's
 in-toto metadata as they're unaware of how to resolve certain URI tokens used by
@@ -402,4 +402,3 @@ This ITE currently proposes no prototypes.
 
 * link:https://tools.ietf.org/html/rfc3986[Uniform Resource Identifier (URI): Generic Syntax]
 * link:https://github.com/in-toto/docs/blob/master/in-toto-spec.md[in-toto Specification]
-* link:https://pypi.org/project/rfc3986/[RFC 3986 library for Python]
