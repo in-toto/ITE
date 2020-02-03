@@ -187,7 +187,7 @@ ITE-4 is motivated by the following use cases.
 
 ==== Use Case 1: SPDX Document Identifiers
 
-The Software Package Data Exchange (SPDX) is an open standard for communicating
+Software Package Data Exchange (SPDX) is an open standard for communicating
 software bill of materials (SBoM) information such as components, licenses,
 copyrights, and security references. Each document is a comprehensive report
 that describes a software package in detail. SPDX is a part of the broader
@@ -195,6 +195,10 @@ discussions with Continuous Delivery (CD) Foundation's
 link:https://github.com/cdfoundation/sig-security-sbom[Special Interest Group for Software Bill of Materials],
 as well as with the National Telecommunication and Information Administration's
 (NTIA) link:https://www.ntia.doc.gov/SoftwareTransparency[Software Component Transparency].
+SPDX and in-toto, along with representatives from NTIA and other stakeholders,
+are also part of the Consortium for Information and Software Quality (CISQ) and
+Object Management Group's (OMG) working group on
+link:https://www.it-cisq.org/software-bill-of-materials/index.htm[Tool-to-tool Software Bill of Materials Exchange].
 
 SPDX documents composed of several entities that have unique identifiers. These
 identifiers can be used in in-toto metadata embedded in SPDX documents to refer
@@ -413,3 +417,4 @@ This ITE currently proposes no prototypes.
 * link:https://github.com/in-toto/docs/blob/master/in-toto-spec.md[in-toto Specification]
 * link:https://github.com/cdfoundation/sig-security-sbom[CD Foundation Special Interest Group on Software Bill of Materials]
 * link:https://www.ntia.doc.gov/SoftwareTransparency[NTIA Software Component Transparency]
+* link:https://www.it-cisq.org/software-bill-of-materials/index.htm[CISQ/OMG Tool-to-tool Software Bill of Materials Exchange]
