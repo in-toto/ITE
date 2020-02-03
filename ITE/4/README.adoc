@@ -129,7 +129,7 @@ follows:
 }
 ```
 
-Similarly, a generic URI can be used to refer to other abstrat entities like an
+Similarly, a generic URI can be used to refer to other abstract entities like an
 SPDX element. The URI can be used to directly fetch the corresponding documents
 from a specified location. For in-toto metadata that are embedded within SPDX
 documents, the URI can also be used to refer to other entities elsewhere in the
