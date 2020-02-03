@@ -152,7 +152,7 @@ types of operations or actions that supply chain functionaries carry out.
 `MATCH <pattern> [IN <source-path-prefix>] WITH (MATERIALS|PRODUCTS) [IN
 <destination-path-prefix>] FROM <step>`
 
-The Match rule is a convenient way to match artifacts (either in materials or
+The `MATCH` rule is a convenient way to match artifacts (either in materials or
 products depending on where the rule is specified) with artifacts from other
 steps in the supply chain, allowing owners to establish a flow of artifacts
 between steps in the software supply chain.
@@ -180,7 +180,7 @@ does not affect the working of these rules.
 [[motivation]]
 == Motivation
 
-ITE 4 is motivated by the following use cases.
+ITE-4 is motivated by the following use cases.
 
 ==== Use Case 1: SPDX Document Identifiers
 
