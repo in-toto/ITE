@@ -90,10 +90,11 @@ This ITE proposes the following structure for the URI.
 
 `<scheme>:<hier-part>`
 
-This structure is derived from RFC 3986. The `scheme` defines the token or
-identifier for the type of resource the URI refers to. It can also contain
-other relevant information that indicates how the resource can be accessed. The
-`hier-part` identifies the path or location of the resource.
+This structure is derived from
+link:https://tools.ietf.org/html/rfc3986[RFC 3986]. The `scheme` defines the
+token or identifier for the type of resource the URI refers to. It can also
+contain other relevant information that indicates how the resource can be
+accessed. The `hier-part` identifies the path or location of the resource.
 
 A compliant in-toto system must be capable of generating link metadata with
 artifacts that have generic URI references. Therefore, this system must also be
