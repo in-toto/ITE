@@ -201,9 +201,9 @@ are also part of the Consortium for Information and Software Quality (CISQ) and
 Object Management Group's (OMG) working group on
 link:https://www.it-cisq.org/software-bill-of-materials/index.htm[Tool-to-tool Software Bill of Materials Exchange].
 
-SPDX documents composed of several entities that have unique identifiers. These
-identifiers can be used in in-toto metadata embedded in SPDX documents to refer
-to the respective entities.
+SPDX documents are composed of several entities that have unique identifiers.
+These identifiers can be used in in-toto metadata embedded in SPDX documents to
+refer to the respective entities.
 
 ===== in-toto link attestation for packaging SPDX files into an SPDX package
 
@@ -317,7 +317,7 @@ commit. The attestation could look something like:
 This step is accepting the pull request as a material and is recording the merge
 commit as a product.
 
-===== in-toto link attesation for GitHub Actions building from a merge commit
+===== in-toto link attestation for GitHub Actions building from a merge commit
 
 GitHub Actions can be used to set up a workflow for continuous integration (CI).
 Workflows can be triggered on push and an attestation can be generated for the
