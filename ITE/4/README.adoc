@@ -84,9 +84,9 @@ in-toto link metadata files currently look like this:
 The `materials` and `products` fields contain key-value pairs. The URI for each
 artifact is its path in the filesystem. With this ITE active, the artifact could
 instead have a generic URI which can be resolved to some external resource that
-is part of the supply chain. The URI MUST have a fixed structure and MUST
-contain all the information necessary for the verifier to resolve if any part of
-the verification workflow requires it.
+is part of the supply chain. Such a generic URI MUST have a fixed structure and
+MUST contain all the information necessary for the verifier to resolve if any
+part of the verification workflow requires it.
 
 This ITE proposes the following structure for the URI.
 
