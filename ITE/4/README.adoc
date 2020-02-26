@@ -379,17 +379,48 @@ information for.
 [[security]]
 == Security
 
-It's important to note that file paths are a form of URIs too, and can be
-represented with the `scheme` `file://`. We have also discovered that `MATCH`
-and other artifact rules use only the URI strings themselves to find the
-appropriate entries in the link metadata. The changes proposed in this ITE,
-therefore, have no effect on the security guarantees made by the in-toto
-specification.
+As per the in-toto specification, the only direct interaction in-toto tools have
+with artifacts is to record their hashes using one or more cryptographic hash
+algorithms. Other artifact operations such as verifying the artifact rules
+rely on the hashes recorded in the link metadata.
 
-Implementing systems that conform to this ITE must, however, be careful with how
-they compute cryptographic hashes of abstract entities. The implementors must
-understand the abstract entities they are hashing so as to be able to do so
-consistently.
+We found that the extending the recording of hashes to abstract resources, some
+of which may live at remote locations, is more complicated than the recording of
+hashes of artifacts in the local filesystem. It is, therefore, important for
+ITE-4 compliant in-toto tools to handle the resolving of generic URIs to these
+abstract resources securely. It is quite possible that the contents of these
+resources need to be serialized in some manner that allows for their hashing,
+and these operations when performed unsafely can lead to severe vulnerabilities
+if the resource is controlled by a malicious actor.
+
+Further, it is likely that abstract resources change more frequently, both in
+content and format, and implementors must take care to identify how these
+contents are recorded, as well what specific information is recorded for a
+particular type of entity. Otherwise, the in-toto verification workflow can be
+plagued by failures due to the lack of availability of the artifact as
+previously recorded. For example, implementors who decide how to resolve GitHub
+pull request must decide what information encoded in a pull request must be
+hashed. If they are considering the comments of various users when hashing the
+pull request, this can lead to differences in the hashes recorded by different
+steps in the supply chain even if the changes proposed in the pull request are
+the same. This will of course eventually lead to a failure of the in-toto
+verification workflow.
+
+As always, it is also necessary to consider the actors who can make changes to
+an abstract entity. This is perhaps slightly exacerbated in the case of abstract
+resources as the content and format being hashed aren't as specific as artifacts
+in the local filesystem. In the above example, for a public repository, *any*
+GitHub user can comment on a pull request, so for an implementation that also
+considers comments when recording the hash, any user can potentially cause a
+failure of the verification workflow. This can potentially be leveraged by a
+malicious actor to target automated pipelines that rely on in-toto verification.
+
+Finally, our analysis showed that verification of artifact rules specified in
+in-toto layouts use the hashes recorded while generating the link metadata and
+do not record afresh any of the hashes. So the security properties of artifact
+rules verification rely on the above points - ensuring the hashes are recorded
+correctly for a given context. The change in the URI format has no direct impact
+on the artifact rules and their verification.
 
 [[infrastructure-requirements]]
 == Infrastructure Requirements
