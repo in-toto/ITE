@@ -146,10 +146,12 @@ tokens that all conforming implementations MUST support. Instead, it merely
 specifies what any generic URI must look like, and what rules the system MUST
 follow.
 
+==== Artifact Rules
+
 in-toto artifact rules are a means to specify what artifacts the project owner
 expects in every step of the supply chain in the in-toto layout. in-toto
-provides the following rules that together attempt to describe the different
-types of operations or actions that supply chain functionaries carry out.
+provides the certain rules that together attempt to describe the different types
+of operations or actions that supply chain functionaries carry out.
 
 *MATCH Rule*
 
@@ -180,6 +182,13 @@ different checks by verifying if artifacts matching the pattern occur or do not
 occur in the materials or products sections of the relevant link. This does not
 involve resolving the pattern or URI into the artifact itself, and so this ITE
 does not affect the working of these rules.
+
+However, it is quite likely that the contents referred to using generic URIs
+change more frequently than the traditional artifacts in the filesystem. The
+expectation is that either these changes are recorded with link attestations of
+their own, making them part of the supply chain, or metadata is replaced by
+authorized functionaries. The security implications of frequently changing
+generic resources are discussed in the Security section below.
 
 [[motivation]]
 == Motivation
