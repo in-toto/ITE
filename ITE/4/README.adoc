@@ -82,7 +82,7 @@ in-toto link metadata files currently look like this:
 ```
 
 The `materials` and `products` fields contain key-value pairs. The URI for each
-artifact is its path in the filesystem. With this ITE active, the artifact could
+artifact is its path in the filesystem. With this ITE active, the artifact MAY
 instead have a generic URI which can be resolved to some external resource that
 is part of the supply chain. Such a generic URI MUST have a fixed structure and
 MUST contain all the information necessary for the verifier to resolve if any
@@ -98,14 +98,14 @@ token or identifier for the type of resource the URI refers to. It can also
 contain other relevant information that indicates how the resource can be
 accessed. The `hier-part` identifies the path or location of the resource.
 
-A compliant in-toto system must be capable of generating link metadata with
-artifacts that have generic URI references. Therefore, this system must also be
+A compliant in-toto system MUST be capable of generating link metadata with
+artifacts that have generic URI references. Therefore, this system MUST also be
 capable of resolving this URI and calculating cryptographic hashes of these
 artifacts. It's important to note that the contents of the resource are hashed,
 as opposed to the URI itself. This ITE doesn't specify how the contents are
 resolved and hashed by the system generating the metadata for the relevant
 abstract entities. All it specifies is that the resolution and the URI itself
-must be consistent in all metadata.
+MUST be consistent in all metadata.
 
 Consider an example of a GitHub specific resource - a pull request or an issue.
 
@@ -117,7 +117,7 @@ This can also instead use GitHub's API specific URI to refer to the same data.
 
 Both the above URIs refer to the same abstract entity - pull request 250 to
 in-toto's reference implementation. However, taken directly, they correspond to
-different data. Therefore, the implementing system must resolve the URI and thus
+different data. Therefore, the implementing system MUST resolve the URI and thus
 the artifact in a consistent manner. We discuss this and other sources of
 non-determinism in the Appendix.
 
@@ -138,12 +138,12 @@ SPDX element. The URI can be used to directly fetch the corresponding documents
 from a specified location. For in-toto metadata that are embedded within SPDX
 documents, the URI can also be used to refer to other entities elsewhere in the
 document. Resolving such URIs that point to local entities elsewhere in the SPDX
-document is an implementation level detail - but it's clear that the URI must
+document is an implementation level detail - but it's clear that the URI MUST
 contain all the information necessary to identify the entity in that context.
 
 It is important to note that this ITE doesn't mandate any specific generic URI
 tokens that all conforming implementations MUST support. Instead, it merely
-specifies what any generic URI must look like, and what rules the system MUST
+specifies what any generic URI MUST look like, and what rules the system MUST
 follow.
 
 ==== Artifact Rules
@@ -375,7 +375,7 @@ to this ITE, verification using a non-conforming implementation can fail. It is
 possible for the verification workflow to progress if the inspections don't
 use generic URIs.
 
-However, a conforming implementation should be capable of verifying in-toto
+However, a conforming implementation SHOULD be capable of verifying in-toto
 metadata generated using a non-conforming implementation, as an ITE-4 conforming
 system MUST also conform to the actual in-toto specification.
 
