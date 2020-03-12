@@ -150,8 +150,8 @@ follow.
 
 in-toto artifact rules are a means to specify what artifacts the project owner
 expects in every step of the supply chain in the in-toto layout. in-toto
-provides the certain rules that together attempt to describe the different types
-of operations or actions that supply chain functionaries carry out.
+provides certain rules that together attempt to describe the different types of
+operations or actions that supply chain functionaries carry out.
 
 *MATCH Rule*
 
@@ -393,10 +393,10 @@ with artifacts is to record their hashes using one or more cryptographic hash
 algorithms. Other artifact operations such as verifying the artifact rules
 rely on the hashes recorded in the link metadata.
 
-We found that the extending the recording of hashes to abstract resources, some
-of which may live at remote locations, is more complicated than the recording of
-hashes of artifacts in the local filesystem. It is, therefore, important for
-ITE-4 compliant in-toto tools to handle the resolving of generic URIs to these
+We found that the recording of hashes of abstract resources, some of which may
+live at remote locations, is more complicated than the recording of hashes of
+artifacts in the local filesystem. It is, therefore, important for ITE-4
+compliant in-toto tools to handle the resolving of generic URIs to these
 abstract resources securely. It is quite possible that the contents of these
 resources need to be serialized in some manner that allows for their hashing,
 and these operations when performed unsafely can lead to severe vulnerabilities
