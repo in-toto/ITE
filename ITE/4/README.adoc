@@ -429,7 +429,8 @@ in the local filesystem. In the above example, for a public repository, *any*
 GitHub user can comment on a pull request, so for an implementation that also
 considers comments when recording the hash, any user can potentially cause a
 failure of the verification workflow. This can potentially be leveraged by a
-malicious actor to target automated pipelines that rely on in-toto verification.
+malicious actor to target automated pipelines that rely on in-toto verification,
+using a Denial of Service attack.
 
 Finally, our analysis showed that verification of artifact rules specified in
 in-toto layouts use the hashes recorded while generating the link metadata and
