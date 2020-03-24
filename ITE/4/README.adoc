@@ -411,6 +411,9 @@ if the resource is controlled by a malicious actor. Implementors must also take
 care to ensure they handle situations where a resource may be unavailable, and
 fail appropriately.
 
+NOTE: There is an ongoing discussion about limiting the scope of this ITE to
+static or unchanging resources. Thread: https://github.com/in-toto/ITE/issues/7
+
 Further, it is likely that abstract resources change more frequently, both in
 content and format, and implementors must take care to identify how these
 contents are recorded, as well what specific information is recorded for a
