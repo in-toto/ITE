@@ -407,7 +407,9 @@ compliant in-toto tools to handle the resolving of generic URIs to these
 abstract resources securely. It is quite possible that the contents of these
 resources need to be serialized in some manner that allows for their hashing,
 and these operations when performed unsafely can lead to severe vulnerabilities
-if the resource is controlled by a malicious actor.
+if the resource is controlled by a malicious actor. Implementors must also take
+care to ensure they handle situations where a resource may be unavailable, and
+fail appropriately.
 
 Further, it is likely that abstract resources change more frequently, both in
 content and format, and implementors must take care to identify how these
