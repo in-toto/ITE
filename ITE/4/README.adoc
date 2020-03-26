@@ -205,15 +205,20 @@ enables them to be reused by different stakeholders looking to hash the same
 abstract entities.
 
 ```
-define hash_artifact(string generic_uri, list hash_algorithms) returns map \
-    hash_map
-    hashable_representation <- get_hashable_representation(generic_uri)
-    for each algorithm in hash_algorithms
-        hash_map[algorithm] <- algorithm_hash(hashable_representation)
+define hash_artifacts(string generic_uri, list hash_algorithms, kwargs) \
+    returns map artifact_hash_map
 
-define get_hashable_representation(string generic_uri) returns string \
+define resolve_uri(string generic_uri, kwargs) returns list contained_uris
+
+define get_hashable_representation(string generic_uri, kwargs) returns bytes \
     hashable_representation
 ```
+
+`hash_artifacts` closely mirrors the general workflow of hashing artifacts in
+the filesystem, and is similar to how the in-toto reference implementations
+currently work. It requires generic artifacts to have a hashable representation
+of themselves. The method must return a map that contains all artifacts and
+their corresponding hash objects.
 
 `get_hashable_representation` is the fundamental component of any implementation
 that complies with this ITE. It is responsible for generating consistent
@@ -223,17 +228,21 @@ entities may choose to use a subsection of the contents obtained using the
 official API, which returns JSON representations containing different properties
 of the entities. It is important for these representations to be consistent for
 a particular entity and they must be generated keeping in mind the different
-sources of non-determinism as highlighted in the Appendix. This component is
-also responsible for handling missing resources safely.
+sources of non-determinism as highlighted in the Appendix. It's also necessary
+for this method to handle missing resources safely.
 
 Being able to get some hashable representation of abstract entities is necessary
 for in-toto inspections to verify contents as the context demands it. Therefore,
 it should be possible for implementations to use the method in scenarios other
 than just the recording of hashes of an artifact.
 
-`hash_artifact` closely mirrors the general workflow of hashing artifacts in the
-filesystem, and is similar to how the in-toto reference implementations
-currently work.
+It is quite likely that a generic URI specified may point to a collection of
+abstract entities. In the present framework where all artifacts are part of the
+filesystem, this is akin to using the path of a directory to record all the
+contents of the directory as the actual artifacts of the step. Therefore,
+`resolve_uri` is used to resolve such URIs to multiple different artifacts that
+they contain. Each of them must be hashed using their corresponding hashable
+representations.
 
 [[motivation]]
 == Motivation
