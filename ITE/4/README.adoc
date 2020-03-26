@@ -197,6 +197,44 @@ their own, making them part of the supply chain, or metadata is replaced by
 authorized functionaries. The security implications of frequently changing
 generic resources are discussed in the Security section below.
 
+==== General Structure for URI Resolvers
+
+While the implementations of resolvers will vary wildly depending on the context
+they're written for, this ITE recommends they follow a certain structure that
+enables them to be reused by different stakeholders looking to hash the same
+abstract entities.
+
+```
+define hash_artifact(string generic_uri, list hash_algorithms) returns map \
+    hash_map
+    hashable_representation <- get_hashable_representation(generic_uri)
+    for each algorithm in hash_algorithms
+        hash_map[algorithm] <- algorithm_hash(hashable_representation)
+
+define get_hashable_representation(string generic_uri) returns string \
+    hashable_representation
+```
+
+`get_hashable_representation` is the fundamental component of any implementation
+that complies with this ITE. It is responsible for generating consistent
+representations of abstract entities while simultaneously maintaining their core
+properties. For example, an implementation that is capable of hashing GitHub
+entities may choose to use a subsection of the contents obtained using the
+official API, which returns JSON representations containing different properties
+of the entities. It is important for these representations to be consistent for
+a particular entity and they must be generated keeping in mind the different
+sources of non-determinism as highlighted in the Appendix. This component is
+also responsible for handling missing resources safely.
+
+Being able to get some hashable representation of abstract entities is necessary
+for in-toto inspections to verify contents as the context demands it. Therefore,
+it should be possible for implementations to use the method in scenarios other
+than just the recording of hashes of an artifact.
+
+`hash_artifact` closely mirrors the general workflow of hashing artifacts in the
+filesystem, and is similar to how the in-toto reference implementations
+currently work.
+
 [[motivation]]
 == Motivation
 
