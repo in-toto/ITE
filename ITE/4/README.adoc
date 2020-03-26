@@ -364,6 +364,42 @@ resulting build and CI report.
 }
 ```
 
+==== Use Case 3: Granular JSON Access
+
+The enhancement proposed in this ITE can also be used to provide more granular
+access to certain resources like JSON files. A generic URI can be used to
+resolve to the information contained in a specific key of the JSON. This allows
+for greater flexibility when using in-toto with different types of artifacts.
+
+===== in-toto link attestation signing contents of a specific JSON key
+
+An in-toto attestation can be generated when performing some operation over a
+single field in a JSON file, such as signing the contents of the field.
+
+```
+{
+    "_type": "link",
+    "name": "sign-json-key-testkey",
+    "command": "",
+    "materials": {
+        "json+file://test.json$testkey": <HASH>
+    },
+    "products": {
+        "json+file://test.json$testkey": <HASH>
+    },
+    "byproducts": {
+        "stderr": "",
+        "stdout": "",
+        "return-value": ""
+    },
+    "environment": {
+        "variables": "",
+        "filesystem": "",
+        "workdir": ""
+    }
+}
+```
+
 [[reasoning]]
 == Reasoning
 
