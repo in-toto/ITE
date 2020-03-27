@@ -534,11 +534,10 @@ malicious actor to target automated pipelines that rely on in-toto verification,
 using a Denial of Service attack.
 
 Finally, our analysis showed that verification of artifact rules specified in
-in-toto layouts use the hashes recorded while generating the link metadata and
-do not record afresh any of the hashes. So the security properties of artifact
-rules verification rely on the above points - ensuring the hashes are recorded
-correctly for a given context. The change in the URI format has no direct impact
-on the artifact rules and their verification.
+in-toto layouts rely on the hashes recorded while generating link metadata for
+steps and inspections, and do not record any hashes afresh. Therefore, while the
+changes proposed in this ITE impact the resolving of artifacts and the recording
+of their hashes, they do not change how artifact rules are verified.
 
 [[infrastructure-requirements]]
 == Infrastructure Requirements
