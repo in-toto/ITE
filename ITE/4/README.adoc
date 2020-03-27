@@ -205,13 +205,19 @@ enables them to be reused by different stakeholders looking to hash the same
 abstract entities.
 
 ```
-define hash_artifacts(string generic_uri, list hash_algorithms, kwargs) \
-    returns map artifact_hash_map
+function hash_artifacts(string generic_uri, list hash_algorithms, kwargs) \
+        returns map artifact_hash_map
+    contained_uris <- resolve_uri(generic_uri)
+    for each uri in contained_uris do
+        hashable_representation <- get_hashable_representation
+        set artifact_hash_map[uri] <- hash(hashable_representation)
 
-define resolve_uri(string generic_uri, kwargs) returns list contained_uris
 
-define get_hashable_representation(string generic_uri, kwargs) returns bytes \
-    hashable_representation
+function resolve_uri(string generic_uri, kwargs) returns list contained_uris
+
+
+function get_hashable_representation(string generic_uri, kwargs) returns bytes \
+        hashable_representation
 ```
 
 `hash_artifacts` closely mirrors the general workflow of hashing artifacts in
@@ -240,9 +246,16 @@ It is quite likely that a generic URI specified may point to a collection of
 abstract entities. In the present framework where all artifacts are part of the
 filesystem, this is akin to using the path of a directory to record all the
 contents of the directory as the actual artifacts of the step. Therefore,
-`resolve_uri` is used to resolve such URIs to multiple different artifacts that
-they contain. Each of them must be hashed using their corresponding hashable
-representations.
+in these instances, a method `resolve_uri` must be used to resolve the
+collective URI into the URIs of many different artifacts that are contained or
+represented by the collective URI. Each of them must be hashed using their
+corresponding hashable representations.
+
+Such a method is optional and the operations performed to unpack collective URIs
+into individual URIs need not be implemented if the context or type or abstract
+resources do not require them. All the methods defined above can contain
+additional arguments that may be used to control these and other options of
+operation.
 
 [[motivation]]
 == Motivation
