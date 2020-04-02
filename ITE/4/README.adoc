@@ -504,8 +504,8 @@ abstract resources securely. It is quite possible that the contents of these
 resources need to be serialized in some manner that allows for their hashing,
 and these operations when performed unsafely can lead to severe vulnerabilities
 if the resource is controlled by a malicious actor. Implementors must also take
-care to ensure they handle situations where a resource may be unavailable, and
-fail appropriately.
+care to ensure ITE-4 compliant systems are capable of handling situations where
+an abstract resource is unavailable, and fail appropriately.
 
 NOTE: There is an ongoing discussion about limiting the scope of this ITE to
 static or unchanging resources. Thread: https://github.com/in-toto/ITE/issues/7
