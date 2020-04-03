@@ -596,10 +596,9 @@ maintain that consistency throughout, ensuring a single root is maintained.
 Similarly, it is possible for generic URIs that point to remote locations to be
 redirected at times. In some cases, the resources are moved to a new location.
 For example, when a user changes their GitHub username, a redirect is setup for
-references to the old username. Similarly, when repositories are renamed, a
-redirect is setup to the new location. Implementors must be careful with
-redirects and must decide based on context and security considerations if the
-compliant system should follow them to the destination or not.
+references to the old username. Implementors must be careful with redirects and
+must decide based on context and security considerations if the compliant system
+should follow them to the destination or not.
 
 ==== Dynamic data in remote abstract entities
 
