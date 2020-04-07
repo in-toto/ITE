@@ -36,21 +36,20 @@ endif::[]
 [[abstract]]
 == Abstract
 
-This ITE proposes a generic Unique Resource Identifier (URI) scheme for in-toto
-artifacts. Currently, the
-link:https://github.com/in-toto/docs/blob/master/in-toto-spec.md[in-toto specification]
-only allows for files in the local filesystem to be the artifacts of link
-metadata. This ITE defines the scheme for a generic URI and provides a
-description of the expected behaviour of in-toto implementations that support
+This ITE proposes changing the current in-toto requirement that the identifier
+for each in-toto
+artifact must be its path in the filesystem. Instead, it would allow the artifact to have a generic
+Unique Resource Identifier (URI) link:https://github.com/in-toto/docs/blob/master/in-toto-spec.md[in-toto specification] (URI) that can be resolved to some external resource within the supply chain.
+This ITE defines the scheme for implementing a generic URI and provides a
+description of the expected behavior of in-toto implementations that support
 generic URIs.
 
 [[specification]]
 == Specification
 
-The current in-toto specification must be modified to provide support for
-generic URI schemes. The current specification allows only for files in the
-local filesystem to be set as artifacts. With the addition of other entities,
-the parts of the specification that directly interact or handle the artifacts
+As the current in-toto specification allows only for files in the local filesystem to be set
+as artifacts, providing support for generic URI schemes will require some modifications. With the addition of other entities,
+parts of the specification that directly interact or handle the artifacts
 must be updated.
 
 in-toto link metadata files currently look like this:
@@ -82,7 +81,7 @@ in-toto link metadata files currently look like this:
 ```
 
 The `materials` and `products` fields contain key-value pairs. The URI for each
-artifact is its path in the filesystem. With this ITE active, the artifact MAY
+artifact is its path in the filesystem. If this ITE is implemented, the artifact MAY
 instead have a generic URI which can be resolved to some external resource that
 is part of the supply chain. Such a generic URI MUST have a fixed structure and
 MUST contain all the information necessary for the verifier to resolve if any
@@ -94,15 +93,15 @@ This ITE proposes the following structure for the URI.
 
 This structure is derived from
 link:https://tools.ietf.org/html/rfc3986[RFC 3986]. The `scheme` defines the
-token or identifier for the type of resource the URI refers to. It can also
-contain other relevant information that indicates how the resource can be
+token or identifier for the type of resource the URI references. It can also
+contain information about how the resource can be
 accessed. The `hier-part` identifies the path or location of the resource.
 
-A compliant in-toto system MUST be capable of generating link metadata with
-artifacts that have generic URI references. Therefore, this system MUST also be
+For an in-toto system to be compliant with this ITE, it MUST be capable of generating link metadata with
+artifacts that have generic URI references. Therefore, the system MUST also be
 capable of resolving this URI and calculating cryptographic hashes of these
-artifacts. It's important to note that the contents of the resource are hashed,
-as opposed to the URI itself. This ITE doesn't specify how the contents are
+artifacts. It is important to note that the contents of the resource are hashed,
+as opposed to the URI itself. This ITE does not specify how the contents are
 resolved and hashed by the system generating the metadata for the relevant
 abstract entities. All it specifies is that the resolution and the URI itself
 MUST be consistent in all metadata.
@@ -116,7 +115,7 @@ This can also instead use GitHub's API specific URI to refer to the same data.
 `github+https://api.github.com/repos/in-toto/in-toto/pulls/250`
 
 Both the above URIs refer to the same abstract entity - pull request 250 to
-in-toto's reference implementation. However, taken directly, they correspond to
+in-toto's Reference Implementation. However, taken directly, they correspond to
 different data. Therefore, the implementing system MUST resolve the URI and thus
 the artifact in a consistent manner. We discuss this and other sources of
 non-determinism in the Appendix.
@@ -133,32 +132,30 @@ follows:
 }
 ```
 
-Similarly, a generic URI can be used to refer to other abstract entities like an
-SPDX element. The URI can be used to directly fetch the corresponding documents
-from a specified location. For in-toto metadata that are embedded within SPDX
-documents, the URI can also be used to refer to other entities elsewhere in the
-document. Resolving such URIs that point to local entities elsewhere in the SPDX
-document is an implementation level detail - but it's clear that the URI MUST
+Similarly, a generic URI can be used to refer to other abstract entities, such as an
+SPDX element, and can be used to directly fetch the corresponding documents
+from a specified location. For in-toto metadata embedded within SPDX
+documents, the URI can also refer to entities elsewhere in the
+document. Resolving URIs that point to local entities elsewhere in the SPDX
+document is an implementation level detail, but it is clear that the URI MUST
 contain all the information necessary to identify the entity in that context.
 
-It is important to note that this ITE doesn't mandate any specific generic URI
-tokens that all conforming implementations MUST support. Instead, it merely
-specifies what any generic URI MUST look like, and what rules the system MUST
-follow. However, it is vital to create a formal process that introduces new URI
+It is important to note that this ITE specifies what any generic URI MUST look like,
+and what rules the system MUST follow, but does not mandate a particular URI
+token that all conforming implementations MUST support. However, it is vital to create a formal process that introduces new URI
 tokens and details how their abstract contents are hashed. This ensures that
-different in-toto implementations do not diverge significantly, and by creating
-an open process that involves the in-toto community, it can ensure consistency
-when hashing resources that multiple stakeholders use. Finally, such a process
+different in-toto implementations do not diverge significantly. Creating
+an open process that involves the in-toto community can ensure consistency
+when hashing resources used by multiple stakeholders. Finally, such a process
 will also help ensure that the hashing of these entities is done in a correct
-and secure manner. However, detailing such a process is out of the scope of this
-ITE and must instead be handled in a future ITE.
+and secure manner. Yet, detailing such a process is out of the scope of this
+ITE.
 
 ==== Artifact Rules
 
 in-toto artifact rules are a means to specify what artifacts the project owner
-expects in every step of the supply chain in the in-toto layout. in-toto
-provides certain rules that together attempt to describe the different types of
-operations or actions that supply chain functionaries carry out.
+expects in every step of the supply chain, as documented in the in-toto layout. These rules describe the different types of
+operations or actions carried out by supply chain functionaries.
 
 *MATCH Rule*
 
@@ -166,9 +163,9 @@ operations or actions that supply chain functionaries carry out.
 <destination-path-prefix>] FROM <step>`
 
 The `MATCH` rule is a convenient way to match artifacts (either in materials or
-products depending on where the rule is specified) with artifacts from other
-steps in the supply chain, allowing owners to establish a flow of artifacts
-between steps in the software supply chain.
+products depending on where the rule is specified) found in different
+steps in the supply chain, thus allowing owners to establish a flow of artifacts
+between steps in the chain as a whole.
 
 The current verification workflow for the `MATCH` rule compares the
 cryptographic hashes of the relevant artifacts from the respective link files.
@@ -197,11 +194,13 @@ their own, making them part of the supply chain, or metadata is replaced by
 authorized functionaries. The security implications of frequently changing
 generic resources are discussed in the Security section below.
 
-==== General Structure for URI Resolvers
+==== URI Resolvers
 
-While the implementations of resolvers will vary wildly depending on the context
-they're written for, this ITE recommends they follow a certain structure that
-enables them to be reused by different stakeholders looking to hash the same
+ITE-4 compliant in-toto tools will require a strategy for determining what resources
+these generic URIs are pointing to. Such resolvers, as we refer to these strategies, are required so
+the abstract resources can be hashed. While the implementations will vary wildly, depending on the context
+for which they are written, this ITE recommends resolvers follow a certain structure that
+will enable them to be reused by different stakeholders looking to hash the same
 abstract entities.
 
 ```
@@ -220,8 +219,8 @@ function get_hashable_representation(string generic_uri, kwargs) returns bytes \
         hashable_representation
 ```
 
-`hash_artifacts` closely mirrors the general workflow of hashing artifacts in
-the filesystem, and is similar to how the in-toto reference implementations
+`hash_artifacts` closely mirror the general workflow of hashing artifacts in
+the filesystem, and are similar to the way in-toto reference implementations
 currently work. It requires generic artifacts to have a hashable representation
 of themselves. The method must return a map that contains all artifacts and
 their corresponding hash objects.
@@ -233,22 +232,26 @@ properties. For example, an implementation that is capable of hashing GitHub
 entities may choose to use a subsection of the contents obtained using the
 official API, which returns JSON representations containing different properties
 of the entities. It is important for these representations to be consistent for
-a particular entity and they must be generated keeping in mind the different
-sources of non-determinism as highlighted in the Appendix. It's also necessary
-for this method to handle missing resources safely.
+a particular entity, and to acknowledge the different
+sources of non-determinism highlighted in the Appendix. It is also necessary
+for this method to handle any missing resources safely. That is, if a resource does not exist
+at the location pointed to by a URI, this method must fail in a secure manner.
 
-Being able to get some hashable representation of abstract entities is necessary
-for in-toto inspections to verify contents as the context demands it. Therefore,
-it should be possible for implementations to use the method in scenarios other
-than just the recording of hashes of an artifact.
+Being able to get some hashable representation of abstract entities is also needed
+for in-toto inspections to verify contents. There is no specification mandating
+how parts of the supply chain are to be verified. Yet, these abstract resources still
+need to be resolvable so that they can be inspected if the supply chain owner so decides to.
+Therefore,
+it should be possible for implementations to use get_hashable_representation in scenarios other
+than just recording the hashes of an artifact.
 
-It is quite likely that a generic URI specified may point to a collection of
+It is quite likely that any given generic URI specified could point to a collection of
 abstract entities. In the present framework where all artifacts are part of the
 filesystem, this is akin to using the path of a directory to record all the
-contents of the directory as the actual artifacts of the step. Therefore,
-in these instances, a method `resolve_uri` must be used to resolve the
-collective URI into the URIs of many different artifacts that are contained or
-represented by the collective URI. Each of them must be hashed using their
+contents of the directory as the actual artifacts of the step.
+In these instances, a method `resolve_uri` must be used to resolve the
+collective URI into the URIs of the many different artifacts contained or
+represented by it. Each of them must be hashed using their
 corresponding hashable representations.
 
 Such a method is optional and the operations performed to unpack collective URIs
@@ -283,8 +286,8 @@ refer to the respective entities.
 
 ===== in-toto link attestation for packaging SPDX files into an SPDX package
 
-An in-toto attestation can be bundled into an SPDX document to show the chain of
-custody for the elements the SPDX document refers to. Here, we see how
+An in-toto attestation can be bundled into an SPDX document that shows the chain of
+custody for all the elements referred to in the document. Here, we see how
 provenance can be attested to for File and Package entities in an SPDX document.
 
 ```
@@ -315,15 +318,15 @@ provenance can be attested to for File and Package entities in an SPDX document.
 
 ==== Use Case 2: GitHub Entities
 
-GitHub has more abstract entities such as Pull Requests and Issues. These
+GitHub has a number of abstract entities, such as Pull Requests and Issues. These
 entities can be referred to directly using the URI schemes proposed in this ITE
-and help provide attestations about these artifacts. Consider:
+to help provide attestations about these artifacts. Consider:
 
 ===== in-toto link attestation for creating a pull request
 
 A pull request is a proposal to make changes to a repository. Changes are either
 made on a separate branch on the same repository or a branch on a fork of the
-repository and the pull request is a proposal to merge these changes into the
+repository. The pull request is a proposal to merge these changes into the
 main repository.
 
 ```
@@ -351,10 +354,10 @@ main repository.
 }
 ```
 
-The materials aren't limited to the commits that make up a pull request, but can
-also contain other elements such as reviews or other comments that make up a
-discussion, as well as approvals from maintainers. It really depends on how the
-implementor, perhaps GitHub, chooses to define the components of a pull request.
+The materials are not limited to the commits that make up a pull request. They can
+also contain other elements such as reviews, or comments, as well as approvals from maintainers.
+It really depends on how the
+implementer, or perhaps GitHub, chooses to define the components of a pull request.
 
 ===== in-toto link attestation for merging a pull request into `master`
 
@@ -427,8 +430,8 @@ resulting build and CI report.
 ==== Use Case 3: Granular JSON Access
 
 The enhancement proposed in this ITE can also be used to provide more granular
-access to certain resources like JSON files. A generic URI can be used to
-resolve to the information contained in a specific key of the JSON. This allows
+access to certain resources, such as JSON files. A generic URI can be used to
+resolve to the information contained in a specific key of a JSON file. This allows
 for greater flexibility when using in-toto with different types of artifacts.
 
 ===== in-toto link attestation signing contents of a specific JSON key
@@ -463,11 +466,11 @@ single field in a JSON file, such as signing the contents of the field.
 [[reasoning]]
 == Reasoning
 
-This ITE proposes a change in the URI scheme of artifacts in in-toto metadata.
-The proposed change closely matches the URI structure laid out in RFC 3986. The
+This ITE proposes a change in the URI scheme of artifacts in in-toto metadata that
+closely matches the URI structure laid out in RFC 3986. The
 URI structure proposed in that document is widely accepted and is versatile
 enough to allow for a wide variety of references. It is also easy to implement
-and extend support for due to the presence of a large number of standard
+and to extend support for due to the presence of a large number of standard
 libraries.
 
 [[backwards-compatibility]]
@@ -482,11 +485,11 @@ However, a conforming implementation SHOULD be capable of verifying in-toto
 metadata generated using a non-conforming implementation, as an ITE-4 conforming
 system MUST also conform to the actual in-toto specification.
 
-It's also possible two conforming systems may be unable to verify the other's
-in-toto metadata as they're unaware of how to resolve certain URI tokens used by
-the other. This is again because of the possibility of inspections containing
-URIs that the other system is unable to resolve and calculate cryptographic
-information for.
+It is also possible that two conforming systems may be unable to verify each others
+in-toto metadata because they are unaware of how to resolve certain URI tokens.
+This is again because of the possibility of inspections containing
+URIs that the other system is unable to resolve, and thus can not calculate the required cryptographic
+information.
 
 [[security]]
 == Security
@@ -496,14 +499,14 @@ with artifacts is to record their hashes using one or more cryptographic hash
 algorithms. Other artifact operations such as verifying the artifact rules
 rely on the hashes recorded in the link metadata.
 
-We found that the recording of hashes of abstract resources, some of which may
-live at remote locations, is more complicated than the recording of hashes of
-artifacts in the local filesystem. It is, therefore, important for ITE-4
+We found that recording hashes of abstract resources is more complicated than the recording hashes of
+artifacts in the local filesystem, particularly if these resources may
+live at remote locations. It is, therefore, important for ITE-4
 compliant in-toto tools to handle the resolving of generic URIs to these
-abstract resources securely. It is quite possible that the contents of these
-resources need to be serialized in some manner that allows for their hashing,
-and these operations when performed unsafely can lead to severe vulnerabilities
-if the resource is controlled by a malicious actor. Implementors must also take
+abstract resources in a secure manner. It is quite possible that the contents of these
+resources need to be serialized in a manner that allows for their hashing, and these
+operations, when performed unsafely, can lead to severe vulnerabilities if the
+resource is controlled by a malicious actor. Implementers must also take
 care to ensure ITE-4 compliant systems are capable of handling situations where
 an abstract resource is unavailable, and fail appropriately.
 
@@ -511,21 +514,21 @@ NOTE: There is an ongoing discussion about limiting the scope of this ITE to
 static or unchanging resources. Thread: https://github.com/in-toto/ITE/issues/7
 
 Further, it is likely that abstract resources change more frequently, both in
-content and format, and implementors must take care to identify how these
-contents are recorded, as well what specific information is recorded for a
-particular type of entity. Otherwise, the in-toto verification workflow can be
+content and format, and implementers must take care to identify how these
+contents are recorded, as well as what specific information is recorded for a
+particular type of entity. Otherwise, the in-toto verification workflow could be
 plagued by failures due to the lack of availability of the artifact as
-previously recorded. For example, implementors who decide how to resolve GitHub
-pull request must decide what information encoded in a pull request must be
+previously recorded. For example, implementers who decide how to resolve GitHub
+pull requests must decide what information encoded in a request must be
 hashed. If they are considering the comments of various users when hashing the
-pull request, this can lead to differences in the hashes recorded by different
-steps in the supply chain even if the changes proposed in the pull request are
+pull request, this can lead to differences in how the hashes are recorded at different
+steps in the supply chain, even if the changes proposed in the pull request are
 the same. This will of course eventually lead to a failure of the in-toto
 verification workflow.
 
 As always, it is also necessary to consider the actors who can make changes to
 an abstract entity. This is perhaps slightly exacerbated in the case of abstract
-resources as the content and format being hashed aren't as specific as artifacts
+resources as the content and format being hashed are not as specific as artifacts
 in the local filesystem. In the above example, for a public repository, *any*
 GitHub user can comment on a pull request, so for an implementation that also
 considers comments when recording the hash, any user can potentially cause a
@@ -551,7 +554,7 @@ In an in-toto system conforming to this ITE, it is important to test:
 
 - that all the artifact rules behave as described in the specification
 - that cryptographic hashes of data in abstract entities change with changes in
-in the data - in effect, this would test how the data is transformed into a form
+the data. In effect, this would test how the data is transformed into a form
 that can be hashed
 
 [[prototype-implementation]]
@@ -573,13 +576,13 @@ This ITE currently proposes no prototypes.
 
 The changes proposed in this ITE can lead to some non-determinism in the data
 represented by artifacts. We discuss *some* of them here, and emphasize that
-it is important for implementors to keep these factors in mind while designing
+it is important for implementers to keep these factors in mind while designing
 compliant systems.
 
 ==== Non-Unique URIs for abstract resources
 
-It is possible for an abstract entity to have more than one URI. An example of
-this is with GitHub entities. A GitHub pull request can be identified by its web
+It is possible for an abstract entity to have more than one URI, such as in the case of GitHub entities.
+A GitHub pull request can be identified by its web
 URL or by its API URL. Both of them refer to the same abstract entity - a
 specific pull request - however, the data fetched by the resolver are vastly
 different, and even encoded differently. It is out of the scope of this ITE to
