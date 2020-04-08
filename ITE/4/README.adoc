@@ -242,7 +242,7 @@ for in-toto inspections to verify contents. There is no specification mandating
 how parts of the supply chain are to be verified. Yet, these abstract resources still
 need to be resolvable so that they can be inspected if the supply chain owner so decides to.
 Therefore,
-it should be possible for implementations to use get_hashable_representation in scenarios other
+it should be possible for implementations to use `get_hashable_representation` in scenarios other
 than just recording the hashes of an artifact.
 
 It is quite likely that any given generic URI specified could point to a collection of
