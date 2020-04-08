@@ -357,7 +357,7 @@ main repository.
 The materials are not limited to the commits that make up a pull request. They can
 also contain other elements such as reviews, or comments, as well as approvals from maintainers.
 It really depends on how the
-implementer, or perhaps GitHub, chooses to define the components of a pull request.
+implementer, perhaps GitHub, chooses to define the components of a pull request.
 
 ===== in-toto link attestation for merging a pull request into `master`
 
