@@ -219,7 +219,7 @@ function get_hashable_representation(string generic_uri, kwargs) returns bytes \
         hashable_representation
 ```
 
-`hash_artifacts` closely mirror the general workflow of hashing artifacts in
+`hash_artifacts` closely mirrors the general workflow of hashing artifacts in
 the filesystem, and are similar to the way in-toto reference implementations
 currently work. It requires generic artifacts to have a hashable representation
 of themselves. The method must return a map that contains all artifacts and
