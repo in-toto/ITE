@@ -17,7 +17,7 @@ endif::[]
 | 2
 
 | Title
-| in-toto Enhancement format
+| A general overview of combining TUF and in-toto to build compromise-resilient CI/CD
 
 | Sponsor
 | link:https://github.com/trishankatdatadog[Trishank Karthik Kuppusamy]
