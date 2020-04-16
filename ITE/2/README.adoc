@@ -169,14 +169,16 @@ are three important considerations regarding the targets metadata signed
 by the delegated "`package-and-in-toto-metadata-signer`" role:
 
 [arabic]
-. Since each package is typically produced independently of other
-packages, this means that the complete set of in-toto _link_ metadata
-for a package SHOULD be different, and therefore isolated, from that for
-another package. This MAY be done in a number of different ways, but
-perhaps the simplest is to use directories with unique names to isolate
-different in-toto link metadata for different packages, where the name
-MAY be the SHA-256 hash of the "`developer`" step link metadata file for
-a particular package.
+. Since each package for a project is typically produced independently
+of other packages, this means that the complete set of in-toto _link_
+metadata for a package SHOULD be different, and therefore isolated,
+from that for another package. This MAY be done in a number of different
+ways, but perhaps the simplest is to use directories with unique names to
+isolate different in-toto link metadata for different packages, where the
+name MAY be the SHA-256 hash of the "`developer`" step link metadata file
+for a particular package. The root layout MAY be identical for each
+of these packages, but it can differ to allow for changes in the supply
+chain such as changes in functionaries' keys.
 . The targets metadata MUST also list the targets metadata of all
 in-toto link metadata files associated with all available packages. Note
 that as the number of packages grows, so will the size of this metadata
