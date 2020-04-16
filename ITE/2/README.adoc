@@ -140,10 +140,10 @@ outputs packages as products. This step is performed automatically,
 and therefore, its link metadata is signed using (1, 1) online keys.
 
 The in-toto root layout itself MUST be signed by administrators using
-(m, n) offline keys, where n >= 2, and m >= ceiling(n / 2). This means
-that administrators are responsible for distributing, revoking, and
-rotating the developer keys used in the first step. Alternatively,
-administrators MAY use a
+(m, n) offline keys, where it is RECOMMENDED n >= 2, and m >=
+ceiling(n / 2). This means that administrators are responsible for
+distributing, revoking, and rotating the developer keys used in the
+first step. Alternatively, administrators MAY use a
 https://github.com/in-toto/docs/blob/master/in-toto-spec.md#214-third-party-sublayouts[sublayout]
 to outsource this responsibility. In that case, the functionary who
 signs the sublayout MUST use the same (m, n) threshold of offline keys.
@@ -172,8 +172,7 @@ by the delegated "`package-and-in-toto-metadata-signer`" role:
 . Since each package is typically produced independently of other
 packages, this means that the complete set of in-toto _link_ metadata
 for a package SHOULD be different, and therefore isolated, from that for
-another package. (The in-toto _root layout_ metadata SHOULD be the same
-for every package.) This MAY be done in a number of different ways, but
+another package. This MAY be done in a number of different ways, but
 perhaps the simplest is to use directories with unique names to isolate
 different in-toto link metadata for different packages, where the name
 MAY be the SHA-256 hash of the "`developer`" step link metadata file for
@@ -183,7 +182,8 @@ in-toto link metadata files associated with all available packages. Note
 that as the number of packages grows, so will the size of this metadata
 file. Bandwidth considerations will be discussed in the next subsection.
 . Since packages can be added on demand, this role SHOULD use (1, 1)
-online keys, and its metadata SHOULD expire in 1 day.
+online keys, and its metadata SHOULD expire in some function of time
+that represents the average release cycle, for example 1 day or 1 week.
 
 See `package-and-in-toto-metadata-signer.json` for an example of a complete set
 of targets metadata for a particular package signed by this role.
@@ -236,8 +236,8 @@ makes a terminating delegation of all packages ("`*`") to the
 “package-and-in-toto-metadata-signer'' role. It MUST use a different set
 of (m, n) offline keys from the root role (to ensure that a compromise of
 these keys do not lead to a compromise of the root role as well), where
-n >= 2, and m >= ceiling(n / 2). Finally, its metadata SHOULD expire
-in 1 year. See `targets.json` for an example.
+it is RECOMMENDED that n >= 2, and m >= ceiling(n / 2). Finally, its
+metadata SHOULD expire in 1 year. See `targets.json` for an example.
 
 .targets.json
 [source,json]
@@ -297,15 +297,22 @@ in 1 year. See `targets.json` for an example.
 ----
 
 The snapshot and timestamp roles SHOULD use (1, 1) online keys, and
-their metadata SHOULD expire in 1 day. The in-toto "`packager`"
-functionary, as well as the TUF timestamp, snapshot, and
-"`package-and-in-toto-metadata-signer`" roles, MAY share the same (1, 1)
-online keys. Furthermore, these online TUF roles MAY share the same
-metadata expiration period (e.g., 1 day). Online keys are used so that
-robots can use the key to sign new metadata on demand. When the in-toto
-or TUF implementation supports it, it is RECOMMENDED that online keys
-be protected from  exfiltration using a Hardware Security Module
-(HSM).
+their metadata SHOULD expire in a period that represents the average
+release cycle. The in-toto "`packager`" functionary, as well as the
+TUF timestamp, snapshot, and "`package-and-in-toto-metadata-signer`"
+roles, MAY share the same (1, 1) online keys. Furthermore, these
+online TUF roles MAY share the same metadata expiration period
+(e.g., 1 day). Online keys are used so that robots can use the key
+to sign new metadata on demand. When the in-toto or TUF
+implementation supports it, it is RECOMMENDED that online keys be
+protected from exfiltration using a Hardware Security Module (HSM).
+HSMs provide several additional guarantees such as requiring attackers
+to have physical access to these tokens to carry out an attack,
+generating signatures in secure environments, as well as the assurance
+that a key has not been stolen simply because that would require the
+token itself to be stolen, as opposed to a software only key that can
+be trivially copied. Most popular HSMs also come with built-in logging
+capabilities that enables administrators to audit their use.
 
 Finally, the root role MUST use a different set of (m, n) offline keys
 from both the in-toto root layout and the targets role, where n >= 2,
@@ -399,6 +406,9 @@ which are protected using hardware and / or operations security.
 Weaknesses in implementations of cryptography are outside the scope of
 this document, although implementers may be able to hedge their bets by
 using a diversity of cryptographic hashing and signing algorithms.
+Implementers can also leverage a threshold of keys - requiring a
+minimum of a certain number of keys out of a pool of keys to generate
+signatures - to increase the complexity of accessing keys for attackers.
 
 The worst attack happens when the attacker can change the contents of
 a package that a user installs (e.g., to insert a backdoor).
