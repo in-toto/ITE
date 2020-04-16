@@ -136,7 +136,8 @@ hardware such as https://github.com/DataDog/yubikey[YubiKeys].
 . The "`packager`" step is performed by the CI/CD pipeline which
 transforms this source code into packages (e.g., tarballs, binaries).
 Typically, it receives source code from the "`developer`" step, and
-outputs packages as products. It SHOULD use (1, 1) online keys.
+outputs packages as products. This step is performed automatically,
+and therefore, its link metadata is signed using (1, 1) online keys.
 
 The in-toto root layout itself MUST be signed by administrators using
 (m, n) offline keys, where n >= 2, and m >= ceiling(n / 2). This means
@@ -233,9 +234,10 @@ The targets role signs targets metadata about the in-toto root layout,
 and all of the public keys used to verify the layout itself. Finally, it
 makes a terminating delegation of all packages ("`*`") to the
 “package-and-in-toto-metadata-signer'' role. It MUST use a different set
-of (m, n) offline keys from the root role, where n >= 2, and m >=
-ceiling(n / 2), and its metadata SHOULD expire in 1 year. See `targets.json`
-for an example.
+of (m, n) offline keys from the root role (to ensure that a compromise of
+these keys do not lead to a compromise of the root role as well), where
+n >= 2, and m >= ceiling(n / 2). Finally, its metadata SHOULD expire
+in 1 year. See `targets.json` for an example.
 
 .targets.json
 [source,json]
