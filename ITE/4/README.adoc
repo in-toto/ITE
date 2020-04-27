@@ -235,7 +235,7 @@ of the entities. It is important for these representations to be consistent for
 a particular entity, and to acknowledge the different
 sources of non-determinism highlighted in the Appendix. It is also necessary
 for this method to handle any missing resources safely. That is, if a resource does not exist
-at the location pointed to by a URI, this method must fail in a secure manner.
+at the location pointed to by a URI, this method must fail appropriately.
 
 Being able to get some hashable representation of abstract entities is also needed
 for in-toto inspections to verify contents. There is no specification mandating
