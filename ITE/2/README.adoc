@@ -244,6 +244,11 @@ of (m, n) offline keys from the root role (to ensure that a compromise of
 these keys do not lead to a compromise of the root role as well), where
 it is RECOMMENDED that n >= 2, and m >= ceiling(n / 2). Finally, its
 metadata SHOULD expire in 1 year. See `targets.json` for an example.
+Note in particular how we are using the custom targets metadata to
+associate in-toto root layouts with their respective public keys:
+this allows us to publish different root layouts with different keys,
+and thus keep old packages with obsolete root layouts while publishing
+new packages with new root layouts.
 
 .targets.json
 [source,json]
@@ -268,6 +273,13 @@ metadata SHOULD expire in 1 year. See `targets.json` for an example.
     },
     "targets": {
       "in-toto-metadata/root.layout": {
+        "custom": {
+          "in-toto": [
+            "in-toto-pubkeys/298f37401f0b526a708967b7f708bc9c938fe0ad4bfe50d66837c20a57084e84.pub",
+            "in-toto-pubkeys/3e82bcdc71b29999340ceaadf3dc4193f8b06572d1c20612e9acdd7b52fa4b90.pub",
+            "in-toto-pubkeys/e847f58ca5e83fc48d1d2388ddd8f1a168b205a3fe7978ad015dee3ae7b2ecf7.pub"
+          ]
+        },
         "hashes": {
           "sha256": "930c48fa182d14835febd6a7f9129e34b83246f74238b9747fef7fc12147184d",
           "sha512": "6fb781b534266411d0c424626b728b57e6c0a39b21798729efc63ff73556dfd19ebeddf7612da272936dad890d71b7e3caa65735ab6ac293740f2c5d29795590"
