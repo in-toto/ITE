@@ -197,7 +197,7 @@ generic resources are discussed in the Security section below.
 ==== URI Resolvers
 
 ITE-4 compliant in-toto tools will require pluggable components for determining what resources
-these generic URIs are pointing to. Such resolvers, as we refer to these strategies, are required so
+these generic URIs are pointing to. Such resolvers, as we refer to these components, are required so
 the abstract resources can be hashed. While the implementations will vary wildly, depending on the context
 for which they are written, this ITE recommends resolvers follow a certain structure that
 will enable them to be reused by different stakeholders looking to hash the same
