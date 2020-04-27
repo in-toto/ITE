@@ -239,7 +239,7 @@ at the location pointed to by a URI, this method must fail appropriately.
 
 Being able to get some hashable representation of abstract entities is also needed
 for in-toto inspections to verify contents. There is no specification mandating
-how parts of the supply chain are to be verified. Yet, these abstract resources still
+any specific inspections. Yet, these abstract resources still
 need to be resolvable so that they can be inspected if the supply chain owner so decides to.
 Therefore,
 it should be possible for implementations to use `get_hashable_representation` in scenarios other
