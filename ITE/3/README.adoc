@@ -70,7 +70,7 @@ xref:../2/README.adoc#motivation-and-reasoning[ITE-2].
 
 image:tuf-in-toto-figure-1.png[Figure 1]
 
-*Figure 1*: The Datadog Agent integration software supply chain.
+*Figure 1*: The Datadog Agent integrations software supply chain.
 
 The Datadog agent integrations supply chain, shown in Figure 1,
 presently has three steps:
