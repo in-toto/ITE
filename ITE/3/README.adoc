@@ -40,9 +40,7 @@ Datadog is a monitoring service for cloud-scale applications that monitor
 servers, databases, tools, and services through a
 software-as-a-service-based data analytics platform. It supports
 multiple cloud service providers, including Amazon Web Services,
-Microsoft Azure, Google Cloud Platform, and Red Hat OpenShift. At the
-time of this writing, the company serves more than 8,000 customers, and
-collects trillions of monitoring record points on a daily basis.
+Microsoft Azure, Google Cloud Platform, and Red Hat OpenShift.
 
 The Datadog https://docs.datadoghq.com/agent/?tab=agentv6[agent] is the
 software that runs on virtual machines or containers. It collects events and
