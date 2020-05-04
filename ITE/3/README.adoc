@@ -78,7 +78,11 @@ presently has three steps:
 integration consists of Python source code and several
 https://yaml.org/[YAML] configuration files. The step uses (1, n)
 Yubikeys, where n is the current number of Datadog Agent integration
-developers. (See this
+developers. We use this threshold for usability, so that any developer
+may release a new integration at any time. If a higher level of security
+is desired, more than one developer keys may be required to release a new
+integration.
+(See this
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/targets/in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/tag.c295cf63.link[example]
 "`tag`" link metadata file.)
 . In the second "`wheels-builder`" step, the pipeline must receive the
@@ -87,13 +91,17 @@ https://pythonwheels.com/[wheel], as well as its updated Python metadata
 (https://www.python.org/dev/peps/pep-0503/[simple indices]). Each wheel
 is a ZIP file and its metadata is an HTML file that points to all the
 available _versions_ of an integration. This step uses (1,1) online
-keys. (See this
+keys. This threshold is used because using more than 1 online key does not
+confer significant additional security.
+(See this
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/targets/in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/wheels-builder.9fc6e62d.link[example]
 "`wheels-builder`" link metadata file.)
 . In the third "`wheels-signer`" step, the pipeline must receive, as
 materials, the same products as the "`wheels-builder`" step. This step
 signs for all wheels using the TUF security model, which will be described
-shortly. This step uses (1, 1) online keys. (See this
+shortly. This step uses (1, 1) online keys. This threshold is used because
+using more than 1 online key does not confer significant additional security.
+(See this
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/targets/in-toto-metadata/3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e/wheels-signer.20585de1.link[example]
 "`wheels-signer`" link metadata file.)
 
@@ -105,12 +113,13 @@ same Python source code and YAML configuration files as the products of the
 prevents a compromised pipeline from causing users to trust wheels with
 source code that was never released by Datadog developers.
 The root layout uses (2, 3) offline keys, and its metadata expires in 1 year.
+Using a threshold of two keys to sign the root provides the benefits of the
+two-man rule developed by the US Air Force, while a third key in the pool of
+valid keys allows for redundancies in situations where a compromised key
+must be revoked and replaced.
 (See this
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/targets/in-toto-metadata/root.layout[example]
-root layout metadata file.) Using a threshold of two keys to sign the root
-provides the benefits of the two-man rule developed by the US Air Force, while
-a third key in the pool of valid keys allows for redundancies in situations
-where a compromised key must be revoked and replaced.
+root layout metadata file.)
 
 (The root layout also tracks previously built Python metadata and wheels, as
 well as their corresponding in-toto link metadata files, as they move through
@@ -207,7 +216,10 @@ for one or more associated wheel is named directly using the SHA-256
 hexadecimal digest of the "`tag`" link metadata file associated with
 these wheels. Each role uses (1,1) online keys, does not delegate any
 Python metadata or wheel, and its metadata expires in 1 week, which is
-the maximum lifetime allowed for a release of a wheel. The following is
+the maximum lifetime allowed for a release of a wheel.
+This threshold is used because using more than 1 online key does not
+confer significant additional security.
+The following is
 an excerpt of the
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/wheels-signer-a.json[example]
 metadata file:
@@ -250,8 +262,9 @@ in-toto link metadata in directories beginning with the letter "`f`" to
 the "`in-toto-metadata-signer-f`" role. Thus, there are 16 of these
 roles (since there are 16 hexadecimal characters in the SHA-256 digests
 used to uniquely name these directories). This role uses (2, 3) offline
-keys, does not directly sign for any in-toto link metadata file, and its
-metadata expires in 1 year. The following is an excerpt of the
+keys for the same reasons as the root layout, does not directly sign for
+any in-toto link metadata file, and its metadata expires in 1 year.
+The following is an excerpt of the
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/in-toto-metadata-signer.json[example]
 metadata file:
 
@@ -310,8 +323,10 @@ Each "`in-toto-metadata-singer-[0-f]`" role signs targets metadata about
 a certain subset of in-toto-link metadata files inside directories
 beginning with a particular letter. Each role uses (1,1) online keys,
 does not delegate any in-toto link metadata file, and its metadata
-expires in 1 week, which is again based on the release lifetime. The
-following is an excerpt of the
+expires in 1 week, which is again based on the release lifetime.
+This threshold is used because using more than 1 online key does not
+confer significant additional security.
+The following is an excerpt of the
 https://dd-integrations-core-wheels-build-stable.datadoghq.com/metadata.staged/in-toto-metadata-signer-3.json[example]
 metadata file:
 
