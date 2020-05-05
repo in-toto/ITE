@@ -437,7 +437,7 @@ the information contained in a specific key of a JSON file using JSONPath. This
 allows for greater flexibility when using in-toto with different types of
 artifacts.
 
-A practical example of this use case is for Cloud Native Application Bundle
+A practical example of this use case is for Cloud Native Application Bundles
 (CNAB) metadata. A link:https://github.com/cnabio/cnab-spec/blob/master/101-bundle-json.md[CNAB bundle.json file]
 contains information such as the top-level package information, images included
 in the bundle, credentials required by the application, and so on. We define a
@@ -615,7 +615,7 @@ the workflow laid out in Use Case 3 for CNAB bundles.
 * link:https://github.com/cdfoundation/sig-security-sbom[CD Foundation Special Interest Group on Software Bill of Materials]
 * link:https://www.ntia.doc.gov/SoftwareTransparency[NTIA Software Component Transparency]
 * link:https://www.it-cisq.org/software-bill-of-materials/index.htm[CISQ/OMG Tool-to-tool Software Bill of Materials Exchange]
-* link:https://cnab.io/[Cloud Native Application Bundle]
+* link:https://cnab.io/[Cloud Native Application Bundles]
 
 [[appendix]]
 == Appendix: Sources of Non-Determinism
