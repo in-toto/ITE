@@ -52,7 +52,7 @@ versions of packages that were never released by developers.
 Whereas in-toto provides end-to-end verification of a software supply
 chain, it does not solve a crucial problem that arises in practice: how
 to securely distribute, revoke, and replace the public keys used to
-verify the in-toto layout. This mechanism in and of itself must also be
+verify the in-toto layout. This mechanism in and of itself SHOULD also be
 _compromise-resilient_, and resistant to a compromise of the software
 repository or server used to serve files.
 
@@ -121,52 +121,33 @@ https://github.com/in-toto/in-toto-java[Java], and
 https://github.com/in-toto/in-toto-golang[Go]) that are capable of
 meeting the requirements outlined in this section.
 
-This subsection describes the requirements that MUST be met in order for
-an integration of TUF and in-toto to be said to be compromise-resilient.
-
-The in-toto root layout MUST consist of at least two steps:
-
-[arabic]
-. The "`developer`" step is performed by a developer who signs source
-code. Typically, it receives no materials, and outputs source code as
-products. Its link metadata MUST be signed by developers using (m, n)
-offline keys, where m >= 1, and n is the number of currently trusted
-developers. It is OPTIONAL but RECOMMENDED to protect these keys using
-hardware such as https://github.com/DataDog/yubikey[YubiKeys].
-. The "`packager`" step is performed by the CI/CD pipeline which
-transforms this source code into packages (e.g., tarballs, binaries).
-Typically, it receives source code from the "`developer`" step, and
-outputs packages as products. This step is performed automatically,
-and therefore, its link metadata is signed using (1, 1) online keys.
-
-The in-toto root layout itself MUST be signed by administrators using
-(m, n) offline keys, where it is RECOMMENDED n >= 2, and m >=
-ceiling(n / 2). This means that administrators are responsible for
-distributing, revoking, and rotating the developer keys used in the
-first step. Alternatively, administrators MAY use a
-https://github.com/in-toto/docs/blob/master/in-toto-spec.md#214-third-party-sublayouts[sublayout]
-to outsource this responsibility. In that case, the functionary who
-signs the sublayout MUST use the same (m, n) threshold of offline keys.
-The root layout and sublayout, if any, SHOULD expire in 1 year.
+First, we should note that we cannot discuss the specifics of the in-toto root layout,
+as this is particular to the software project in question. The best we can say is that
+the root layout SHOULD be designed such that the most important functionaries are
+proportionally protected. The in-toto root layout itself SHOULD be signed using
+a sufficiently high threshold of offline keys. The expiration for the root layout
+SHOULD also be set to something reasonable (e.g., 1 year), such that the rules of the
+software supply chain are expected to be stable and immutable for that time period.
+See https://github.com/in-toto/ITE/blob/master/ITE/3/README.adoc[ITE-3] for an example
+of a compromise-resilient root layout.
 
 image:tuf-in-toto-figure-1.png[Figure 1]
 
-*Figure 1*: An illustration of a minimum TUF security model that
+*Figure 1*: An illustration of a TUF security model that
 provides compromise-resilience.
 
-The TUF security model, illustrated in Figure 1, MUST be configured as
+The TUF security model, illustrated in Figure 1, SHOULD be configured as
 follows, which we discuss using an "`inside-out,`" layered approach.
 
-The targets metadata for the delegated "`package-and-in-toto-metadata-signer`"
-role signs targets metadata about the latest available packages. Besides
-cryptographic hashes and file sizes, each package listed in the targets
+There SHOULD be a delegated targets role, e.g., "`package-and-in-toto-metadata-signer`",
+that signs targets metadata about the latest available packages. Besides
+cryptographic hashes and file sizes, each package listed in this role's targets
 metadata is also associated with custom targets metadata: specifically,
-the _complete_ set of in-toto metadata associated with the production of
-that particular package. In our basic security model, this means: (1)
-the in-toto root layout metadata file, (2) the "`developer`" step link
-metadata file, and (3) the "`package`" step link metadata file. There
-are three important considerations regarding the targets metadata signed
-by the delegated "`package-and-in-toto-metadata-signer`" role:
+the _complete_ set of in-toto metadata associated with the production
+of that particular package. This means an in-toto root layout metadata
+file as well as all of the link metadata files associated with that package.
+There are three important considerations regarding the targets metadata
+signed by this role:
 
 [arabic]
 . Since each package for a project is typically produced independently
@@ -175,7 +156,7 @@ metadata for a package SHOULD be different, and therefore isolated,
 from that for another package. This MAY be done in a number of different
 ways, but perhaps the simplest is to use directories with unique names to
 isolate different in-toto link metadata for different packages, where the
-name MAY be the SHA-256 hash of the "`developer`" step link metadata file
+name MAY be the SHA-256 hash of the first step's link metadata file
 for a particular package. The root layouts MAY be identical for each
 of these packages where they are all the results of the same supply chain.
 The root layouts MAY differ to allow for changes in the supply chain (such
@@ -183,13 +164,14 @@ as revoking functionaries' keys), or even to account for packages that are
 from entirely different supply chains (therefore, with entirely different
 root layouts). By using consistent snapshots and defining custom targets
 metadata, backward compatibility can be maintained.
-. The targets metadata MUST also list the targets metadata of all
+. The targets metadata SHOULD also list the targets metadata of all
 in-toto link metadata files associated with all available packages. Note
 that as the number of packages grows, so will the size of this metadata
 file. Bandwidth considerations will be discussed in the next subsection.
-. Since packages can be added on demand, this role SHOULD use (1, 1)
-online keys, and its metadata SHOULD expire in some function of time
-that represents the average release cycle, for example 1 day or 1 week.
+. Since packages can be added on demand, this role MAY use (1, 1)
+online keys, since using more keys does not add to security. Its metadata
+MAY expire in some function of time that represents the average release cycle,
+for example 1 day or 1 week.
 
 See `package-and-in-toto-metadata-signer.json` for an example of a complete set
 of targets metadata for a particular package signed by this role.
@@ -206,8 +188,9 @@ of targets metadata for a particular package signed by this role.
         "custom": {
           "in-toto": [
             "in-toto-metadata/root.layout",
-            "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/developer.87d52666.link",
-            "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/packager.20585de1.link"
+            "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/step1.87d52666.link",
+            "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/step2.20585de1.link",
+            "...",
           ]
         },
         "hashes": {
@@ -216,39 +199,40 @@ of targets metadata for a particular package signed by this role.
         },
         "length": 7206
       },
-      "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/developer.87d52666.link": {
+      "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/step1.87d52666.link": {
         "hashes": {
           "sha256": "3e592d47ab815cb9bd8aa064bbaa2a217c1baa9a55a7f8b73d2da6dfd14a247e",
           "sha512": "848188de9c1ec1d855ed88d62114f0d4f0f13df6fb5aae77716276a1240cefbe7cf03c1b664e43dc93c3438c82e88f3d910ab3d10d55bfc31a759b7997c4b6cb"
         },
         "length": 132251
       },
-      "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/packager.20585de1.link": {
+      "in-toto-metadata/0a33cbf67b70f315c0b7a83923bcef35308e986140169950e609e3be38585289/step2.20585de1.link": {
         "hashes": {
           "sha256": "e5076f59e2096fb64deae6b13384575d3d63c1c4f7a42f48d0a238097a8823eb",
           "sha512": "7f8c1496abca669c3e8cdbfd315e2383bb4fc3386d06258d961a5fe059b2ea9afa410f9924462933ec3c6570f2c3744f13882f61394687bf9de1156e7c6c2357"
         },
         "length": 57495
-      }
+      },
+      ...,
     }
     ...,
   }
 }
 ----
 
-The targets role signs targets metadata about the in-toto root layout,
-and all of the public keys used to verify the layout itself. Finally, it
-makes a terminating delegation of all packages ("`*`") to the
-“package-and-in-toto-metadata-signer'' role. It MUST use a different set
-of (m, n) offline keys from the root role (to ensure that a compromise of
-these keys do not lead to a compromise of the root role as well), where
-it is RECOMMENDED that n >= 2, and m >= ceiling(n / 2). Finally, its
-metadata SHOULD expire in 1 year. See `targets.json` for an example.
-Note in particular how we are using the custom targets metadata to
-associate in-toto root layouts with their respective public keys:
-this allows us to publish different root layouts with different keys,
-and thus keep old packages with obsolete root layouts while publishing
-new packages with new root layouts.
+The top-level targets role signs targets metadata about all versions of the in-toto root layout,
+as well as all of the public keys used to verify each version of the root layout. Finally, it
+makes a terminating delegation of all packages ("`*`") to the aforementioned
+“package-and-in-toto-metadata-signer'' role. It SHOULD use a different set
+of offline keys from the in-toto root layouts, so that a compromise of any of
+these in-toto functionaries is not sufficient to break the security of the
+entire system. Finally, a reasonable expiration period should be chosen for
+the top-level targets role (e.g., 1 year), for the same reason as the in-toto
+root layouts. See `targets.json` for an example. Note in particular how we
+are using the custom targets metadata to associate different versions of the
+in-toto root layouts with their respective public keys: this allows us to
+publish different root layouts with different keys, and thus keep old packages
+with obsolete root layouts while publishing new packages with new root layouts.
 
 .targets.json
 [source,json]
@@ -314,28 +298,15 @@ new packages with new root layouts.
 }
 ----
 
-The snapshot and timestamp roles SHOULD use (1, 1) online keys, and
-their metadata SHOULD expire in a period that represents the average
-release cycle. The in-toto "`packager`" functionary, as well as the
-TUF timestamp, snapshot, and "`package-and-in-toto-metadata-signer`"
-roles, MAY share the same (1, 1) online keys. Furthermore, these
-online TUF roles MAY share the same metadata expiration period
-(e.g., 1 day). Online keys are used so that robots can use the key
-to sign new metadata on demand. When the in-toto or TUF
-implementation supports it, it is RECOMMENDED that online keys be
-protected from exfiltration using a Hardware Security Module (HSM).
-HSMs provide several additional guarantees such as requiring attackers
-to have physical access to these tokens to carry out an attack,
-generating signatures in secure environments, as well as the assurance
-that a key has not been stolen simply because that would require the
-token itself to be stolen, as opposed to a software only key that can
-be trivially copied. Most popular HSMs also come with built-in logging
-capabilities that enables administrators to audit their use.
+The "`package-and-in-toto-metadata-signer`", snapshot, and timestamp roles
+SHOULD use (1, 1) online keys because packages may be added at any time on
+demand, and as before, a higher number of keys does not add to the security.
+Their metadata SHOULD expire in a period that represents the average
+release cycle (e.g. 1 day or week)).
 
-Finally, the root role MUST use a different set of (m, n) offline keys
-from both the in-toto root layout and the targets role, where n >= 2,
-and m >= ceiling(n / 2). Its metadata SHOULD expire in 1 year. All TUF
-metadata and targets MUST be written using
+Finally, the TUF root role SHOULD use a different set of offline keys from both
+the in-toto root layout functionaries, and the TUF targets role. Its metadata SHOULD expire in a
+suitable period (e.g., 1 year). All TUF metadata and targets SHOULD be written using
 https://github.com/theupdateframework/specification/blob/master/tuf-spec.md#7-consistent-snapshots[consistent
 snapshots] (this Boolean property is set in the root metadata). This enables the
 repository to concurrently write new files while package managers are
@@ -348,37 +319,9 @@ image:tuf-in-toto-figure-2.png[Figure 2]
 *Figure 2*: A summary of the security model discussed in this subsection.
 
 [[workflows]]
-=== Workflows
+=== End-User Verification Workflow
 
-This subsection discusses the workflow followed by developers, the CI/CD
-pipeline, and end-users.
-
-==== Developer
-
-As discussed in the <<basic-security-model, basic security model>>, a
-threshold of developers specified in the in-toto root layout SHOULD sign their
-respective "`developer`" link metadata files. It is OPTIONAL but RECOMMENDED to
-protect these developer keys using hardware such as
-https://github.com/DataDog/yubikey[YubiKeys]. These link metadata files SHOULD
-be made available to the CI/CD for subsequent steps in the workflow to work.
-
-==== CI/CD
-
-The "`packager`" step, typically performed by automation, SHOULD:
-
-* Transform developer-signed source code into packages.
-* Sign in-toto link metadata about materials (expected to be the same as the
-source code from the "`developer`" step) and products (the packages produced in
-this step).
-* Produce updated TUF timestamp, snapshot, and
-"`package-and-in-toto-metadata-signer`" metadata about new packages and
-associated in-toto metadata.
-* Upload the latest consistent snapshot of TUF metadata, new packages, and new
-in-toto link metadata to the repository.
-
-==== End-users
-
-Finally, to install or update packages, end-users SHOULD use a package manager
+To install or update packages, end-users SHOULD use a package manager
 which transparently calls TUF and in-toto libraries on their behalf. The
 download and verification workflow is roughly as follows:
 
@@ -431,7 +374,7 @@ signatures - to increase the complexity of accessing keys for attackers.
 The worst attack happens when the attacker can change the contents of
 a package that a user installs (e.g., to insert a backdoor).
 
-Figure 3 presents a detailed security analysis for the
+Figure 3 presents a rough security analysis for the
 <<basic-security-model, basic security model>>, featuring only the
 most significant security attacks.
 
@@ -498,12 +441,19 @@ backward-incompatible changes to how signatures are generated, so that
 previous package managers are able to continue to install new packages.*
 Note that TUF can otherwise be used to safely rotate the keys for the
 entire system, including those using different key types, key sizes,
-signature schemes, and cryptographic hashes.
+signature schemes, and cryptographic hashes. However, if there are such
+backward-incompatible changes, then TAP 6 may be able to handle them.
 
 [[testing]]
 == Testing
 
 N/A.
+
+[[prototype-implementation]]
+== Prototype implementation
+
+See https://github.com/in-toto/ITE/blob/master/ITE/3/README.adoc[ITE-3] for a
+complete end-to-end example of implementing ITE-2 in practice.
 
 [[references]]
 == References
