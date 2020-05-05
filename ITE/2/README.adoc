@@ -452,8 +452,8 @@ N/A.
 [[prototype-implementation]]
 == Prototype implementation
 
-See https://github.com/in-toto/ITE/blob/master/ITE/3/README.adoc[ITE-3] for a
-complete end-to-end example of implementing ITE-2 in practice.
+See https://github.com/SantiagoTorres/tuf_in_toto_demo[the TUF+in-toto demo]
+for a complete end-to-end example of implementing ITE-2 in practice.
 
 [[references]]
 == References
