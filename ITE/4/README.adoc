@@ -473,6 +473,9 @@ of the next step.
 
 In the example link file for this step, we notice that the in-toto tool captured
 each field (or leaf node) within the bundle.json file as a separate artifact.
+This is sufficient to detect any changes to the file and we do not need to
+record hashes of "middle-level" nodes, as any changes to them must occur at the
+"leaf-level".
 
 ===== in-toto link attestation for automatically populating image specifics 
 
