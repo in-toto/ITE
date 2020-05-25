@@ -432,10 +432,9 @@ resulting build and CI report.
 ==== Use Case 3: Granular JSON Access
 
 The enhancement proposed in this ITE can also be used to provide more granular
-access to resources such as JSON files. A generic URI can be used to resolve to
-the information contained in a specific key of a JSON file using JSONPath. This
-allows for greater flexibility when using in-toto with different types of
-artifacts.
+access to resources such as JSON files. A generic URI can be used to refer to
+information contained in a specific key of a JSON file; in this scenario, each
+field serves as an abstract resource.
 
 A practical example of this use case is for Cloud Native Application Bundles
 (CNAB) metadata. A link:https://github.com/cnabio/cnab-spec/blob/master/101-bundle-json.md[CNAB bundle.json file]
@@ -463,9 +462,9 @@ of the next step.
     "name": "developer",
     "products": {
         "...": "...",
-        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$.images.my-microservice.contentDigest": <HASH>,
-        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$.images.my-microservice.description": <HASH>,
-        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$.images.my-microservice.image": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/contentDigest": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/description": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/image": <HASH>,
         "...": "...",
     }
 }
@@ -493,17 +492,17 @@ was supposed to.
     "environment": {},
     "materials": {
         "...": "...",
-        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$.images.my-microservice.contentDigest": <HASH>,
-        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$.images.my-microservice.description": <HASH>,
-        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$.images.my-microservice.image": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/contentDigest": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/description": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/image": <HASH>,
         "...": "...",
     },
     "name": "machine",
     "products": {
         "...": "...",
-        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$.images.my-microservice.contentDigest": <HASH>,
-        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$.images.my-microservice.description": <HASH>,
-        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$.images.my-microservice.image": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/contentDigest": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/description": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/image": <HASH>,
         "...": "...",
     }
 }
