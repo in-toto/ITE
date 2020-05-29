@@ -441,7 +441,9 @@ A practical example of this use case is for Cloud Native Application Bundles
 contains information such as the top-level package information, images included
 in the bundle, credentials required by the application, and so on. We define a
 minimal supply chain described below for the creation of these bundle.json
-files. A link:https://github.com/adityasaky/in-toto/tree/ite-4-cnab-resolver[prototype resolver]
+files. This supply chain is used in CNAB Signy and can be
+link:https://github.com/cnabio/signy/blob/master/scripts/in-toto/minimal.py[verified using in-toto].
+A link:https://github.com/adityasaky/in-toto/tree/ite-4-cnab-resolver[prototype resolver]
 was created using the structure defined in the <<uri-resolvers, URI Resolvers>>
 section for CNAB bundle.json files.
 
@@ -618,6 +620,8 @@ the workflow laid out in Use Case 3 for CNAB bundles.
 * link:https://www.ntia.doc.gov/SoftwareTransparency[NTIA Software Component Transparency]
 * link:https://www.it-cisq.org/software-bill-of-materials/index.htm[CISQ/OMG Tool-to-tool Software Bill of Materials Exchange]
 * link:https://cnab.io/[Cloud Native Application Bundles]
+* link:https://github.com/cnabio/signy/blob/master/scripts/in-toto/minimal.py[Minimal Supply Chain for CNAB bundle.json files]
+* link:https://github.com/adityasaky/in-toto/tree/ite-4-cnab-resolver[CNAB Prototype Resolver]
 
 [[appendix]]
 == Appendix: Sources of Non-Determinism
