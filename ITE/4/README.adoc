@@ -151,6 +151,7 @@ will also help ensure that the hashing of these entities is done in a correct
 and secure manner. Yet, detailing such a process is out of the scope of this
 ITE.
 
+[[artifact-rules]]
 ==== Artifact Rules
 
 in-toto artifact rules are a means to specify what artifacts the project owner
@@ -194,6 +195,7 @@ their own, making them part of the supply chain, or metadata is replaced by
 authorized functionaries. The security implications of frequently changing
 generic resources are discussed in the Security section below.
 
+[[uri-resolvers]]
 ==== URI Resolvers
 
 ITE-4 compliant in-toto tools will require pluggable components for determining what resources
@@ -430,35 +432,80 @@ resulting build and CI report.
 ==== Use Case 3: Granular JSON Access
 
 The enhancement proposed in this ITE can also be used to provide more granular
-access to certain resources, such as JSON files. A generic URI can be used to
-resolve to the information contained in a specific key of a JSON file. This allows
-for greater flexibility when using in-toto with different types of artifacts.
+access to resources such as JSON files. A generic URI can be used to refer to
+information contained in a specific key of a JSON file; in this scenario, each
+field serves as an abstract resource.
 
-===== in-toto link attestation signing contents of a specific JSON key
+A practical example of this use case is for Cloud Native Application Bundles
+(CNAB) metadata. A link:https://github.com/cnabio/cnab-spec/blob/master/101-bundle-json.md[CNAB bundle.json file]
+contains information such as the top-level package information, images included
+in the bundle, credentials required by the application, and so on. We define a
+minimal supply chain described below for the creation of these bundle.json
+files. This supply chain is used in CNAB Signy and can be
+link:https://github.com/cnabio/signy/blob/master/scripts/in-toto/minimal.py[verified using in-toto].
+A link:https://github.com/adityasaky/in-toto/tree/ite-4-cnab-resolver[prototype resolver]
+was created using the structure defined in the <<uri-resolvers, URI Resolvers>>
+section for CNAB bundle.json files.
 
-An in-toto attestation can be generated when performing some operation over a
-single field in a JSON file, such as signing the contents of the field.
+===== in-toto link attestation for the creation of the initial bundle.json
+
+In this step of the minimal supply chain, a developer creates an initial
+bundle.json file with some details such as the images to use populated. However,
+the specific properties of the images are to be filled in by the machine as part
+of the next step.
 
 ```
 {
     "_type": "link",
-    "name": "sign-json-key-testkey",
-    "command": "",
-    "materials": {
-        "json+file://test.json$testkey": <HASH>
-    },
+    "byproducts": {},
+    "command": [],
+    "environment": {},
+    "materials": {},
+    "name": "developer",
     "products": {
-        "json+file://test.json$testkey": <HASH>
+        "...": "...",
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/contentDigest": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/description": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/image": <HASH>,
+        "...": "...",
+    }
+}
+```
+
+In the example link file for this step, we notice that the in-toto tool captured
+each field (or leaf node) within the bundle.json file as a separate artifact.
+This is sufficient to detect any changes to the file and we do not need to
+record hashes of "middle-level" nodes, as any changes to them must occur at the
+"leaf-level".
+
+===== in-toto link attestation for automatically populating image specifics 
+
+In this step, the machine takes the bundle.json a developer wrote and populates
+certain fields such as the hashes of the images specified. As each field in the
+bundle.json is treated as a separate artifact, the in-toto layout for this
+supply chain can be used to ensure that the machine modified only the fields it
+was supposed to.
+
+```
+{
+    "_type": "link",
+    "byproducts": {},
+    "command": [],
+    "environment": {},
+    "materials": {
+        "...": "...",
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/contentDigest": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/description": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/image": <HASH>,
+        "...": "...",
     },
-    "byproducts": {
-        "stderr": "",
-        "stdout": "",
-        "return-value": ""
-    },
-    "environment": {
-        "variables": "",
-        "filesystem": "",
-        "workdir": ""
+    "name": "machine",
+    "products": {
+        "...": "...",
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/contentDigest": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/description": <HASH>,
+        "cnab+json:/home/saky/Work/secure-systems-lab/cnab-ite-4/bundle.json$/images/my-microservice/image": <HASH>,
+        "...": "...",
     }
 }
 ```
@@ -560,7 +607,9 @@ that can be hashed
 [[prototype-implementation]]
 == Prototype Implementation
 
-This ITE currently proposes no prototypes.
+An initial prototype exists at link:https://github.com/adityasaky/in-toto/tree/ite-4-cnab-resolver[this branch]
+on a fork of the in-toto reference implementation. The resolver uses ITE-4 for
+the workflow laid out in Use Case 3 for CNAB bundles.
 
 [[references]]
 == References
@@ -570,6 +619,9 @@ This ITE currently proposes no prototypes.
 * link:https://github.com/cdfoundation/sig-security-sbom[CD Foundation Special Interest Group on Software Bill of Materials]
 * link:https://www.ntia.doc.gov/SoftwareTransparency[NTIA Software Component Transparency]
 * link:https://www.it-cisq.org/software-bill-of-materials/index.htm[CISQ/OMG Tool-to-tool Software Bill of Materials Exchange]
+* link:https://cnab.io/[Cloud Native Application Bundles]
+* link:https://github.com/cnabio/signy/blob/master/scripts/in-toto/minimal.py[Minimal Supply Chain for CNAB bundle.json files]
+* link:https://github.com/adityasaky/in-toto/tree/ite-4-cnab-resolver[CNAB Prototype Resolver]
 
 [[appendix]]
 == Appendix: Sources of Non-Determinism
