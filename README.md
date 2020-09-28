@@ -10,6 +10,10 @@
 * [ITE-3: Real-world example of combining TUF and in-toto for packaging Datadog Agent integrations](ITE/3/README.adoc)
 * [ITE-4: Generic URI Schemes for in-toto](ITE/4/README.adoc)
 
+## License
+
+This project is developed under the Apache license.
+
 ## Acknowledgements
 
 This project is managed by Prof. Justin Cappos and other members of the [Secure
