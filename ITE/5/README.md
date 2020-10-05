@@ -84,8 +84,8 @@ with `payload`.
 To sign:
 
 -   Serialize BODY according to PAYLOAD_TYPE. Call the result SERIALIZED_BODY.
--   Sign PAE([PAYLOAD_TYPE, PAYLOAD]), base64-encode the result, and store it in
-    `sig`.
+-   Sign PAE([PAYLOAD_TYPE, SERIALIZED_BODY]), base64-encode the result, and
+    store it in `sig`.
 -   Base64-encode SERIALIZED_BODY and store it in `payload`.
 -   Store PAYLOAD_TYPE in `payloadType`.
 
@@ -93,8 +93,8 @@ To verify:
 
 -   Base64-decode `payload`; call this SERIALIZED_BODY. Reject if the decoding
     fails.
--   Base64-decode `sig` and verify PAE([PAYLOAD_TYPE, PAYLOAD]). Reject if
-    either the decoding or the signature verification fails.
+-   Base64-decode `sig` and verify PAE([PAYLOAD_TYPE, SERIALIZED_BODY]). Reject
+    if either the decoding or the signature verification fails.
 -   Parse SERIALIZED_BODY according to PAYLOAD_TYPE. Reject if the parsing
     fails.
 
