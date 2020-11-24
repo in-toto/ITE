@@ -40,15 +40,15 @@ endif::[]
 This link:https://github.com/in-toto/ITE[in-toto enhancement (ITE)] proposes
 removing the in-toto signature scheme requirements, and allow users to adopt the signature wrapper that better fits their ecosystem. This has the following general benefits:
 
-1. avoid mandating an ad-hoc signing specification for in-toto
-2. Allow for implementers to propose different signing specifications.
+1. avoid mandating an ad-hoc signing specification for in-toto; and
+2. allow for implementers to propose different signing specifications.
 
-In adition, this ITE makes a recommendation using the
-link:http://github.com/secure-systems-lab/signing-spec[SSL Signing Spec]. Which
+In adition, this ITE makes a recommendation to use the
+link:http://github.com/secure-systems-lab/signing-spec[SSL Signing Spec]. This
 has the following benefits over the current state:
 
 1. Avoids canonicalization for security reasons (i.e., to not parse untrusted input) 
-2. Reduce the possibility of misinterpretation of the payload. The serialized payload is encoded as a string and verified by the recipient before de-serializing.
+2. Reduces the possibility of misinterpretation of the payload. The serialized payload is encoded as a string and verified by the recipient before de-serializing.
 3. This specification also provides a backwards-compatible serialization format.
 
 [[specification]]
@@ -76,7 +76,7 @@ integration.
 
 In addition, keeping the signature wrapper specification *outside* of the
 current in-toto specification will also simplify the specification, which can
-now only focus in describing in-toto specifics, rather than cryptographic
+now only focus on describing in-toto specifics, rather than cryptographic
 building blocks.
 
 [[reasoning]]
