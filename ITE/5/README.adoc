@@ -1,4 +1,4 @@
-= ITE-5: Signature scheme that avoids canonicalization
+= ITE-5: Replace signature wrapper with SSL signing spec
 :source-highlighter: pygments
 :toc: preamble
 :toclevels: 2
