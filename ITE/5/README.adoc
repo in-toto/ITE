@@ -49,7 +49,7 @@ has the following benefits over the current state:
 
 1. Avoids canonicalization for security reasons (i.e., to not parse untrusted input) 
 2. Reduce the possibility of misinterpretation of the payload. The serialized payload is encoded as a string and verified by the recipient before de-serializing.
-3. This specification also provides a backwards compatible serialization format.
+3. This specification also provides a backwards-compatible serialization format.
 
 [[specification]]
 == Specification
@@ -94,7 +94,7 @@ it allows for a transparent upgrade via their cryptographic provider,
 link:https://github.com/secure-systems-lab/securesystemslib[securesystemslib].
 
 Finally, since this is an improved version of the current TUF and in-toto
-wrappers, the design allows for a backwards compatible JSON representation,
+wrappers, the design allows for a backwards-compatible JSON representation,
 which would allow for providers/verifiers to continue using metadata with the
 old signature wrapper. This way, an upgrade path for existing implementations
 exists without ad-hoc measures.
@@ -110,7 +110,7 @@ specification. As such, no supply-chain security properties are removed from
 the system through this ITE.
 
 The specifics on the signature wrapper provide, at worst, the same security
-properties through its backwards compatible json representation. At best, the
+properties through its backwards-compatible json representation. At best, the
 changes improve the security stance of implementations since it is not parsing
 untrusted input anymore.
 
