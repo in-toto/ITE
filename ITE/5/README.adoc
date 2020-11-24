@@ -1,0 +1,182 @@
+= ITE-5: Signature scheme that avoids canonicalization
+:source-highlighter: pygments
+:toc: preamble
+:toclevels: 2
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| ITE
+| 5
+
+| Title
+| Replace signature wrapper with SSL signing spec
+
+| Sponsor
+| link:https://github.com/santiagotorres[Santiago Torres]
+
+| Status
+| Draft 💬
+
+
+| Type
+| Standards
+
+| Created
+| 2020-09-28
+
+|===
+
+[[abstract]]
+== Abstract
+
+This link:https://github.com/in-toto/ITE[in-toto enhancement (ITE)] proposes
+removing the in-toto signature scheme requirements, and allow users to adopt the signature wrapper that better fits their ecosystem. This has the following general benefits:
+
+1. avoid mandating an ad-hoc signing specification for in-toto
+2. Allow for implementers to propose different signing specifications.
+
+In adition, this ITE makes a recommendation using the
+link:http://github.com/secure-systems-lab/signing-spec[SSL Signing Spec]. Which
+has the following benefits over the current state:
+
+1. Avoids canonicalization for security reasons (i.e., to not parse untrusted input) 
+2. Reduce the possibility of misinterpretation of the payload. The serialized payload is encoded as a string and verified by the recipient before de-serializing.
+3. This specification also provides a backwards compatible serialization format.
+
+[[specification]]
+== Specification
+
+The specification adopted will be the SSL signing spec, as linked above. As
+such, we defer to that document to describe the specifics of signature
+generation and verification.
+
+[[motivation]]
+== Motivation
+
+The early motivations for in-toto to use the current wrapper were to allow for
+our sister project, TUF, to transparently use the same crypto provider. The
+reasoning back then is that we would maximize code reuse, and allow for users
+of both solutions to easily integrate them.
+
+However, as time has shown, keeping these two separately-specified signature
+wrappers (i.e., one for TUF and one for in-toto) is rather difficult. As time
+passes, and due to the interactions in each community, the signature wrappers
+evolve to better fit their user-bases. Adopting a common source of truth (i.e.,
+a separate signature specification) should help increase cohesion between
+projects while maintaining the original goal of code-reuse and transparent
+integration.
+
+In addition, keeping the signature wrapper specification *outside* of the
+current in-toto specification will also simplify the specification, which can
+now only focus in describing in-toto specifics, rather than cryptographic
+building blocks.
+
+[[reasoning]]
+== Reasoning
+
+Our goal was to adopt a signature wrapper that is as simple and foolproof as
+possible. Alternatives such as [JWS] are extremely complex and error-prone,
+while others such as [PASETO] are overly specific. (Both are also
+JSON-specific.) We believe the SSL signing spec strikes the right balance of
+simplicity, usefulness, and security. 
+
+Further, the SSL signing spec is a "natural evolution" of the current signature
+wrapper, which was both defined in the TUF and in-toto specifications. As such,
+it allows for a transparent upgrade via their cryptographic provider,
+link:https://github.com/secure-systems-lab/securesystemslib[securesystemslib].
+
+Finally, since this is an improved version of the current TUF and in-toto
+wrappers, the design allows for a backwards compatible JSON representation,
+which would allow for providers/verifiers to continue using metadata with the
+old signature wrapper. This way, an upgrade path for existing implementations
+exists without ad-hoc measures.
+
+Further information on the reasoning behind the wrapper's specifics is provided in the link:https://github.com/secure-systems-lab/signing-spec#reasoning[signing specification] repository
+
+[[Security]]
+== Security
+
+At first sight this proposal is central to security, yet the actual
+contribution is to allow for a signature provider to be disaggregated from the
+specification. As such, no supply-chain security properties are removed from
+the system through this ITE.
+
+The specifics on the signature wrapper provide, at worst, the same security
+properties through its backwards compatible json representation. At best, the
+changes improve the security stance of implementations since it is not parsing
+untrusted input anymore.
+
+[[infrastructure-requirements]]
+== Infrastructure Requirements
+
+Since this is a change in the metadata format, no infrastructure requirements
+exist.
+
+
+[[prototype-implementation]]
+== Prototype Implementation
+
+See link:https://github.com/secure-systems-lab/signing-spec/blob/master/reference_implementation.ipynb[reference_implementation.ipynb] for an implementation.
+
+[[Testing]]
+== Testing
+
+=== Test Vector
+An example of the signature wrapper, to be used as a test vector, follows:
+
+BODY:
+
+```none
+hello world
+```
+
+PAYLOAD_TYPE:
+
+```none
+http://example.com/HelloWorld
+```
+
+PAE:
+
+```none
+02 00 00 00 00 00 00 00 1d 00 00 00 00 00 00 00
+68 74 74 70 3a 2f 2f 65 78 61 6d 70 6c 65 2e 63
+6f 6d 2f 48 65 6c 6c 6f 57 6f 72 6c 64 0b 00 00
+00 00 00 00 00 68 65 6c 6c 6f 20 77 6f 72 6c 64
+```
+
+Cryptographic keys:
+
+```none
+Algorithm: ECDSA over NIST P-256 and SHA-256, with deterministic-rfc6979
+Signature: raw concatenation of r and s (Cryptodome binary encoding)
+X: 46950820868899156662930047687818585632848591499744589407958293238635476079160
+Y: 5640078356564379163099075877009565129882514886557779369047442380624545832820
+d: 97358161215184420915383655311931858321456579547487070936769975997791359926199
+```
+
+Signed wrapper:
+
+```json
+{"payload": "aGVsbG8gd29ybGQ=",
+ "payloadType": "http://example.com/HelloWorld",
+ "signatures": [{"sig": "y7BK8Mm8Mr4gxk4+G9X3BD1iBc/vVVuJuV4ubmsEK4m/8MhQOOS26ejx+weIjyAx8VjYoZRPpoXSNjHEzdE7nQ=="}]}
+```
+
+=== Test Suite 
+In addition the changes on the test-suite may include loading/generating backwards-compatible metadata.
+
+[[references]]
+== References
+
+* link:http://gibson042.github.io/canonicaljson-spec/[Canonical JSON]
+* link:https://tools.ietf.org/html/rfc7515[JWS]
+* link:https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig[PASETO]
