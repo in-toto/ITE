@@ -67,7 +67,7 @@ reasoning back then is that we would maximize code reuse, and allow for users
 of both solutions to easily integrate them.
 
 However, as time has shown, keeping these two separately-specified signature
-wrappers (i.e., one for TUF and one for in-toto) is rather difficult. As time
+wrappers (i.e., one for TUF and one for in-toto) synchronized is rather difficult. As time
 passes, and due to the interactions in each community, the signature wrappers
 evolve to better fit their user-bases. Adopting a common source of truth (i.e.,
 a separate signature specification) should help increase cohesion between
@@ -89,7 +89,7 @@ JSON-specific.) We believe the SSL signing spec strikes the right balance of
 simplicity, usefulness, and security. 
 
 Further, the SSL signing spec is a "natural evolution" of the current signature
-wrapper, which was both defined in the TUF and in-toto specifications. As such,
+wrapper, which was defined in both the TUF and in-toto specifications. As such,
 it allows for a transparent upgrade via their cryptographic provider,
 link:https://github.com/secure-systems-lab/securesystemslib[securesystemslib].
 
@@ -110,9 +110,9 @@ specification. As such, no supply-chain security properties are removed from
 the system through this ITE.
 
 The specifics on the signature wrapper provide, at worst, the same security
-properties through its backwards-compatible json representation. At best, the
-changes improve the security stance of implementations since it is not parsing
-untrusted input anymore.
+properties through its backwards-compatible JSON representation. At best, the
+changes improve the security stance of implementations since they are no longer parsing
+untrusted input.
 
 [[infrastructure-requirements]]
 == Infrastructure Requirements
