@@ -1,4 +1,4 @@
-= ITE-5: Replace signature wrapper with SSL signing spec
+= ITE-5: Replace signature envelope with SSL signing spec
 :source-highlighter: pygments
 :toc: preamble
 :toclevels: 2
@@ -17,7 +17,7 @@ endif::[]
 | 5
 
 | Title
-| Replace signature wrapper with SSL signing spec
+| Replace signature envelope with SSL signing spec
 
 | Sponsor
 | link:https://github.com/santiagotorres[Santiago Torres]
@@ -38,7 +38,9 @@ endif::[]
 == Abstract
 
 This link:https://github.com/in-toto/ITE[in-toto enhancement (ITE)] proposes
-removing the in-toto signature scheme requirements, and allow users to adopt the signature wrapper that better fits their ecosystem. This has the following general benefits:
+removing the in-toto signature scheme requirements, and allow users to adopt the
+signature envelope that better fits their ecosystem. This has the following
+general benefits:
 
 1. avoid mandating an ad-hoc signing specification for in-toto; and
 2. allow for implementers to propose different signing specifications.
@@ -61,20 +63,20 @@ generation and verification.
 [[motivation]]
 == Motivation
 
-The early motivations for in-toto to use the current wrapper were to allow for
+The early motivations for in-toto to use the current envelope were to allow for
 our sister project, TUF, to transparently use the same crypto provider. The
 reasoning back then is that we would maximize code reuse, and allow for users
 of both solutions to easily integrate them.
 
 However, as time has shown, keeping these two separately-specified signature
-wrappers (i.e., one for TUF and one for in-toto) synchronized is rather difficult. As time
-passes, and due to the interactions in each community, the signature wrappers
+envelopes (i.e., one for TUF and one for in-toto) synchronized is rather difficult. As time
+passes, and due to the interactions in each community, the signature envelopes
 evolve to better fit their user-bases. Adopting a common source of truth (i.e.,
 a separate signature specification) should help increase cohesion between
 projects while maintaining the original goal of code-reuse and transparent
 integration.
 
-In addition, keeping the signature wrapper specification *outside* of the
+In addition, keeping the signature envelope specification *outside* of the
 current in-toto specification will also simplify the specification, which can
 now only focus on describing in-toto specifics, rather than cryptographic
 building blocks.
@@ -82,24 +84,24 @@ building blocks.
 [[reasoning]]
 == Reasoning
 
-Our goal was to adopt a signature wrapper that is as simple and foolproof as
+Our goal was to adopt a signature envelope that is as simple and foolproof as
 possible. Alternatives such as [JWS] are extremely complex and error-prone,
 while others such as [PASETO] are overly specific. (Both are also
 JSON-specific.) We believe the SSL signing spec strikes the right balance of
 simplicity, usefulness, and security. 
 
 Further, the SSL signing spec is a "natural evolution" of the current signature
-wrapper, which was defined in both the TUF and in-toto specifications. As such,
+envelope, which was defined in both the TUF and in-toto specifications. As such,
 it allows for a transparent upgrade via their cryptographic provider,
 link:https://github.com/secure-systems-lab/securesystemslib[securesystemslib].
 
 Finally, since this is an improved version of the current TUF and in-toto
-wrappers, the design allows for a backwards-compatible JSON representation,
+envelopes, the design allows for a backwards-compatible JSON representation,
 which would allow for providers/verifiers to continue using metadata with the
-old signature wrapper. This way, an upgrade path for existing implementations
+old signature envelope. This way, an upgrade path for existing implementations
 exists without ad-hoc measures.
 
-Further information on the reasoning behind the wrapper's specifics is provided in the link:https://github.com/secure-systems-lab/signing-spec#reasoning[signing specification] repository
+Further information on the reasoning behind the envelope's specifics is provided in the link:https://github.com/secure-systems-lab/signing-spec#reasoning[signing specification] repository
 
 [[Security]]
 == Security
@@ -109,7 +111,7 @@ contribution is to allow for a signature provider to be disaggregated from the
 specification. As such, no supply-chain security properties are removed from
 the system through this ITE.
 
-The specifics on the signature wrapper provide, at worst, the same security
+The specifics on the signature envelope provide, at worst, the same security
 properties through its backwards-compatible JSON representation. At best, the
 changes improve the security stance of implementations since they are no longer parsing
 untrusted input.
@@ -130,7 +132,7 @@ See link:https://github.com/secure-systems-lab/signing-spec/blob/master/referenc
 == Testing
 
 === Test Vector
-An example of the signature wrapper, to be used as a test vector, follows:
+An example of the signature envelope, to be used as a test vector, follows:
 
 BODY:
 
@@ -163,7 +165,7 @@ Y: 5640078356564379163099075877009565129882514886557779369047442380624545832820
 d: 97358161215184420915383655311931858321456579547487070936769975997791359926199
 ```
 
-Signed wrapper:
+Signed envelope:
 
 ```json
 {"payload": "aGVsbG8gd29ybGQ=",
