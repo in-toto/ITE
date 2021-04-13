@@ -105,6 +105,12 @@ link:https://github.com/secure-systems-lab/securesystemslib[securesystemslib].
 
 Further information on the reasoning behind the envelope's specifics is provided in the link:https://github.com/secure-systems-lab/signing-spec[signing specification] repository
 
+[[backwards-compatibility]]
+== Backwards Compatibility
+
+Implementations should continue to support old-style envelope as well as
+new-style SSL Signing Spec envelopes.
+
 [[security]]
 == Security
 
