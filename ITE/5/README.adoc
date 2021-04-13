@@ -51,7 +51,6 @@ has the following benefits over the current state:
 
 1. Avoids canonicalization for security reasons (i.e., to not parse untrusted input) 
 2. Reduces the possibility of misinterpretation of the payload. The serialized payload is encoded as a string and verified by the recipient before de-serializing.
-3. This specification also provides a backwards-compatible serialization format.
 
 [[specification]]
 == Specification
@@ -95,13 +94,7 @@ envelope, which was defined in both the TUF and in-toto specifications. As such,
 it allows for a transparent upgrade via their cryptographic provider,
 link:https://github.com/secure-systems-lab/securesystemslib[securesystemslib].
 
-Finally, since this is an improved version of the current TUF and in-toto
-envelopes, the design allows for a backwards-compatible JSON representation,
-which would allow for providers/verifiers to continue using metadata with the
-old signature envelope. This way, an upgrade path for existing implementations
-exists without ad-hoc measures.
-
-Further information on the reasoning behind the envelope's specifics is provided in the link:https://github.com/secure-systems-lab/signing-spec#reasoning[signing specification] repository
+Further information on the reasoning behind the envelope's specifics is provided in the link:https://github.com/secure-systems-lab/signing-spec[signing specification] repository
 
 [[Security]]
 == Security
@@ -111,10 +104,8 @@ contribution is to allow for a signature provider to be disaggregated from the
 specification. As such, no supply-chain security properties are removed from
 the system through this ITE.
 
-The specifics on the signature envelope provide, at worst, the same security
-properties through its backwards-compatible JSON representation. At best, the
-changes improve the security stance of implementations since they are no longer parsing
-untrusted input.
+The adoption of SSL signing spec slightly improves the security stance of
+implementations because they are no longer parsing untrusted input.
 
 [[infrastructure-requirements]]
 == Infrastructure Requirements
