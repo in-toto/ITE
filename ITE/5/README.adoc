@@ -45,7 +45,7 @@ general benefits:
 1. avoid mandating an ad-hoc signing specification for in-toto; and
 2. allow for implementers to propose different signing specifications.
 
-In adition, this ITE makes a recommendation to use the
+In addition, this ITE makes a recommendation to use the
 link:http://github.com/secure-systems-lab/signing-spec[SSL Signing Spec]. This
 has the following benefits over the current state:
 
