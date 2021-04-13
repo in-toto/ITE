@@ -132,7 +132,9 @@ exist.
 [[prototype-implementation]]
 == Prototype Implementation
 
-See link:https://github.com/secure-systems-lab/signing-spec/blob/master/reference_implementation.ipynb[reference_implementation.ipynb] for an implementation.
+See
+link:https://github.com/secure-systems-lab/signing-spec/blob/master/reference_implementation.ipynb[reference_implementation.ipynb]
+for an implementation of the envelope itself.
 
 [[testing]]
 == Testing
