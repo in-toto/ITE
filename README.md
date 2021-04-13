@@ -9,7 +9,7 @@
 
 * [ITE-2: A general overview of combining TUF and in-toto to build compromise-resilient CI/CD](ITE/2/README.adoc)
 * [ITE-3: Real-world example of combining TUF and in-toto for packaging Datadog Agent integrations](ITE/3/README.adoc)
-* [ITE-5: Replace signature wrapper with SSL signing spe](ITE/5/README.md)
+* [ITE-5: Replace signature wrapper with SSL signing spe](ITE/5/README.adoc)
 
 ## License
 
