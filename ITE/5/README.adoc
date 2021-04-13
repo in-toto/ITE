@@ -67,6 +67,9 @@ The envelope's `payloadType` is either:
 The `payload` is the JSON serialization of the message, equivalent to the
 `signed` object in the current format.
 
+Once this ITE is accepted, we will change the website to redirect those URLs to
+point to documentation.
+
 [[motivation]]
 == Motivation
 
