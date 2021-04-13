@@ -119,53 +119,11 @@ exist.
 
 See link:https://github.com/secure-systems-lab/signing-spec/blob/master/reference_implementation.ipynb[reference_implementation.ipynb] for an implementation.
 
-[[Testing]]
+[[testing]]
 == Testing
 
-=== Test Vector
-An example of the signature envelope, to be used as a test vector, follows:
-
-BODY:
-
-```none
-hello world
-```
-
-PAYLOAD_TYPE:
-
-```none
-http://example.com/HelloWorld
-```
-
-PAE:
-
-```none
-02 00 00 00 00 00 00 00 1d 00 00 00 00 00 00 00
-68 74 74 70 3a 2f 2f 65 78 61 6d 70 6c 65 2e 63
-6f 6d 2f 48 65 6c 6c 6f 57 6f 72 6c 64 0b 00 00
-00 00 00 00 00 68 65 6c 6c 6f 20 77 6f 72 6c 64
-```
-
-Cryptographic keys:
-
-```none
-Algorithm: ECDSA over NIST P-256 and SHA-256, with deterministic-rfc6979
-Signature: raw concatenation of r and s (Cryptodome binary encoding)
-X: 46950820868899156662930047687818585632848591499744589407958293238635476079160
-Y: 5640078356564379163099075877009565129882514886557779369047442380624545832820
-d: 97358161215184420915383655311931858321456579547487070936769975997791359926199
-```
-
-Signed envelope:
-
-```json
-{"payload": "aGVsbG8gd29ybGQ=",
- "payloadType": "http://example.com/HelloWorld",
- "signatures": [{"sig": "y7BK8Mm8Mr4gxk4+G9X3BD1iBc/vVVuJuV4ubmsEK4m/8MhQOOS26ejx+weIjyAx8VjYoZRPpoXSNjHEzdE7nQ=="}]}
-```
-
-=== Test Suite 
-In addition the changes on the test-suite may include loading/generating backwards-compatible metadata.
+The test-suite should include loading/generating both new-style SSL signing spec
+metadata as well old-style metadata.
 
 [[references]]
 == References
