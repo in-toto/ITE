@@ -92,10 +92,11 @@ building blocks.
 == Reasoning
 
 Our goal was to adopt a signature envelope that is as simple and foolproof as
-possible. Alternatives such as [JWS] are extremely complex and error-prone,
-while others such as [PASETO] are overly specific. (Both are also
-JSON-specific.) We believe the SSL signing spec strikes the right balance of
-simplicity, usefulness, and security. 
+possible. Alternatives such as link:https://tools.ietf.org/html/rfc7515[JWS] are
+extremely complex and error-prone, while others such as
+link:https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig[PASETO]
+are overly specific. (Both are also JSON-specific.) We believe the SSL signing
+spec strikes the right balance of simplicity, usefulness, and security. 
 
 Further, the SSL signing spec is a "natural evolution" of the current signature
 envelope, which was defined in both the TUF and in-toto specifications. As such,
@@ -104,7 +105,7 @@ link:https://github.com/secure-systems-lab/securesystemslib[securesystemslib].
 
 Further information on the reasoning behind the envelope's specifics is provided in the link:https://github.com/secure-systems-lab/signing-spec[signing specification] repository
 
-[[Security]]
+[[security]]
 == Security
 
 At first sight this proposal is central to security, yet the actual
