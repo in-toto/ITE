@@ -59,6 +59,14 @@ The specification adopted will be the SSL signing spec, as linked above. As
 such, we defer to that document to describe the specifics of signature
 generation and verification.
 
+The envelope's `payloadType` is either:
+
+* `https://in-toto.io/Link/v1+json` (for links)
+* `https://in-toto.io/Layout/v1+json` (for layouts)
+
+The `payload` is the JSON serialization of the message, equivalent to the
+`signed` object in the current format.
+
 [[motivation]]
 == Motivation
 
