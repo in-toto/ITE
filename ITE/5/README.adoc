@@ -38,19 +38,15 @@ endif::[]
 == Abstract
 
 This link:https://github.com/in-toto/ITE[in-toto enhancement (ITE)] proposes
-removing the in-toto signature scheme requirements, and allow users to adopt the
-signature envelope that better fits their ecosystem. This has the following
-general benefits:
-
-1. avoid mandating an ad-hoc signing specification for in-toto; and
-2. allow for implementers to propose different signing specifications.
-
-In addition, this ITE makes a recommendation to use the
+switching to a new signature envelope in in-toto, namely the
 link:http://github.com/secure-systems-lab/signing-spec[SSL Signing Spec]. This
 has the following benefits over the current state:
 
 1. Avoids canonicalization for security reasons (i.e., to not parse untrusted input) 
 2. Reduces the possibility of misinterpretation of the payload. The serialized payload is encoded as a string and verified by the recipient before de-serializing.
+
+The old signature envelope would still be supported but deprecated, possibly to
+be removed in a future release.
 
 [[specification]]
 == Specification
