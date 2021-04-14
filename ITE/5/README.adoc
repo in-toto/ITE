@@ -68,6 +68,46 @@ the `signed` object in the current format.
 Once this ITE is accepted, we will change the website to redirect those URLs to
 point to documentation.
 
+[[pseudocode]]
+=== Pseudocode
+
+Implementations should process the authentication layer as follows:
+
+Inputs:
+
+*   `file`: JSON-encoded link or layout
+*   `recognizedSigners`: collection of (`name`, `publicKey`) pairs
+
+Outputs:
+
+*   `message`: the signed message as an implementation-language-specific object
+*   `signers`: set of recognized names that have signed the message
+
+Steps:
+
+*   `envelope` := JsonDecode(`file`); raise error if the decoding fails
+*   If `envelope.payload` exists (new-style envelope):
+    **  If `payloadType` != `https://in-toto.io/schemas/LegacyJsonMessage`,
+        raise error
+    **  `preauthEncoding` := PAE(UTF8(`envelope.payloadType`),
+        `envelope.payload`) as per signing-spec
+    **  `signers` := set of `name` for which Verify(`preauthEncoding`,
+        `signature.sig`, `publicKey`) succeeds, for all combinations of
+        (`signature`) in `envelope.signatures` and (`name`, `publicKey`) in
+        `recognizedSigners`
+    **  `message` := JsonDecode(`envelope.payload`)
+*   Else if `envelope.signed` exists (old-style envelope):
+    **  `preauthEncoding` := CanonicalJsonEncode(`envelope.signed`)
+    **  `signers` := set of `name` for which Verify(`preauthEncoding`,
+        `signature.sig`, `publicKey`) succeeds, for all combinations of
+        (`signature`) in `envelope.signatures` and (`name`, `publicKey`) in
+        `recognizedSigners`
+    **  `message` := `envelope.signed`
+*   Else, raise error
+*   Raise error if `signers` is empty
+*   Return `message` and `signers`
+
+
 [[motivation]]
 == Motivation
 
@@ -110,7 +150,8 @@ Further information on the reasoning behind the envelope's specifics is provided
 == Backwards Compatibility
 
 Implementations should continue to support old-style envelope as well as
-new-style SSL Signing Spec envelopes.
+new-style SSL Signing Spec envelopes, as defined in the
+link:#pseudocode[pseudocode] above.
 
 [[security]]
 == Security
