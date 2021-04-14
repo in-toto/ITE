@@ -55,7 +55,7 @@ has the following benefits over the current state:
 [[specification]]
 == Specification
 
-The specification adopted will be the SSL signing spec, as linked above. As
+The specification adopted will be the SSL Signing Spec 0.1, as linked above. As
 such, we defer to that document to describe the specifics of signature
 generation and verification.
 
