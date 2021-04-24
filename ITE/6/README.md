@@ -1,11 +1,13 @@
 # ITE-6: Generalized link format
 
-Author: lodato@google.com
-
-Contributors/reviewers: dedic@google.com, nitinjain@google.com,
-patricklawson@google.com, tomhennen@google.com, wietse@google.com
-
-Date: September 2020
+<table>
+<tr><td>ITE<td>6
+<tr><td>Title<td>Generalized link format
+<tr><td>Sponsor<td><a href="https://github.com/santiagotorres">Santiago Torres-Arias</a>
+<tr><td>Status<td>Draft 💬
+<tr><td>Type<td>Standards
+<tr><td>Created<td>2020-10-30
+</table>
 
 # Abstract
 
