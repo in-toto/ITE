@@ -55,14 +55,12 @@ The specification adopted will be the SSL Signing Spec 0.1, as linked above. As
 such, we defer to that document to describe the specifics of signature
 generation and verification.
 
-The envelope's `payloadType` is `https://in-toto.io/schemas/LegacyJsonMessage`
-for both links and layouts (since they have a `_type` field.)
+The envelope's `payloadType` is `application/vnd.in-toto+json` for both links
+and layouts. This means that the payload is expected to be a JSON file with a
+`_type` field.
 
 The envelope's `payload` is the JSON serialization of the message, equivalent to
 the `signed` object in the current format.
-
-Once this ITE is accepted, we will change the website to redirect those URLs to
-point to documentation.
 
 [[pseudocode]]
 === Pseudocode
@@ -83,8 +81,7 @@ Steps:
 
 *   `envelope` := JsonDecode(`file`); raise error if the decoding fails
 *   If `envelope.payload` exists (new-style envelope):
-    **  If `payloadType` != `https://in-toto.io/schemas/LegacyJsonMessage`,
-        raise error
+    **  If `payloadType` != `application/vnd.in-toto+json`, raise error
     **  `preauthEncoding` := PAE(UTF8(`envelope.payloadType`),
         `envelope.payload`) as per signing-spec
     **  `signers` := set of `name` for which Verify(`preauthEncoding`,
