@@ -29,7 +29,8 @@ as a drop-in replacement for the existing link schema.
 A future ITE will update the layout format to take advantage of this extra
 information.
 
-More broadly, this ITE moves in-toto to follow the [SLSA Attestation Model] and
+More broadly, this ITE moves in-toto to follow the [SLSA Attestation Model
+](https://github.com/slsa-framework/slsa/blob/main/controls/attestations.md) and
 is developed jointly with
 [Binary Authorization](https://cloud.google.com/binary-authorization). The goal
 is to have an industry standard artifact metadata format that can be consumed by
