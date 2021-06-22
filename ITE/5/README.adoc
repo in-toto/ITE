@@ -38,8 +38,8 @@ endif::[]
 == Abstract
 
 This link:https://github.com/in-toto/ITE[in-toto enhancement (ITE)] proposes
-switching to a new signature envelope in in-toto, namely the
-link:http://github.com/secure-systems-lab/signing-spec[SSL Signing Spec]. This
+switching to a new signature envelope in in-toto, namely
+link:http://github.com/secure-systems-lab/dsse[DSSE]. This
 has the following benefits over the current state:
 
 1. Avoids canonicalization for security reasons (i.e., to not parse untrusted input) 
@@ -83,7 +83,7 @@ Steps:
 *   If `envelope.payload` exists (new-style envelope):
     **  If `payloadType` != `application/vnd.in-toto+json`, raise error
     **  `preauthEncoding` := PAE(UTF8(`envelope.payloadType`),
-        `envelope.payload`) as per signing-spec
+        `envelope.payload`) as per DSSE
     **  `signers` := set of `name` for which Verify(`preauthEncoding`,
         `signature.sig`, `publicKey`) succeeds, for all combinations of
         (`signature`) in `envelope.signatures` and (`name`, `publicKey`) in
@@ -137,7 +137,7 @@ envelope, which was defined in both the TUF and in-toto specifications. As such,
 it allows for a transparent upgrade via their cryptographic provider,
 link:https://github.com/secure-systems-lab/securesystemslib[securesystemslib].
 
-Further information on the reasoning behind the envelope's specifics is provided in the link:https://github.com/secure-systems-lab/signing-spec[signing specification] repository
+Further information on the reasoning behind the envelope's specifics is provided in the link:https://github.com/secure-systems-lab/dsse[DSSE] repository
 
 [[backwards-compatibility]]
 == Backwards Compatibility
