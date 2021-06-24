@@ -1,4 +1,4 @@
-= ITE-5: Replace signature envelope with SSL signing spec
+= ITE-5: Replace signature envelope with DSSE
 :source-highlighter: pygments
 :toc: preamble
 :toclevels: 2
@@ -17,7 +17,7 @@ endif::[]
 | 5
 
 | Title
-| Replace signature envelope with SSL signing spec
+| Replace signature envelope with DSSE
 
 | Sponsor
 | link:https://github.com/santiagotorres[Santiago Torres]
@@ -39,8 +39,8 @@ endif::[]
 
 This link:https://github.com/in-toto/ITE[in-toto enhancement (ITE)] proposes
 switching to a new signature envelope in in-toto, namely
-link:http://github.com/secure-systems-lab/dsse[DSSE]. This
-has the following benefits over the current state:
+link:http://github.com/secure-systems-lab/dsse[Dead Simple Signing Envelope (DSSE)].
+This has the following benefits over the current state:
 
 1. Avoids canonicalization for security reasons (i.e., to not parse untrusted input) 
 2. Reduces the possibility of misinterpretation of the payload. The serialized payload is encoded as a string and verified by the recipient before de-serializing.
@@ -51,7 +51,7 @@ be removed in a future release.
 [[specification]]
 == Specification
 
-The specification adopted will be the SSL Signing Spec 0.1, as linked above. As
+The specification adopted will be DSSE 1.0, as linked above. As
 such, we defer to that document to describe the specifics of signature
 generation and verification.
 
@@ -132,7 +132,7 @@ link:https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/V
 are overly specific. (Both are also JSON-specific.) We believe the SSL signing
 spec strikes the right balance of simplicity, usefulness, and security. 
 
-Further, the SSL signing spec is a "natural evolution" of the current signature
+Further, DSSE is a "natural evolution" of the current signature
 envelope, which was defined in both the TUF and in-toto specifications. As such,
 it allows for a transparent upgrade via their cryptographic provider,
 link:https://github.com/secure-systems-lab/securesystemslib[securesystemslib].
@@ -143,7 +143,7 @@ Further information on the reasoning behind the envelope's specifics is provided
 == Backwards Compatibility
 
 Implementations should continue to support old-style envelope as well as
-new-style SSL Signing Spec envelopes, as defined in the
+new-style DSSE envelopes, as defined in the
 link:#pseudocode[pseudocode] above.
 
 [[security]]
@@ -154,7 +154,7 @@ contribution is to allow for a signature provider to be disaggregated from the
 specification. As such, no supply-chain security properties are removed from
 the system through this ITE.
 
-The adoption of SSL signing spec slightly improves the security stance of
+The adoption of DSSE slightly improves the security stance of
 implementations because they are no longer parsing untrusted input.
 
 [[infrastructure-requirements]]
@@ -172,7 +172,7 @@ None yet.
 [[testing]]
 == Testing
 
-The test-suite should include loading/generating both new-style SSL signing spec
+The test-suite should include loading/generating both new-style DSSE
 metadata as well old-style metadata.
 
 [[references]]
