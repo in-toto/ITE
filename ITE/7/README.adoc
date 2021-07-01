@@ -1,4 +1,4 @@
-= ITE-1: in-toto Enhancement Format
+= ITE-7: Signing & Verification With X509
 :source-highlighter: pygments
 :toc: preamble
 :toclevels: 2
@@ -14,10 +14,10 @@ endif::[]
 [cols="2"]
 |===
 | ITE
-| 0000
+| 7
 
 | Title
-| in-toto Enhancement template
+| Signing & Verification With X509
 
 | Sponsor
 | link:https://github.com/yourusernamehere[John Doe]
@@ -26,10 +26,10 @@ endif::[]
 | Active :smile:
 
 | Type
-| Process
+| Standards
 
 | Created
-| yyyy-mm-dd
+| 2021-07-01
 
 |===
 
