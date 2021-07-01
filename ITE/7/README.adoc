@@ -1,0 +1,242 @@
+= ITE-1: in-toto Enhancement Format
+:source-highlighter: pygments
+:toc: preamble
+:toclevels: 2
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| ITE
+| 0000
+
+| Title
+| in-toto Enhancement template
+
+| Sponsor
+| link:https://github.com/yourusernamehere[John Doe]
+
+| Status
+| Active :smile:
+
+| Type
+| Process
+
+| Created
+| yyyy-mm-dd
+
+|===
+
+
+[[abstract]]
+== Abstract
+
+This ITE proposes adding to the in-toto specification to support signing and
+verifying link metadata with key & X509 certificate pairs.  This ITE details the
+required changes to the current layout and link specifications as well as the
+signing and verification processes.
+
+[[specification]]
+== Specification
+
+This ITE proposes modifying the existing in-toto layout and link metadata specs
+to support verifying functionaries with a chain of trust to a known root
+certificate authority.
+
+Modifications to the layout include the addition of a `rootcas` and
+`intermediatecas` field.  These fields allow the creator of the layout to
+specify known trusted certificate authorities that a functionary's signing key
+must belong to.
+
+Additionally a `cert_constraints` field is added to steps within a layout.  This
+field allows the layout creator to limit the keys a functionary by some
+attributes of the key's certificate.  Ensuring the key has a specific common
+name or URI, for instance.
+
+[[authorities]]
+=== Certificate Authorities
+
+The `intermediatecas` and `rootcas` fields will have the same shape as the
+existing `keys` field: an object that with string indexes that are equal to the
+key's ID.  The keyval's public key will be expected to be a valid X509
+certificate.
+
+```
+"rootcas": {
+  "<KEYID>": {
+    "keyid": "<KEYID>",
+    "keytype": "rsa",
+    "keyval": {
+     "private": "",
+     "public": "-----BEGIN CERTIFICATE-----\nMIIBkjCCATegAwIBAgIBADAKBggqhkjOPQQDAjAdMQswCQYDVQQGEwJVUzEOMAwG\nA1UEChMFU1BJUkUwHhcNMjEwMzAzMTk0MjI0WhcNMjEwNDAyMTk0MjM0WjAdMQsw\nCQYDVQQGEwJVUzEOMAwGA1UEChMFU1BJUkUwWTATBgcqhkjOPQIBBggqhkjOPQMB\nBwNCAARbJaNMniz2ejaGwLAS5Kfl3modn0ceD6LXw+QltwIJKIqGO3C8Lh2KGmZ+\nBycxOHpDcHky8NMdM+0dIVawlIlVo2gwZjAOBgNVHQ8BAf8EBAMCAYYwDwYDVR0T\nAQH/BAUwAwEB/zAdBgNVHQ4EFgQU0dLhyMLPbujKf9nW7j/7qUheP7IwJAYDVR0R\nBB0wG4YZc3BpZmZlOi8vc3BpcmUuYm94Ym9hdC5pbzAKBggqhkjOPQQDAgNJADBG\nAiEA4RYLyrSxwUbv3h1X8kpfyLQmOniCbbMZqvIS49GcWtMCIQD309bBx89ITsYx\nxskO9LGz7NM1QYeiETY3LgZ6joIdgg==\n-----END CERTIFICATE-----\n"
+    }
+}
+```
+
+During the verification process a functionary will be tested against the
+existing set of known key's as defined in the layout or whether a chain of trust
+can be built to the defined roots using the defined intermediates.
+
+Additonal intermediate could be supplied at time of verification though security
+concerns discussed below may be undesired.
+
+[[certificate-constraints]]
+=== Certificate Constraints
+
+The `cert_constraints` field of a step can be used to limit who can act as a
+valid functionary for each step. Wildcards may be used to specify that any value
+meets the constraint whereas an empty array means there should be no values for
+that attribute of the certificate. An example of a few constraints:
+
+```
+{
+  "cert_constraints": [{
+    "common_name": "*"
+    "dns_names": ["*"],
+    "emails": ["*"],
+    "organizations": ["*"],
+    "roots": ["<ROOTKEYID>"],
+    "uris": ["spiffe://example.com/Something"]
+  }, {
+    "common_name": "Bob",
+    "dns_names": [],
+    "emails": ["bob@corp.example"],
+    "organizations": ["Example Corp"],
+    "roots": ["<ROOTKEYID>"],
+    "uris": []
+  }, {
+    "common_name": "*",
+    "dns_names": ["*"],
+    "emails": ["*"],
+    "organizations": ["*"],
+    "roots": ["*"],
+    "uris": ["*"]
+  }]
+}
+```
+
+For a key to be used as a valid functionary it must meet at least one of the
+defined constraints as well as establish a chain of trust back to one of the
+roots in the layout.
+
+When testing a constraint a certificate must meet each of the constraint's
+rules.  For instance to satisfy the first constaint in the example above a
+functionary must have a certificate that is under the root with key id
+`<ROOTKEYID>` and have a URI of `spiffe://example.com/Something`. Any values in
+the other attributes are acceptable.
+
+To satisfy the second constraint a certificate must have a common name of `Bob`
+with an email of `bob@corp.example`, organization of `Example Corp`, no URIs,
+no DNS names, and belong to the root with ID `ROOTKEYID`.
+
+The third constraint will match any certificate belonging to any root specified
+in the layout.
+
+[[metadata-signtaures]]
+=== Metadata Signatures
+
+To support verification using a key's certificate the certificate must be
+supplied to the `in-toto-run` command and will be embedded into the signature
+block in the link metadata.  An example looks like:
+
+```
+"signatures": [
+  {
+    "keyid": "434f5f16788e49f4e405b63556cf5e7772c8fdc438ee381736c90804f648b304",
+    "sig": "304402206e012377e2a661df4be391b4731c5cf92cb9b642509f441d284a15279bf3f8500220027697136b944aeba64578a4ed74af549358b5527a64e500f775b3bdbddfa3ce",
+    "cert": "-----BEGIN CERTIFICATE-----\nMIIB7TCCAZSgAwIBAgIQZqgm6hMgv9qbQPkt+owbhDAKBggqhkjOPQQDAjAdMQsw\nCQYDVQQGEwJVUzEOMAwGA1UEChMFU1BJUkUwHhcNMjEwMzAzMTk0NzU5WhcNMjEw\nNDAyMTk0MjM0WjAdMQswCQYDVQQGEwJVUzEOMAwGA1UEChMFU1BJUkUwWTATBgcq\nhkjOPQIBBggqhkjOPQMBBwNCAASlOE5J2ARBjwQfM255aSPQ7p85qRyrGnuTVbhl\n0zX0P+Bswl8xPOLdIZq93ejAM2nEWv29u1I0f2n0ImU6FNnjo4G1MIGyMA4GA1Ud\nDwEB/wQEAwIDqDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDAYDVR0T\nAQH/BAIwADAdBgNVHQ4EFgQUe1TrPdjzCB7Qxq5vexEAlXOoCMYwHwYDVR0jBBgw\nFoAU0dLhyMLPbujKf9nW7j/7qUheP7IwMwYDVR0RBCwwKoYoc3BpZmZlOi8vc3Bp\ncmUuYm94Ym9hdC5pby9pbnRvdG8tYnVpbGRlcjAKBggqhkjOPQQDAgNHADBEAiB0\nuAsAE9W2xh2OclRFkf8MWaZvcoyeEGM1ppX7hMi7CgIgcXOBpm9jxGkFPUgJpwIU\nrGtQoIwPHAEtmC4hS5z3VFc=\n-----END CERTIFICATE-----\n"
+  }
+]
+```
+
+This ensures the necessary information to verify the signature remains alongside
+the metadata.
+
+[[motivation]]
+== Motivation
+
+[[existing-pki]]
+=== Use Case 1: Usage of existing PKI
+
+Some groups have existing public key infrastructure to issue and maintain their
+group's keys. Being able to leverage this existing infrastructure would be a
+boon to these groups as opposed to potentially altering/creating new practices
+to support in-toto functionary keys.
+
+Additionally in workflows where humans may be required to run commands with
+`in-toto-run` may suffer scaling issues when onboarding and offboarding
+authorized users in in-toto's current model.
+
+[[short-lived-keys]]
+=== Use Case 2: Short lived functionary keys
+
+The prototype implementation of this ITE currently integrates with SPIFFE/SPIRE
+to acquire short lived keys during build pipelines.  Being able to limit the
+life of a functionary's key help limit the blast radius of compromised signing
+keys.  This ITE is the first step to supporting this model of functionary keys.
+
+[[reasoning]]
+== Reasoning
+
+Here, describe why the decisions you made in the specification make sense.
+
+[[backwards-compatibility]]
+== Backwards Compatibility
+
+Implementing changes to the layout and the link metadata structures carries some
+complications around verifying older versions due to canonical JSON.  Depending
+on the in-toto implementation verification of signatures of previous versions
+may break.
+
+A solution to this may be to add a version field to in-toto documents to ensure
+no unexpected fields appear when re-calculating hashes to verify signatures.
+
+[[security]]
+== Security
+
+If a functionary's end-entity private key is leaked an attacker will be able to
+forge signatures.  This is the same risk that exists today with a functionary's
+key being compromised and doesn't pose any more risk.
+
+If an intermediate or root key is compromised an attacker will be able to craft
+keys and certificates that satisfy constraints of potentially multiple steps.
+This could be an elevated risk compared to compromising a single functionaries
+key depending on how the layout is created.
+
+As mentioned in the Specification section there may be cases where intermediates
+need to be passed into `in-toto-verify` at time of verification instead of
+embedded into the layout. This could carry the same increased risk noted above
+if an attacker manages compromise an intermediate or root and craft their own
+intermediate. An option to allow additional intermediates to be supplied at time
+of verification could be added to the layout to alleviate this concern.
+
+[[infrastructure-requirements]]
+== Infrastructure Requirements
+
+If your changes require additional infrastructure, describe it here. Include
+potential costs incurred considering both time and money.
+
+[[testing]]
+== Testing
+
+Our prototype implementation includes some basic unit and integration/system
+testing to ensure our prototype works.  More tests can be created.
+
+[[prototype-implementation]]
+== Prototype Implementation
+
+A current proof-of-concept implementation of this ITE exists at Boxboat's fork
+of the in-toto-golang project: https://github.com/boxboat/in-toto
+
+[[references]]
+== References
+
+=== example references
+
+* link:http://www.ietf.org/rfc.html[IETF RFC]
