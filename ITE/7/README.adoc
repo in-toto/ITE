@@ -73,8 +73,9 @@ certificate.
     "keyid": "<KEYID>",
     "keytype": "rsa",
     "keyval": {
+     "certificate": "-----BEGIN CERTIFICATE-----\nMIIBkjCCATegAwIBAgIBADAKBggqhkjOPQQDAjAdMQswCQYDVQQGEwJVUzEOMAwG\nA1UEChMFU1BJUkUwHhcNMjEwMzAzMTk0MjI0WhcNMjEwNDAyMTk0MjM0WjAdMQsw\nCQYDVQQGEwJVUzEOMAwGA1UEChMFU1BJUkUwWTATBgcqhkjOPQIBBggqhkjOPQMB\nBwNCAARbJaNMniz2ejaGwLAS5Kfl3modn0ceD6LXw+QltwIJKIqGO3C8Lh2KGmZ+\nBycxOHpDcHky8NMdM+0dIVawlIlVo2gwZjAOBgNVHQ8BAf8EBAMCAYYwDwYDVR0T\nAQH/BAUwAwEB/zAdBgNVHQ4EFgQU0dLhyMLPbujKf9nW7j/7qUheP7IwJAYDVR0R\nBB0wG4YZc3BpZmZlOi8vc3BpcmUuYm94Ym9hdC5pbzAKBggqhkjOPQQDAgNJADBG\nAiEA4RYLyrSxwUbv3h1X8kpfyLQmOniCbbMZqvIS49GcWtMCIQD309bBx89ITsYx\nxskO9LGz7NM1QYeiETY3LgZ6joIdgg==\n-----END CERTIFICATE-----\n",
      "private": "",
-     "public": "-----BEGIN CERTIFICATE-----\nMIIBkjCCATegAwIBAgIBADAKBggqhkjOPQQDAjAdMQswCQYDVQQGEwJVUzEOMAwG\nA1UEChMFU1BJUkUwHhcNMjEwMzAzMTk0MjI0WhcNMjEwNDAyMTk0MjM0WjAdMQsw\nCQYDVQQGEwJVUzEOMAwGA1UEChMFU1BJUkUwWTATBgcqhkjOPQIBBggqhkjOPQMB\nBwNCAARbJaNMniz2ejaGwLAS5Kfl3modn0ceD6LXw+QltwIJKIqGO3C8Lh2KGmZ+\nBycxOHpDcHky8NMdM+0dIVawlIlVo2gwZjAOBgNVHQ8BAf8EBAMCAYYwDwYDVR0T\nAQH/BAUwAwEB/zAdBgNVHQ4EFgQU0dLhyMLPbujKf9nW7j/7qUheP7IwJAYDVR0R\nBB0wG4YZc3BpZmZlOi8vc3BpcmUuYm94Ym9hdC5pbzAKBggqhkjOPQQDAgNJADBG\nAiEA4RYLyrSxwUbv3h1X8kpfyLQmOniCbbMZqvIS49GcWtMCIQD309bBx89ITsYx\nxskO9LGz7NM1QYeiETY3LgZ6joIdgg==\n-----END CERTIFICATE-----\n"
+     "public": ""
     }
 }
 ```
@@ -184,7 +185,19 @@ keys.  This ITE is the first step to supporting this model of functionary keys.
 [[reasoning]]
 == Reasoning
 
-Here, describe why the decisions you made in the specification make sense.
+The addition of roots and intermediates to the layout support the need to verify
+that a signing key's certificate links back to a trusted root of trust as defined
+by the owner of the layout.
+
+Adding the certificate that belongs to the signing key as part of the signature
+simplifies the verification process by only requiring the signed metadata file to
+be passed from functionary to verifier.
+
+Certificate constraints support the ability to restrict who can act as a functionary
+for each step.  Constraints may require functionary's to possess a key and certificate
+from a specific root or the certificate to be issued to a specific email.  This
+enables a functionary's key to be rotated without the need to modify and re-sign
+the layout.
 
 [[backwards-compatibility]]
 == Backwards Compatibility
@@ -196,6 +209,10 @@ may break.
 
 A solution to this may be to add a version field to in-toto documents to ensure
 no unexpected fields appear when re-calculating hashes to verify signatures.
+
+The addition of the `certificate` field to the key structure causes calculated
+key IDs to change.  This could be prevented by creating a new data type for the rootca
+and intermediatecas that would prevent the calculation of key IDs from changing.
 
 [[security]]
 == Security
