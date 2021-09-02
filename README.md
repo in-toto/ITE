@@ -18,7 +18,7 @@ This project is developed under the Apache license.
 
 ## Acknowledgements
 
-This project is managed by Prof. Santaigo Torres-Arias at Purdue University.
+This project is managed by Prof. Santiago Torres-Arias at Purdue University.
 It is worked on by many folks in academia and industry, including members of 
 the [Secure Systems Lab](https://ssl.engineering.nyu.edu/) at NYU, and the NJIT
 Cybersecurity Research Center.
