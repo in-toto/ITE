@@ -18,8 +18,9 @@ This project is developed under the Apache license.
 
 ## Acknowledgements
 
-This project is managed by Prof. Justin Cappos and other members of the [Secure
-Systems Lab](https://ssl.engineering.nyu.edu/) at NYU, and the NJIT
+This project is managed by Prof. Santiago Torres-Arias at Purdue University.
+It is worked on by many folks in academia and industry, including members of 
+the [Secure Systems Lab](https://ssl.engineering.nyu.edu/) at NYU, and the NJIT
 Cybersecurity Research Center.
 
 This research was supported by the Defense Advanced Research Projects Agency
