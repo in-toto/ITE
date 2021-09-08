@@ -11,6 +11,7 @@
 * [ITE-3: Real-world example of combining TUF and in-toto for packaging Datadog Agent integrations](ITE/3/README.adoc)
 * [ITE-5: Replace signature envelope with DSSE](ITE/5/README.adoc)
 * [ITE-6: Generalized link format](ITE/6/README.md)
+* [ITE-7: Signing & Verification With X509](ITE/7/README.adoc)
 
 ## License
 

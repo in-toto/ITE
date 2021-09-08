@@ -20,10 +20,10 @@ endif::[]
 | Signing & Verification With X509
 
 | Sponsor
-| link:https://github.com/yourusernamehere[John Doe]
+| link:https://github.com/mikhailswift[Mikhail Swift]
 
 | Status
-| Active :smile:
+| Draft
 
 | Type
 | Standards
@@ -56,7 +56,7 @@ must belong to.
 
 Additionally a `cert_constraints` field is added to steps within a layout.  This
 field allows the layout creator to limit the keys a functionary by some
-attributes of the key's certificate.  Ensuring the key has a specific common
+attributes of the key's certificate, ensuring the key has a specific common
 name or URI, for instance.
 
 [[authorities]]
@@ -81,11 +81,11 @@ certificate.
 ```
 
 During the verification process a functionary will be tested against the
-existing set of known key's as defined in the layout or whether a chain of trust
+existing set of known keys as defined in the layout or whether a chain of trust
 can be built to the defined roots using the defined intermediates.
 
-Additonal intermediate could be supplied at time of verification though security
-concerns discussed below may be undesired.
+Additional intermediate could be supplied at time of verification though security
+concerns discussed below may deem this undesireable.
 
 [[certificate-constraints]]
 === Certificate Constraints
@@ -253,7 +253,3 @@ of the in-toto-golang project: https://github.com/boxboat/in-toto
 
 [[references]]
 == References
-
-=== example references
-
-* link:http://www.ietf.org/rfc.html[IETF RFC]
