@@ -1,4 +1,4 @@
-= ITE-5: Replace signature envelope with DSSE
+= ITE-5: Disassociate signature envelope specification from in-toto
 :source-highlighter: pygments
 :toc: preamble
 :toclevels: 2
@@ -17,14 +17,13 @@ endif::[]
 | 5
 
 | Title
-| Replace signature envelope with DSSE
+| Disassociate signature envelope specification from in-toto
 
 | Sponsor
 | link:https://github.com/santiagotorres[Santiago Torres]
 
 | Status
 | Draft 💬
-
 
 | Type
 | Standards
@@ -37,35 +36,56 @@ endif::[]
 [[abstract]]
 == Abstract
 
+
 This link:https://github.com/in-toto/ITE[in-toto enhancement (ITE)] proposes
-switching to a new signature envelope in in-toto, namely
-link:http://github.com/secure-systems-lab/dsse[Dead Simple Signing Envelope (DSSE)].
-This has the following benefits over the current state:
+disassociating the signature envelope from the in-toto specification, enabling
+implementers to use an envelope of their choice given that it supports certain
+security properties. Further, this ITE recommends the use of the
+link:https://github.com/secure-systems-lab/dsse[Dead Simple Signing Envelope (DSSE)].
 
-1. Avoids canonicalization for security reasons (i.e., to not parse untrusted input) 
-2. Reduces the possibility of misinterpretation of the payload. The serialized payload is encoded as a string and verified by the recipient before de-serializing.
-
-The old signature envelope would still be supported but deprecated, possibly to
-be removed in a future release.
+If an implementation is using the old signature envelope, it SHOULD be
+deprecated, with support for it removed after a sensible transition period.
 
 [[specification]]
 == Specification
 
-The specification adopted will be DSSE 1.0, as linked above. As
-such, we defer to that document to describe the specifics of signature
-generation and verification.
+The in-toto specification currently (as of August 2021) uses a custom signature
+wrapper. At the time of authoring this document, the Python reference
+implementation also emits in-toto metadata using this wrapper.
+
+However, in-toto adopters may wish to generate in-toto metadata using other
+formats, perhaps in wireline formats they already support. It is possible to
+get the benefits of in-toto while still using other wrappers, given that they
+provide certain important properties. These properties dictate that signature
+wrappers:
+
+* SHOULD include an authenticated payload type
+* SHOULD avoid depending on canonicalization for security
+* SHOULD NOT require the verifier to parse the payload before verifying
+* SHOULD NOT require the inclusion of signing key algorithms in the signature
+* MUST support the inclusion of multiple signatures in a file
+* SHOULD support a hint indicating what signing key was used, i.e., a KEYID
+
+The current signature wrapper requires canonicalization, which means that
+untrusted inputs are parsed. It also does not include an authenticated
+payload type, which can lead to misinterpretation of the payload. As a
+result, this ITE recommends, but does not mandate, the use of the
+Dead Simple Signing Envelope v1.0. The implementations maintained by the
+in-toto team MUST switch to using DSSE by default while providing a
+transition period during which both wrappers are supported. For more
+information, please refer to the
+link:#backwards-compatibility[Backwards Compatibility] section.
 
 The envelope's `payloadType` is `application/vnd.in-toto+json` for both links
 and layouts. This means that the payload is expected to be a JSON file with a
-`_type` field.
-
-The envelope's `payload` is the JSON serialization of the message, equivalent to
-the `signed` object in the current format.
+`_type` field. The envelope's `payload` is the JSON serialization of the
+message, equivalent to the `signed` object in the current format.
 
 [[pseudocode]]
-=== Pseudocode
+=== Pseudocode for in-toto's Reference Implementation
 
-Implementations should process the authentication layer as follows:
+[[pseudocode-transition]]
+==== During Transition Period
 
 Inputs:
 
@@ -100,6 +120,35 @@ Steps:
 *   Raise error if `signers` is empty
 *   Return `message` and `signers`
 
+[[pseudocode-dsse-only]]
+==== After Transition Period
+
+Inputs:
+
+*   `file`: JSON-encoded link or layout
+*   `recognizedSigners`: collection of (`name`, `publicKey`) pairs
+
+Outputs:
+
+*   `message`: the signed message as an implementation-language-specific object
+*   `signers`: set of recognized names that have signed the message
+
+Steps:
+
+*   `envelope` := JsonDecode(`file`); raise error if the decoding fails
+*   If `envelope.payload` exists:
+    **  If `payloadType` != `application/vnd.in-toto+json`, raise error
+    **  `preauthEncoding` := PAE(UTF8(`envelope.payloadType`),
+        `envelope.payload`) as per DSSE
+    **  `signers` := set of `name` for which Verify(`preauthEncoding`,
+        `signature.sig`, `publicKey`) succeeds, for all combinations of
+        (`signature`) in `envelope.signatures` and (`name`, `publicKey`) in
+        `recognizedSigners`
+    **  `message` := JsonDecode(`envelope.payload`)
+*   Else, raise error
+*   Raise error if `signers` is empty
+*   Return `message` and `signers`
+
 
 [[motivation]]
 == Motivation
@@ -125,26 +174,28 @@ building blocks.
 [[reasoning]]
 == Reasoning
 
-Our goal was to adopt a signature envelope that is as simple and foolproof as
-possible. Alternatives such as link:https://tools.ietf.org/html/rfc7515[JWS] are
-extremely complex and error-prone, while others such as
-link:https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig[PASETO]
-are overly specific. (Both are also JSON-specific.) We believe the SSL signing
-spec strikes the right balance of simplicity, usefulness, and security. 
-
-Further, DSSE is a "natural evolution" of the current signature
-envelope, which was defined in both the TUF and in-toto specifications. As such,
-it allows for a transparent upgrade via their cryptographic provider,
-link:https://github.com/secure-systems-lab/securesystemslib[securesystemslib].
-
-Further information on the reasoning behind the envelope's specifics is provided in the link:https://github.com/secure-systems-lab/dsse[DSSE] repository
+Our goal was to enable adopters to use in-toto without also committing to
+a single signature wrapper defined in the specification. Further, for our
+reference implementations, we wanted the signature envelope to be as simple and
+foolproof as possible. DSSE checked those boxes, while also being a "natural
+evolution" of the existing signature wrapper. For further information
+on the reasoning behind DSSE, please refer to the
+link:https://github.com/secure-systems-lab/dsse/blob/master/background.md[Background section]
+of its specification.
 
 [[backwards-compatibility]]
 == Backwards Compatibility
 
 Implementations should continue to support old-style envelope as well as
-new-style DSSE envelopes, as defined in the
-link:#pseudocode[pseudocode] above.
+new-style envelopes during the transition period. Implementators are free to
+determine the length of this period, and MUST communicate this clearly to their
+users using their standard channels. For example, the in-toto reference
+implementation MUST use its roadmaps to define a transition period and set
+a date for when it will drop support for the old style envelopes entirely.
+
+During the transition period, implementers MAY use the pseudocode defined
+link:#pseudocode-transition[above], while swapping out the DSSE specific
+processing to match their chosen signature wrappers.
 
 [[security]]
 == Security
@@ -154,8 +205,8 @@ contribution is to allow for a signature provider to be disaggregated from the
 specification. As such, no supply-chain security properties are removed from
 the system through this ITE.
 
-The adoption of DSSE slightly improves the security stance of
-implementations because they are no longer parsing untrusted input.
+The adoption of DSSE slightly improves the security stance of our reference
+implementations because they are no longer parsing possibly untrusted input.
 
 [[infrastructure-requirements]]
 == Infrastructure Requirements
@@ -172,8 +223,8 @@ None yet.
 [[testing]]
 == Testing
 
-The test-suite should include loading/generating both new-style DSSE
-metadata as well old-style metadata.
+The test-suites of the reference implementations should include
+loading / generating both new-style DSSE metadata as well old-style metadata.
 
 [[references]]
 == References

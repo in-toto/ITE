@@ -9,7 +9,7 @@
 ## Draft
 
 * [ITE-2: A general overview of combining TUF and in-toto to build compromise-resilient CI/CD](ITE/2/README.adoc)
-* [ITE-5: Replace signature envelope with DSSE](ITE/5/README.adoc)
+* [ITE-5: Disassociate signature envelope specification from in-toto](ITE/5/README.adoc)
 * [ITE-6: Generalized link format](ITE/6/README.md)
 
 ## License
