@@ -55,8 +55,8 @@ specify known trusted certificate authorities that a functionary's signing key
 must belong to.
 
 Additionally a `cert_constraints` field is added to steps within a layout.  This
-field allows the layout creator to limit the keys a functionary by some
-attributes of the key's certificate, ensuring the key has a specific common
+field allows the layout creator to authorize a functionary's key by constraining
+some attributes of the key's certificate, ensuring the key has a specific common
 name or URI, for instance.
 
 [[authorities]]
@@ -64,8 +64,8 @@ name or URI, for instance.
 
 The `intermediatecas` and `rootcas` fields will have the same shape as the
 existing `keys` field: an object that with string indexes that are equal to the
-key's ID.  The keyval's public key will be expected to be a valid X509
-certificate.
+key's ID.  The keyval's public key will be expected to be a valid PEM encoded
+X509 certificate.
 
 ```
 "rootcas": {
@@ -84,8 +84,8 @@ During the verification process a functionary will be tested against the
 existing set of known keys as defined in the layout or whether a chain of trust
 can be built to the defined roots using the defined intermediates.
 
-Additional intermediate could be supplied at time of verification though security
-concerns discussed below may deem this undesireable.
+Additional intermediates could be supplied at time of verification though
+security concerns discussed below may deem this undesireable.
 
 [[certificate-constraints]]
 === Certificate Constraints
