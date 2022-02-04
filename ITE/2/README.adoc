@@ -23,7 +23,7 @@ endif::[]
 | link:https://github.com/trishankatdatadog[Trishank Karthik Kuppusamy]
 
 | Status
-| Draft :pensive:
+| Accepted 
 
 | Type
 | Informational
