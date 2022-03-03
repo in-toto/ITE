@@ -1,0 +1,97 @@
+= ITE-9: Introducing new in-toto Attestation types
+:source-highlighter: pygments
+:toc: preamble
+:toclevels: 2
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| ITE
+| 9
+
+| Title
+| Introducing new in-toto Attestation types
+
+| Sponsor
+| 
+| Status
+| Draft
+
+| Type
+| Process
+
+| Created
+| 2022-03-02
+
+|===
+
+[[abstract]]
+== Abstract
+
+With ITE-6, in-toto opened the door to custom attestation types rather than the single fixed scheme. Various attestation types have been proposed, with some specified formally, and this highlighted the necessity for a formal process to develop, document, and discuss attestation types. This document proposes leveraging the ITE process to introduce new in-toto Attestation types.
+
+[[specification]]
+== Specification
+
+The in-toto attestation framework enables developers to create authenticated metadata about various software artifacts. A more detailed explanation of this framework is available in ITE-6 and the formal definition.
+
+When discussing a new attestation type, what is really being defined is a new type of link:https://github.com/in-toto/attestation/tree/main/spec#predicate[predicate]. The developer(s) of this new predicate must create and link:https://github.com/in-toto/ITE/blob/master/ITE/1/README.adoc#sponsor[sponsor] a new link:https://github.com/in-toto/ITE/blob/master/ITE/1/README.adoc#ite-types[standards ITE]. The purpose and prerequisites for the new attestation type MUST be defined as the motivation for the ITE. The motivation should also include a model that describes how the various components of the predicate map to supply chain semantics, juxtaposed with detailed use cases. These use cases SHOULD include example metadata that clearly highlight how the proposed predicate addresses the shortcoming described by them.
+
+The ITE's specification MUST contain a detailed schema of the fields that make up the predicate. This schema MUST define unambiguously a unique predicateType following the rules defined by the attestation framework. The schema must also clearly define the types of every field, with ranges for values where applicable. Further, the specification MUST contain rules for parsing the fields, as well as make recommendations for handling edge cases. For example, it may be preferable in some cases to silently allow extra, undefined fields, while in other cases such metadata should be rejected.
+
+Since this process is designed to promote use of new attestation types across ecosystems and organizations, it is important to actually communicate the proposal to the broader in-toto community. Sponsors are encouraged to use the next community meeting, the mailing list, as well as other communication channels like Slack and IRC to discuss the new ITE. This also ensures the approved version of the ITE can be listed in the in-toto library of attestation types.
+
+=== Special Considerations
+
+ITEs introducing new attestation types are not typical ITEs, and therefore have some special considerations.
+
+==== No Final State
+
+ITE-1 specifies that ITEs can reach a "final" state, after which no changes are permitted. ITEs that define a new attestation type MUST NOT reach this state. It is important to be able to continually update such ITEs for a number of reasons. First, attestation types can be continuously developed and updated--indeed, they have their own version numbers. Second, attestation types are identified by a URI. It SHOULD be possible to update these identifiers as and when necessary, as the circumstances surrounding a particular attestation type may change.
+
+==== Changelog
+
+ITEs currently do not require the changes to their specification to be logged and tracked. However, for attestation ITEs, it is important to be able to clearly map the changes made to the schema of the attestation to its different versions. New attestation types are unlikely to have impacts on backward compatibility, however, some updates can be backwards incompatible. Therefore, the backwards compatibility section can be repurposed to track detailed changes and their impacts on backwards compatibility.
+
+[[motivation]]
+== Motivation
+
+The ITE process was designed to communicate enhancements or extensions to the in-toto specification. 
+
+[[reasoning]]
+== Reasoning
+
+TODO
+
+[[backwards-compatibility]]
+== Backwards Compatibility
+
+The process described here has no bearing on backwards compatibility.
+
+[[security]]
+== Security
+
+[[infrastructure-requirements]]
+== Infrastructure Requirements
+
+ITE-6 led to the creation of the in-toto attestations repository. Currently, this repository contains the specification for the framework as well as a library of some attestation types. In future, this library may move to a stand-alone repository.
+
+[[testing]]
+== Testing
+
+When introducing a new attestation type, it is important to take into account how the attestation must be validated. Such proposals should include a section on testing the fields of attestations, as well as a description of how the attestations must be verified. Essentially, this would require the ITE to describe at least at a high level the structure of policies for the new predicate.
+
+[[prototype-implementation]]
+== Prototype Implementation
+
+Not applicable.
+
+[[references]]
+== References
