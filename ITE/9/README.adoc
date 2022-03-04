@@ -63,7 +63,7 @@ ITEs currently do not require the changes to their specification to be logged an
 [[motivation]]
 == Motivation
 
-The ITE process was designed to communicate enhancements or extensions to the in-toto specification. 
+The ITE process was designed to communicate enhancements or extensions to the in-toto specification. With ITE-6, in-toto enables developers to create new attestation types that allow for greater granularity when defining various supply chain activities and processes. However, while ITE-6 allows for these new attestations, it does not specify a specific, community-oriented process for introducing them. Further, there is no "blessed" location where consumers can find new attestation types. With this ITE, we aim to create a formal process for defining new in-toto attestation types, as well as to ensure the in-toto community is engaged when a new attestation type is proposed.
 
 [[reasoning]]
 == Reasoning
