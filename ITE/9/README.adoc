@@ -35,30 +35,62 @@ endif::[]
 [[abstract]]
 == Abstract
 
-With ITE-6, in-toto opened the door to custom attestation types rather than the single fixed scheme. Various attestation types have been proposed, with some specified formally, and this highlighted the necessity for a formal process to develop, document, and discuss attestation types. This document proposes leveraging the ITE process to introduce new in-toto Attestation types.
+With ITE-6, in-toto opened the door to custom attestation types rather than the single fixed scheme. Various attestation types have been proposed, with some specified formally, and this highlighted the necessity for a formal process to develop, document, and discuss attestation types. This document introduces such a process.
 
 [[specification]]
 == Specification
 
 The in-toto attestation framework enables developers to create authenticated metadata about various software artifacts. A more detailed explanation of this framework is available in ITE-6 and the formal definition.
 
-When discussing a new attestation type, what is really being defined is a new type of link:https://github.com/in-toto/attestation/tree/main/spec#predicate[predicate]. The developer(s) of this new predicate must create and link:https://github.com/in-toto/ITE/blob/master/ITE/1/README.adoc#sponsor[sponsor] a new link:https://github.com/in-toto/ITE/blob/master/ITE/1/README.adoc#ite-types[standards ITE]. The purpose and prerequisites for the new attestation type MUST be defined as the motivation for the ITE. The motivation should also include a model that describes how the various components of the predicate map to supply chain semantics, juxtaposed with detailed use cases. These use cases SHOULD include example metadata that clearly highlight how the proposed predicate addresses the shortcoming described by them.
+When discussing a new attestation type, what is really being defined is a new type of link:https://github.com/in-toto/attestation/tree/main/spec#predicate[predicate]. The developer(s) of this new predicate must create a formal document that specifies the predicate type, and discusses several other related aspects. The purpose and prerequisites for the new attestation type MUST be defined. The document should also include a model that describes how the various components of the predicate map to supply chain semantics, juxtaposed with detailed use cases. These use cases SHOULD include example metadata that clearly highlight how the proposed predicate addresses the shortcoming described by them. Including these aspects will aid readers and future adopters understand the why and how of a particular attestation type.
 
-The ITE's specification MUST contain a detailed schema of the fields that make up the predicate. This schema MUST define unambiguously a unique predicateType following the rules defined by the attestation framework. The schema must also clearly define the types of every field, with ranges for values where applicable. Further, the specification MUST contain rules for parsing the fields, as well as make recommendations for handling edge cases. For example, it may be preferable in some cases to silently allow extra, undefined fields, while in other cases such metadata should be rejected.
+The specification MUST contain a detailed schema of the fields that make up the predicate. This schema MUST define unambiguously a unique predicateType following the rules defined by the attestation framework. The schema must also clearly define the types of every field, with ranges for values where applicable. Further, the specification MUST contain rules for parsing the fields, as well as make recommendations for handling edge cases. For example, it may be preferable in some cases to silently allow extra, undefined fields, while in other cases such metadata should be rejected.
 
-Since this process is designed to promote use of new attestation types across ecosystems and organizations, it is important to actually communicate the proposal to the broader in-toto community. Sponsors are encouraged to use the next community meeting, the mailing list, as well as other communication channels like Slack and IRC to discuss the new ITE. This also ensures the approved version of the ITE can be listed in the in-toto library of attestation types.
+Since this process is designed to promote use of new attestation types across ecosystems and organizations, it is important to actually communicate the proposal to the broader in-toto community. The developers of the new type are encouraged to use the next community meeting, the mailing list, as well as other communication channels like Slack and IRC where the in-toto community has a presence to discuss the new document. This is a necessary step to list the new attestation type in the in-toto library of attestation types.
 
-=== Special Considerations
+// FIXME: should this ITE also define a library of ITEs?
 
-ITEs introducing new attestation types are not typical ITEs, and therefore have some special considerations.
+=== Document Format
 
-==== No Final State
+The new attestation definition SHOULD include the following fields.
 
-ITE-1 specifies that ITEs can reach a "final" state, after which no changes are permitted. ITEs that define a new attestation type MUST NOT reach this state. It is important to be able to continually update such ITEs for a number of reasons. First, attestation types can be continuously developed and updated--indeed, they have their own version numbers. Second, attestation types are identified by a URI. It SHOULD be possible to update these identifiers as and when necessary, as the circumstances surrounding a particular attestation type may change.
+// DISCUSS: this is taken from the current SLSA provenance spec
 
-==== Changelog
+==== Purpose
 
-ITEs currently do not require the changes to their specification to be logged and tracked. However, for attestation ITEs, it is important to be able to clearly map the changes made to the schema of the attestation to its different versions. New attestation types are unlikely to have impacts on backward compatibility, however, some updates can be backwards incompatible. Therefore, the backwards compatibility section can be repurposed to track detailed changes and their impacts on backwards compatibility.
+This section must discuss at a high level the reason for creating the new attestation type. Essentially, it describes the problems that can be solved using the new attestation.
+
+==== Prerequisites
+
+New attestation types may be very specific to a particular technology or specification, which must be detailed in the prerequisites section. The in-toto attestation framework is likely a necessary prerequisite for all attestation types, but it SHOULD be explicitly mentioned to err on the side of caution.
+
+==== Model
+
+The in-toto attestation framework was designed with software supply chain specific metadata in mind. However, supply chains are vast and composed of many different components and phases. Therefore, it is important for the attestation type to declare at a high level the steps and functionaries (in the generic) it is relevant to.
+
+==== Schema
+
+The schema of the attestation type is the core part of the document. It defines the fields included in an instantiation of the attestation type, as well as rules to parse them.
+
+===== Parsing Rules
+
+Parsing rules are important to define explicitly to ensure implementations can handle example attestations correctly. For example, this section can discuss how the attestation types are versioned, how non-specified fields must be handled, and so on.
+
+===== Fields
+
+This subsection defines the fields that make up the new attestation type. At this point, it is important to remember that when introducing a new attestation type really means introducing a new predicate type. As such, this subsection MUST only define the predicate and not any fields external to it, such as the Statement.
+
+The fields must be listed with their names, the type of information they can hold, whether they are required or not, and a textual description of their expected contents. If the legal values for a field are known, or belong in a range, this must be specified in the description.
+
+==== Example
+
+A new attestation type MUST include one or more examples. It is recommended that this example corresponds to the Purpose defined at the start of the document.
+
+The example included MUST be an entire in-toto attestation document, and not just the predicate type. This will allow adopters and implementers to work with examples more easily.
+
+==== Changelog and Migrations
+
+For attestation definitions, it is important to be able to clearly map the changes made to the schema of the attestation to its different versions. These changes and the steps to migrate from one to another must be detailed where appropriate. This section MAY be skipped for the initial version of an attestation type.
 
 [[motivation]]
 == Motivation
@@ -86,7 +118,7 @@ ITE-6 led to the creation of the in-toto attestations repository. Currently, thi
 [[testing]]
 == Testing
 
-When introducing a new attestation type, it is important to take into account how the attestation must be validated. Such proposals should include a section on testing the fields of attestations, as well as a description of how the attestations must be verified. Essentially, this would require the ITE to describe at least at a high level the structure of policies for the new predicate.
+When introducing a new attestation type, it is important to take into account how the attestation must be validated. Such proposals should include a section on testing the fields of attestations, as well as a description of how the attestations must be verified. Essentially, this would require the definition to describe at least at a high level the structure of policies for the new predicate.
 
 [[prototype-implementation]]
 == Prototype Implementation
