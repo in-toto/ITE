@@ -48,13 +48,11 @@ The specification MUST contain a detailed schema of the fields that make up the 
 
 Since this process is designed to promote use of new attestation types across ecosystems and organizations, it is important to actually communicate the proposal to the broader in-toto community. The developers of the new type are encouraged to use the next community meeting, the mailing list, as well as other communication channels like Slack and IRC where the in-toto community has a presence to discuss the new document. This is a necessary step to list the new attestation type in the in-toto library of attestation types.
 
-// FIXME: should this ITE also define a library of ITEs?
+ITE-6 established the in-toto/attestation repository where the specification for attestations is defined. This repository can be used to maintain a library of attestation types as a starting point, at least until the number of types requires a stand-alone home for them.
 
 === Document Format
 
 The new attestation definition SHOULD include the following fields.
-
-// DISCUSS: this is taken from the current SLSA provenance spec
 
 ==== Purpose
 
@@ -100,7 +98,7 @@ The ITE process was designed to communicate enhancements or extensions to the in
 [[reasoning]]
 == Reasoning
 
-TODO
+While ITE-6 defines the broad structure of new attestation types, it does not discuss how developer(s) should create these new types. ITE-6 also doesn't specify the process developer(s) must use. The lack of a process can lead to the creation of arbitrary attestation types that may or may not function as intended, as well as a significant amount of fragmentation and redundancy--developers may well recreate different versions of attestation types that already exist.
 
 [[backwards-compatibility]]
 == Backwards Compatibility
@@ -109,6 +107,8 @@ The process described here has no bearing on backwards compatibility.
 
 [[security]]
 == Security
+
+The process itself has no security implications. However, when defining new attestation types, care must be taken to ensure the attestation performs the tasks it is designed for. It is also vital to understand clearly the claims made in an attestation as a misunderstanding may lead to unseen gaps existing in the software supply chain. More specific security concerns also apply to the individual contexts an attestation type is a part of.
 
 [[infrastructure-requirements]]
 == Infrastructure Requirements
