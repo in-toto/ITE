@@ -127,3 +127,8 @@ Not applicable.
 
 [[references]]
 == References
+
+* link:https://github.com/in-toto/attestation[in-toto Attestation Specification]
+* link:https://slack.cncf.io[CNCF's Slack Workspace]
+* link:https://groups.google.com/g/in-toto-public[in-toto-public Mailing List]
+* link:https://hackmd.io/@lukpueh/ry_e70Qqw[in-toto Community Meetings]
