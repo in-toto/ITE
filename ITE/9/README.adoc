@@ -20,7 +20,8 @@ endif::[]
 | Introducing new in-toto Attestation types
 
 | Sponsor
-| 
+| Aditya Sirish A Yelgundhalli (@adityasaky)
+
 | Status
 | Draft
 
