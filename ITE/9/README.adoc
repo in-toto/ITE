@@ -48,7 +48,7 @@ The specification MUST contain a detailed schema of the fields that make up the 
 
 Since this process is designed to promote use of new attestation types across ecosystems and organizations, it is important to actually communicate the proposal to the broader in-toto community. The developers of the new type are encouraged to use the next community meeting, the mailing list, as well as other communication channels like Slack and IRC where the in-toto community has a presence to discuss the new document. This is a necessary step to list the new attestation type in the in-toto library of attestation types.
 
-ITE-6 established the in-toto/attestation repository where the specification for attestations is defined. This repository can be used to maintain a library of attestation types as a starting point, at least until the number of types requires a stand-alone home for them.
+ITE-6 established the in-toto/attestation repository where the specification for attestations is defined. This repository can be used to maintain a library of attestation types as a starting point, at least until the number of types requires a stand-alone home for them. A group of community members must be selected to curate and generally maintain this library of attestations, and they can be selected through the in-toto community meeting.
 
 === Document Format
 
