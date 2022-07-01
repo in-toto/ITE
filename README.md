@@ -12,6 +12,7 @@
 
 * [ITE-6: Generalized link format](ITE/6/README.md)
 * [ITE-7: Signing & Verification With X509](ITE/7/README.adoc)
+* [ITE-9: Introducing new in-toto Attestation types](ITE/9/README.adoc)
 
 ## License
 
