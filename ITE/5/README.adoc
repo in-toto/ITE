@@ -232,3 +232,38 @@ loading / generating both new-style DSSE metadata as well old-style metadata.
 * link:http://gibson042.github.io/canonicaljson-spec/[Canonical JSON]
 * link:https://tools.ietf.org/html/rfc7515[JWS]
 * link:https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig[PASETO]
+
+[[changelog]]
+== Changelog
+
+* Dec 23, 2022: Created an appendix section and added a description of the SSL
+  signature envelope that was in the in-toto specification.
+
+[[appendix]]
+== Appendix
+
+This appendix contains a description of the signature wrapper that was a part
+of the in-toto specification. The ITE proposes disassociating this wrapper from
+the in-toto specification but includes a description here for implementations
+that still need it.
+
+=== Specification
+
+All signed files (i.e., link and layout files) have the format:
+
+```json
+{
+  "signed" : "<ROLE>",
+  "signatures" : [
+      { "keyid" : "<KEYID>",
+        "sig" : "<SIGNATURE>" },
+  "..."
+  ]
+}
+```
+
+ROLE is a dictionary whose `"_type"` field describes the metadata type, either
+an in-toto layout or link. KEYID is the identifier of the key signing the ROLE
+dictionary. SIGNATURE is a signature of the canonical JSON form of ROLE. The
+in-toto specification defines KEYID for a key as the hexadecimal encoding of the
+SHA-256 hash of the canonical JSON form of its public key.
