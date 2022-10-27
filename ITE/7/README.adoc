@@ -49,33 +49,37 @@ This ITE proposes modifying the existing in-toto layout and link metadata specs
 to support verifying functionaries with a chain of trust to a known root
 certificate authority.
 
-Modifications to the layout include the addition of a `rootcas` and
-`intermediatecas` field.  These fields allow the creator of the layout to
-specify known trusted certificate authorities that a functionary's signing key
-must belong to.
+Modifications include the addition of a `trustBundles` key to the layout. This
+allows a layout creator to define a set of X509 roots and intermediates that we
+will use to verify leaf certificates as functionaries.
 
-Additionally a `cert_constraints` field is added to steps within a layout.  This
+Additionally a `certConstraints` field is added to steps within a layout.  This
 field allows the layout creator to authorize a functionary's key by constraining
 some attributes of the key's certificate, ensuring the key has a specific common
-name or URI, for instance.
+name or URI for instance. The bundle id is also used within a cert constraint to
+ensure that a leaf certificate belongs to the expected trust bundle defined in
+`trustBundles`.
 
-[[authorities]]
-=== Certificate Authorities
+And finally a `certificate` field is added to signatures on a link metadata.
+This field will be a PEM encoded leaf certificate that belongs to the public key
+used to sign the link metadata.
 
-The `intermediatecas` and `rootcas` fields will have the same shape as the
-existing `keys` field: an object that with string indexes that are equal to the
-key's ID.  The keyval's public key will be expected to be a valid PEM encoded
-X509 certificate.
+[[Trust Bundles]]
+=== Trust Bundles
+
+A `trustBundles` field is added to the layout that describes a X509 root and any
+intermediates required to build a chain of trust back to roots in the bundle.
+The `trustBundles` object is indexed by an identifier for each bundle, defined
+as the bundle id. `roots` is an array of PEM encoded X509 root certificates.
+`intermediates` is an array of strings representing PEM encoded X509 intermediate
+certificates that are part of the trust bundle.
 
 ```
-"rootcas": {
-  "<KEYID>": {
-    "keyid": "<KEYID>",
-    "keytype": "rsa",
-    "keyval": {
-     "certificate": "-----BEGIN CERTIFICATE-----\nMIIBkjCCATegAwIBAgIBADAKBggqhkjOPQQDAjAdMQswCQYDVQQGEwJVUzEOMAwG\nA1UEChMFU1BJUkUwHhcNMjEwMzAzMTk0MjI0WhcNMjEwNDAyMTk0MjM0WjAdMQsw\nCQYDVQQGEwJVUzEOMAwGA1UEChMFU1BJUkUwWTATBgcqhkjOPQIBBggqhkjOPQMB\nBwNCAARbJaNMniz2ejaGwLAS5Kfl3modn0ceD6LXw+QltwIJKIqGO3C8Lh2KGmZ+\nBycxOHpDcHky8NMdM+0dIVawlIlVo2gwZjAOBgNVHQ8BAf8EBAMCAYYwDwYDVR0T\nAQH/BAUwAwEB/zAdBgNVHQ4EFgQU0dLhyMLPbujKf9nW7j/7qUheP7IwJAYDVR0R\nBB0wG4YZc3BpZmZlOi8vc3BpcmUuYm94Ym9hdC5pbzAKBggqhkjOPQQDAgNJADBG\nAiEA4RYLyrSxwUbv3h1X8kpfyLQmOniCbbMZqvIS49GcWtMCIQD309bBx89ITsYx\nxskO9LGz7NM1QYeiETY3LgZ6joIdgg==\n-----END CERTIFICATE-----\n",
-     "private": "",
-     "public": ""
+"trustBundles": {
+  "<BUNDLEID>": {
+    "bundleid": "<BUNDLEID>",
+    "roots": ["-----BEGIN CERTIFICATE-----\nMIIBkjCCATegAwIBAgIBADAKBggqhkjOPQQDAjAdMQswCQYDVQQGEwJVUzEOMAwG\nA1UEChMFU1BJUkUwHhcNMjEwMzAzMTk0MjI0WhcNMjEwNDAyMTk0MjM0WjAdMQsw\nCQYDVQQGEwJVUzEOMAwGA1UEChMFU1BJUkUwWTATBgcqhkjOPQIBBggqhkjOPQMB\nBwNCAARbJaNMniz2ejaGwLAS5Kfl3modn0ceD6LXw+QltwIJKIqGO3C8Lh2KGmZ+\nBycxOHpDcHky8NMdM+0dIVawlIlVo2gwZjAOBgNVHQ8BAf8EBAMCAYYwDwYDVR0T\nAQH/BAUwAwEB/zAdBgNVHQ4EFgQU0dLhyMLPbujKf9nW7j/7qUheP7IwJAYDVR0R\nBB0wG4YZc3BpZmZlOi8vc3BpcmUuYm94Ym9hdC5pbzAKBggqhkjOPQQDAgNJADBG\nAiEA4RYLyrSxwUbv3h1X8kpfyLQmOniCbbMZqvIS49GcWtMCIQD309bBx89ITsYx\nxskO9LGz7NM1QYeiETY3LgZ6joIdgg==\n-----END CERTIFICATE-----\n"],
+    "intermediates": ["-----BEGIN CERTIFICATE-----\nMIIBkjCCATegAwIBAgIBADAKBggqhkjOPQQDAjAdMQswCQYDVQQGEwJVUzEOMAwG\nA1UEChMFU1BJUkUwHhcNMjEwMzAzMTk0MjI0WhcNMjEwNDAyMTk0MjM0WjAdMQsw\nCQYDVQQGEwJVUzEOMAwGA1UEChMFU1BJUkUwWTATBgcqhkjOPQIBBggqhkjOPQMB\nBwNCAARbJaNMniz2ejaGwLAS5Kfl3modn0ceD6LXw+QltwIJKIqGO3C8Lh2KGmZ+\nBycxOHpDcHky8NMdM+0dIVawlIlVo2gwZjAOBgNVHQ8BAf8EBAMCAYYwDwYDVR0T\nAQH/BAUwAwEB/zAdBgNVHQ4EFgQU0dLhyMLPbujKf9nW7j/7qUheP7IwJAYDVR0R\nBB0wG4YZc3BpZmZlOi8vc3BpcmUuYm94Ym9hdC5pbzAKBggqhkjOPQQDAgNJADBG\nAiEA4RYLyrSxwUbv3h1X8kpfyLQmOniCbbMZqvIS49GcWtMCIQD309bBx89ITsYx\nxskO9LGz7NM1QYeiETY3LgZ6joIdgg==\n-----END CERTIFICATE-----\n"]
     }
 }
 ```
@@ -85,7 +89,7 @@ existing set of known keys as defined in the layout or whether a chain of trust
 can be built to the defined roots using the defined intermediates.
 
 Additional intermediates could be supplied at time of verification though
-security concerns discussed below may deem this undesireable.
+security concerns discussed below may deem this undesirable.
 
 [[certificate-constraints]]
 === Certificate Constraints
@@ -102,21 +106,21 @@ that attribute of the certificate. An example of a few constraints:
     "dns_names": ["*"],
     "emails": ["*"],
     "organizations": ["*"],
-    "roots": ["<ROOTKEYID>"],
+    "trustBundleIds": ["<TRUSTBUNDLEID>"],
     "uris": ["spiffe://example.com/Something"]
   }, {
     "common_name": "Bob",
     "dns_names": [],
     "emails": ["bob@corp.example"],
     "organizations": ["Example Corp"],
-    "roots": ["<ROOTKEYID>"],
+    "trustBundleIds": ["<TRUSTBUNDLEID>"],
     "uris": []
   }, {
     "common_name": "*",
     "dns_names": ["*"],
     "emails": ["*"],
     "organizations": ["*"],
-    "roots": ["*"],
+    "trustBundleIds": ["*"],
     "uris": ["*"]
   }]
 }
@@ -127,10 +131,10 @@ defined constraints as well as establish a chain of trust back to one of the
 roots in the layout.
 
 When testing a constraint a certificate must meet each of the constraint's
-rules.  For instance to satisfy the first constaint in the example above a
-functionary must have a certificate that is under the root with key id
-`<ROOTKEYID>` and have a URI of `spiffe://example.com/Something`. Any values in
-the other attributes are acceptable.
+rules.  For instance to satisfy the first constraint in the example above a
+functionary must have a certificate that is under the trust bundle with ID
+`<TRUSTBUNDLEID>` and have a URI of `spiffe://example.com/Something`. Any values
+in the other attributes are acceptable.
 
 To satisfy the second constraint a certificate must have a common name of `Bob`
 with an email of `bob@corp.example`, organization of `Example Corp`, no URIs,
@@ -151,7 +155,7 @@ block in the link metadata.  An example looks like:
   {
     "keyid": "434f5f16788e49f4e405b63556cf5e7772c8fdc438ee381736c90804f648b304",
     "sig": "304402206e012377e2a661df4be391b4731c5cf92cb9b642509f441d284a15279bf3f8500220027697136b944aeba64578a4ed74af549358b5527a64e500f775b3bdbddfa3ce",
-    "cert": "-----BEGIN CERTIFICATE-----\nMIIB7TCCAZSgAwIBAgIQZqgm6hMgv9qbQPkt+owbhDAKBggqhkjOPQQDAjAdMQsw\nCQYDVQQGEwJVUzEOMAwGA1UEChMFU1BJUkUwHhcNMjEwMzAzMTk0NzU5WhcNMjEw\nNDAyMTk0MjM0WjAdMQswCQYDVQQGEwJVUzEOMAwGA1UEChMFU1BJUkUwWTATBgcq\nhkjOPQIBBggqhkjOPQMBBwNCAASlOE5J2ARBjwQfM255aSPQ7p85qRyrGnuTVbhl\n0zX0P+Bswl8xPOLdIZq93ejAM2nEWv29u1I0f2n0ImU6FNnjo4G1MIGyMA4GA1Ud\nDwEB/wQEAwIDqDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDAYDVR0T\nAQH/BAIwADAdBgNVHQ4EFgQUe1TrPdjzCB7Qxq5vexEAlXOoCMYwHwYDVR0jBBgw\nFoAU0dLhyMLPbujKf9nW7j/7qUheP7IwMwYDVR0RBCwwKoYoc3BpZmZlOi8vc3Bp\ncmUuYm94Ym9hdC5pby9pbnRvdG8tYnVpbGRlcjAKBggqhkjOPQQDAgNHADBEAiB0\nuAsAE9W2xh2OclRFkf8MWaZvcoyeEGM1ppX7hMi7CgIgcXOBpm9jxGkFPUgJpwIU\nrGtQoIwPHAEtmC4hS5z3VFc=\n-----END CERTIFICATE-----\n"
+    "certificate": "-----BEGIN CERTIFICATE-----\nMIIB7TCCAZSgAwIBAgIQZqgm6hMgv9qbQPkt+owbhDAKBggqhkjOPQQDAjAdMQsw\nCQYDVQQGEwJVUzEOMAwGA1UEChMFU1BJUkUwHhcNMjEwMzAzMTk0NzU5WhcNMjEw\nNDAyMTk0MjM0WjAdMQswCQYDVQQGEwJVUzEOMAwGA1UEChMFU1BJUkUwWTATBgcq\nhkjOPQIBBggqhkjOPQMBBwNCAASlOE5J2ARBjwQfM255aSPQ7p85qRyrGnuTVbhl\n0zX0P+Bswl8xPOLdIZq93ejAM2nEWv29u1I0f2n0ImU6FNnjo4G1MIGyMA4GA1Ud\nDwEB/wQEAwIDqDAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwDAYDVR0T\nAQH/BAIwADAdBgNVHQ4EFgQUe1TrPdjzCB7Qxq5vexEAlXOoCMYwHwYDVR0jBBgw\nFoAU0dLhyMLPbujKf9nW7j/7qUheP7IwMwYDVR0RBCwwKoYoc3BpZmZlOi8vc3Bp\ncmUuYm94Ym9hdC5pby9pbnRvdG8tYnVpbGRlcjAKBggqhkjOPQQDAgNHADBEAiB0\nuAsAE9W2xh2OclRFkf8MWaZvcoyeEGM1ppX7hMi7CgIgcXOBpm9jxGkFPUgJpwIU\nrGtQoIwPHAEtmC4hS5z3VFc=\n-----END CERTIFICATE-----\n"
   }
 ]
 ```
@@ -182,12 +186,17 @@ to acquire short lived keys during build pipelines.  Being able to limit the
 life of a functionary's key help limit the blast radius of compromised signing
 keys.  This ITE is the first step to supporting this model of functionary keys.
 
+Another use case could be using certificates from a Fulcio instance to sign
+in-toto link metadata. A trust bundle of Sigstore's root certificate can be
+added to the layout and a cert constraint added to ensure the email on the
+certificate is someone trusted to be a functionary.
+
 [[reasoning]]
 == Reasoning
 
-The addition of roots and intermediates to the layout support the need to verify
-that a signing key's certificate links back to a trusted root of trust as defined
-by the owner of the layout.
+The addition of trust bundles to the layout support the need to verify that a
+signing key's certificate links back to a trusted root of trust as defined by
+the owner of the layout.
 
 Adding the certificate that belongs to the signing key as part of the signature
 simplifies the verification process by only requiring the signed metadata file to
@@ -210,10 +219,6 @@ may break.
 A solution to this may be to add a version field to in-toto documents to ensure
 no unexpected fields appear when re-calculating hashes to verify signatures.
 
-The addition of the `certificate` field to the key structure causes calculated
-key IDs to change.  This could be prevented by creating a new data type for the rootca
-and intermediatecas that would prevent the calculation of key IDs from changing.
-
 [[security]]
 == Security
 
@@ -221,7 +226,7 @@ If a functionary's end-entity private key is leaked an attacker will be able to
 forge signatures.  This is the same risk that exists today with a functionary's
 key being compromised and doesn't pose any more risk.
 
-If an intermediate or root key is compromised an attacker will be able to craft
+If an intermediate or root key is compromised an attacker may be able to craft
 keys and certificates that satisfy constraints of potentially multiple steps.
 This could be an elevated risk compared to compromising a single functionaries
 key depending on how the layout is created.
@@ -236,20 +241,22 @@ of verification could be added to the layout to alleviate this concern.
 [[infrastructure-requirements]]
 == Infrastructure Requirements
 
-If your changes require additional infrastructure, describe it here. Include
-potential costs incurred considering both time and money.
+Currently the only additional infrastructure being used in support of this ITE
+are test SPIRE servers being started during the testing pipeline.
 
 [[testing]]
 == Testing
 
-Our prototype implementation includes some basic unit and integration/system
-testing to ensure our prototype works.  More tests can be created.
+Currently tests exist within in-toto-golang that start a test SPIRE server and
+use short lived certificates to sign link metadata and use the signed metadata
+to verify an in-toto layout.
 
 [[prototype-implementation]]
 == Prototype Implementation
 
-A current proof-of-concept implementation of this ITE exists at Boxboat's fork
-of the in-toto-golang project: https://github.com/boxboat/in-toto
+A prototype implementation of this ITE was merged into the main branch of
+in-toto-golang as part of
+link:https://github.com/in-toto/in-toto-golang/pull/119[Pull Request 119]
 
 [[references]]
 == References
