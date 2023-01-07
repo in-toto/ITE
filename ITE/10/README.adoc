@@ -1,0 +1,323 @@
+= ITE-10: Layouts for in-toto Attestations
+:source-highlighter: pygments
+:toc: preamble
+:toclevels: 2
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| ITE
+| 10
+
+| Title
+| Layouts for in-toto Attestations
+
+| Sponsor
+| link:https://github.com/adityasaky[Aditya Sirish A Yelgundhalli]
+
+| Status
+| Draft
+
+| Type
+| Standards
+
+| Created
+| 2023-01-07
+
+|===
+
+[[abstract]]
+== Abstract
+
+A previous in-toto Enhancement, ITE-6, presented the in-toto Attestation
+framework. This framework introduced the idea of context-specific attestations
+with their own definitions. This ITE builds on ITE-6 and proposes several
+modifications to in-toto layouts that allow for defining and verifying policies
+over ITE-6 attestations.
+
+[[specification]]
+== Specification
+
+=== Changes to Metadata Schema
+
+The in-toto specification describes the following schema for layouts.
+
+```
+{
+    "_type": "layout",
+    "expires": "<EXPIRES>",
+    "readme": "<README>",
+    "keys": {
+        "<KEYID>": "<PUBKEY_OBJECT>"
+    },
+    "steps": ["<STEP>", "..."],
+    "inspect": ["<INSPECTION>", "..."]
+}
+```
+
+As a whole, in-toto breaks down every software supply chain into a number of
+steps. The specification's verification workflow uses in-toto link metadata for
+each step to ensure it was performed correctly. Each step has the following
+schema.
+
+```
+{
+    "_type": "step",
+    "name": "<NAME>",
+    "threshold": "<THRESHOLD>",
+    "expected_materials": [
+        [ "<ARTIFACT_RULE>" ],
+        "..."
+    ],
+    "expected_products": [
+        [ "<ARTIFACT_RULE>" ],
+        "..."
+    ],
+    "pubkeys": ["<KEYID>", "..."],
+    "expected_command": "<COMMAND>"
+}
+```
+
+This ITE proposes modifying the step object to account for different types of
+rules. First, artifact rules recorded for `expected_materials` and
+`expected_products` are collected within a single field called
+`expected_artifacts`. These rules can be verified against in-toto link
+attestations or equivalent attestations accepted via ITE-9 such as SLSA
+Provenance. Second, this ITE adds an `expected_properties` field. Every entry in
+this field is expected to be some property a valid execution of the step is
+expected to possess, and the updated in-toto verification workflow passes only
+if the attestations presented can be validated as meeting every property. The
+updated step definition has the following schema.
+
+```
+{
+    "_type": "step",
+    "name": "<NAME>",
+    "expected_artifacts": {
+        "threshold": "<THRESHOLD>",
+        "pubkeys": ["<KEYID>", "..."],
+        "materials": [
+            [ "<ARTIFACT_RULE>" ],
+            "..."
+        ],
+        "products": [
+            [ "<ARTIFACT_RULE>" ],
+            "..."
+        ]
+    },
+    "expected_properties": {
+        "<PROPERTY_NAME>": {
+            "pubkeys": ["<KEYID>", "..."],
+            "threshold": "<THRESHOLD>"
+        }
+    },
+    "expected_command": "<COMMAND>"
+}
+```
+
+Similarly, each in-toto inspection object is updated to allow for properties. As
+inspections are run during verification, there is no expectation for authorized
+`pubkeys` or `threshold`. As such, the `expected_properties` field is just a
+list of property names.
+
+```
+{
+    "_type": "step",
+    "name": "<NAME>",
+    "expected_artifacts": {
+        "materials": [
+            [ "<ARTIFACT_RULE>" ],
+            "..."
+        ],
+        "products": [
+            [ "<ARTIFACT_RULE>" ],
+            "..."
+        ]
+    },
+    "expected_properties": ["<PROPERTY_NAME>", "..."],
+    "run": "<COMMAND>"
+}
+```
+
+NOTE: Do we consider replacing artifact rules altogether?
+
+The rules for each property validation are recorded in a new field in the
+layout, outside of the step definitions. These definitions can thus be reused
+across steps in the software supply chain.
+
+NOTE: We should evaluate inline policy definitions / extensions.
+
+Additionally, software supply chain owners can define policies for properties
+that apply to the supply chain as a whole rather than any one step. In some
+cases, these properties may apply to two or more steps. Therefore, the updated
+layout schema also supports `expected_properties` at the layout-wide level.
+Aside from the standard `pubkeys` and `threshold` fields, it also includes a
+`steps` field. During verification of a layout-wide policy, attestations from
+the listed steps are made available to it. The `steps` field is optional and
+these properties can also be satisfied with layout-specific attestations rather
+than step-specific attestations. All layout-specific attestations are made
+available to every property listed here, even if the `steps` field is used.
+
+```
+{
+    "_type": "layout",
+    "expires": "<EXPIRES>",
+    "readme: "<README>",
+    "keys": {
+        "<KEYID>": "<PUBKEY_OBJECT>"
+    },
+    "properties": {
+        "<PROPERTY_NAME>": {
+            "accepted_attestation_types": ["<PREDICATE_TYPE>", ...]
+            "policy_language": "<POLICY_LANGUAGE>", // FIXME: see NOTE about supporting multiple languages
+            "policy": "<POLICY>"
+        }
+    }
+    "expected_properties": {
+        "<PROPERTY_NAME>": {
+            "steps": ["<STEP_NAME>", "..."],
+            "pubkeys": ["<KEYID>", "..."],
+            "threshold": "<THRESHOLD>"
+        }
+    }
+    "steps": ["<STEP>", "..."],
+    "inspect": ["<INSPECTION>", "..."]
+}
+```
+
+All ITE-6 attestations have a `PREDICATE_TYPE` identifying the type of
+predicate. For each property, software supply chain owners can specify a list of
+acceptable predicates that can be used to meet the policy. The use of `<POLICY>`
+and `<POLICY_LANGUAGE>` are elaborated in a standalone section.
+
+=== Specifying Policies for Properties
+
+This ITE proposes the use of existing policy definition languages such as Rego
+and CUE. Note that embedding the policies themselves can be complicated by the
+wireline format used by a particular in-toto implementation. In general,
+`POLICY_LANGUAGE` must unambiguously identify the language and the `POLICY`
+must contain the policy itself in the specified language. For example, if an
+implementation uses some flavor of JSON for its metadata, the policy may be
+Base64 encoded and then stored in the layout.
+
+NOTE: FIXME, we need a separate evaluation of policy languages, and we should
+decide if we pick a winner / allow for multiple.
+
+TODO: if we are not picking one or more winners, we should enumerate the
+properties of acceptable policy languages. However, I'm leaning towards picking
+winners and expanding them with future ITEs if necessary.
+
+NOTE: FIXME, is there a better way to do this? Detached policies?
+
+=== Validating Policies for a Step
+
+The in-toto verification workflow specified in the specification is updated to
+include the verification of policies for expected properties of each step.
+Specifically, alongside link metadata, the verification workflow looks must be
+presented with attestations of the types allowed for a particular property,
+defined in the `accepted_attestation_types` field.
+
+Every attestation that is loaded has its signatures validated to ensure the
+metadata was generated by authorized keys (and by extension, functionaries).
+Next, the `POLICY` for each property is executed against the loaded
+attestations. If the policy executes to `true`, the property is deemed to be
+verified and the workflow moves on to the next property.
+
+TODO: Include examples of policies evaluating to `true` for some property.
+
+[[motivation]]
+== Motivation
+
+The original in-toto specification defined only one type of metadata that was to
+be captured during supply chain operations. As such, it had a uniform
+verification workflow and provided supply chain owners the semantics, i.e.
+artifact rules, to verify the flow of artifacts in their supply chains. ITE-6
+expanded the metadata formats to support the generation of custom attestations
+that have context-specific schemas. Current in-toto layouts as defined in the
+in-toto specification cannot be used to verify the information contained in
+these attestations.
+
+This ITE partitions attestations into two categories. Attestations can contain
+information about the flow of artifacts, like in-toto link metadata, and they
+can contain information about other properties of the supply chain. As such, the
+proposed changes to the layout in this ITE allow supply chain owners to define
+artifact rules for the former and policies verifying the existence of desirable
+properties for the latter.
+
+[[reasoning]]
+== Reasoning
+
+The intent of ITE-6 and the in-toto Attestation framework is to enable software
+producers to emit a wide range of contextual information pertaining to their
+supply chain. The intent of this ITE is to extend ITE-6 with policy definitions
+such that attestation producers can validate the information in ITE-6
+attestations. It is clear from ITE-6 that there is not a one-size-fits-all
+solution to policy definitions. Therefore, to support a wide variety of use
+cases, this ITE proposes the use of existing policy languages such as Rego and
+CUE.
+
+=== Rego
+
+Rego is a declarative policy language that is part of Open Policy Agent (OPA).
+Rego policies are composed of assertion queries that are applied against some
+specified data. If the data does not meet every assertion specified for it, the
+policy fails.
+
+Within the context of in-toto attestations, Rego can be used to define a set of
+rules for the data contained within predicates. If every assertion passes for
+some presented attestation, the in-toto verification workflow considers the
+property corresponding to the policy as met.
+
+The use of Rego over in-toto attestations is not new. Witness, an in-toto
+implementation by TestifySec supports the use of Rego policies.
+
+=== CUE
+
+CUE is a data validation language that can be used to validate data and schemas.
+It can be used to define constraints for some input data, and validation fails
+if the input data does not meet the specified constraints. As with Rego, CUE can
+be used to define rules for the data contained within in-toto predicates. During
+verification, if some attestation is presented that does not meet all the
+specified constraints, verification is unsuccessful. On the other hand, if all
+the constraints specified for a property's policy are met by the attestation,
+verification of that property is successful.
+
+[[backwards-compatibility]]
+== Backwards Compatibility
+
+This ITE significantly affects the backwards compatibility of in-toto metadata.
+For starters, the layout schema changes quite significantly. However, layouts
+that conform to the in-toto specification can be converted to the schema
+proposed here and therefore implementations conforming to this ITE can verify
+old layouts. On the other hand, old implementations cannot verify layouts
+conforming to this schema.
+
+[[security]]
+== Security
+
+
+[[infrastructure-requirements]]
+== Infrastructure Requirements
+
+
+[[prototype-implementation]]
+== Prototype Implementation
+
+None yet.
+
+[[testing]]
+== Testing
+
+
+[[references]]
+== References
+
+* link:https://www.openpolicyagent.org/docs/latest/policy-language/[Rego: Open Policy Agent's Policy Language]
+* link:https://cuelang.org/docs/about/[CUE]
