@@ -959,3 +959,8 @@ This ITE leverages existing infrastructure.
 * link:https://github.com/jenkins-infra/iep[Infrastructure Enhancement Proposal]
 * link:https://github.com/jenkinsci/jep[Jenkins Enhancement Proposal]
 * link:http://www.ietf.org/rfc.html[IETF RFC]
+
+== Changelog
+
+* Jan 9, 2023: Created a changelog requirement for modifications to accepted and
+  active ITEs.
