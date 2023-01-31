@@ -59,6 +59,10 @@ The new attestation definition SHOULD include the following fields.
 
 This section must discuss at a high level the reason for creating the new attestation type. Essentially, it describes the problems that can be solved using the new attestation.
 
+==== Use Cases
+
+This section must discuss the use cases that will be solved by this predicate and how the current predicate types (if any) do not solve this.
+
 ==== Prerequisites
 
 New attestation types may be very specific to a particular technology or specification, which must be detailed in the prerequisites section. The in-toto attestation framework is likely a necessary prerequisite for all attestation types, but it SHOULD be explicitly mentioned to err on the side of caution.
