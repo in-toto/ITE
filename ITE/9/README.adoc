@@ -61,7 +61,7 @@ This section must discuss at a high level the reason for creating the new attest
 
 ==== Use Cases
 
-This section must discuss the use cases that will be solved by this predicate and how the current predicate types (if any) do not solve this.
+This section must discuss at least one concrete use case that will be covered by this predicate and how the current predicate types (if any) do not solve this.
 
 ==== Prerequisites
 
