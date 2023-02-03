@@ -631,6 +631,12 @@ during discussion.
 WARNING: ITE submissions that do not adequately complete any of the above
 sections will not be approved as ITE Drafts.
 
+As noted before, ITEs may be modified at all stages except when they are marked
+final. When an ITE that is marked accepted or active is changed, a **Changelog**
+section must be added to the document if one is not present already. Every
+change made to the ITE must be accompanied by a dated entry in this section
+that describes the change.
+
 The final implementation must include test code and documentation
 appropriate for either the in-toto user or developer documentation.
 
@@ -953,3 +959,8 @@ This ITE leverages existing infrastructure.
 * link:https://github.com/jenkins-infra/iep[Infrastructure Enhancement Proposal]
 * link:https://github.com/jenkinsci/jep[Jenkins Enhancement Proposal]
 * link:http://www.ietf.org/rfc.html[IETF RFC]
+
+== Changelog
+
+* Jan 9, 2023: Created a changelog requirement for modifications to accepted and
+  active ITEs.
