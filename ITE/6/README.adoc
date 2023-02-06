@@ -1,4 +1,4 @@
-= ITE-6: Generalized link format
+= ITE-6: Enabling contextual in-toto attestations
 :source-highlighter: pygments
 :toc: preamble
 :toclevels: 2
@@ -17,7 +17,7 @@ endif::[]
 | 6
 
 | Title
-| Generalized link format
+| Enabling contextual in-toto attestations
 
 | Sponsor
 | link:https://github.com/santiagotorres[Santiago Torres]
@@ -36,58 +36,71 @@ endif::[]
 [[abstract]]
 == Abstract
 
-This link:https://github.com/in-toto/ITE[in-toto enhancement (ITE)] defines a
-new schema for in-toto link files, which are now generally called
-"attestations." An attestation is authenticated metadata about one or more
-software artifacts. Instead of a fixed schema (`materials`, `products`,
-`command`, etc.), the attestation format allows users to define their own custom
-"predicates" with arbitrary schemas. This makes it easier and more natural to
-express any type of metadata about software. Several pre-defined predicate types
-cover the most common cases, including
-link:https://github.com/in-toto/attestation/blob/main/spec/predicates/provenance.md[provenance]
-for describing the origins of a software artifact,
-link:https://github.com/in-toto/attestation/blob/main/spec/predicates/spdx.md[spdx]
-for supporting link:https://spdx.dev[SPDX], and
-link:https://github.com/in-toto/attestation/blob/main/spec/predicates/link.md[link]
-as a drop-in replacement for the existing link schema.
-
-A future ITE will update the layout format to take advantage of this extra
-information.
-
-More broadly, this ITE moves in-toto to follow the
-link:https://slsa.dev/attestation-model[SLSA attestation model] and is developed
-jointly with
-link:https://cloud.google.com/binary-authorization[Binary Authorization]. The
-goal is to have an industry standard artifact metadata format that can be
-consumed by any system.
+This link:https://github.com/in-toto/ITE[in-toto enhancement (ITE)] introduces
+the in-toto Attestation Framework, a specification for generating and expressing
+verifiable claims about software supply chains. An attestation is authenticated
+metadata about software artifacts and the processes generating them. The
+framework allows users to define custom "predicates" with arbitrary,
+context-specific schemas. Several predicate types have been introduced that
+cover common cases, and accompanying ITEs have been proposed to define processes
+for creating attestation types and updating in-toto layouts to verify them.
 
 [[specification]]
 == Specification
 
-in-toto will support the new attestation format defined in
-<https://github.com/in-toto/attestation>. This defines the schema of the signed
-payload, which is `signed` in the original envelope and `payload` in
+NOTE: The
+link:https://github.com/in-toto/attestation[in-toto Attestation Framework] is
+defined in a stand-alone specification. This ITE presents a high level overview
+of the specification, and readers should refer to the latest versions of the
+full specification for all details.
+
+An attestation is an authenticated metadata that expresses one or more claims
+about software artifacts and the supply chain producing them. This means that as
+with traditional in-toto layout and link metadata, attestations are
+cryptographically signed and embedded in a signature envelope such as
 link:https://github.com/secure-systems-lab/dsse[DSSE].
+
+All attestations have the following general schema:
+
+```json
+{
+  "_type": "https://in-toto.io/Statement/<VERSION>",
+  "subject": [
+    {
+      "name": "<NAME>",
+      "digest": {"<ALGORITHM>": "<VALUE>"}
+    },
+    ...
+  ],
+  "predicateType": "<URI>",
+  "predicate": { ... }
+}
+```
 
 The `_type` field identifies the type of the object, which is unchanged from the
 status quo. Old-style links use the value `link`. New-style attestations use the
-value `https://in-toto.io/Statement/v0.1`, where `0.1` identifies the major
-version of the schema. Implementations can support multiple versions
+value `https://in-toto.io/Statement/<VERSION>`, where `<VERSION>` identifies the
+major version of the schema. Implementations can support multiple versions
 simultaneously by inspecting the `_type`.
 
-Initially, only
-link:https://github.com/in-toto/attestation/blob/main/spec/predicates/link.md["link"-type]
-predicates will be supported because the layout language refers to
-predicate-specific fields, namely `name`, `command`, `products`, and
-`materials`. The filename remains the same: `[name].[KEYID-PREFIX].link`.
+The `predicate` field contains the contextual metadata about the `subject` of
+the attestation. Predicates are identified by the `predicateType` field, which
+in-toto implementations must use to parse the contents of `predicate`.
 
-A future ITE will extend the layout language to support arbitrary
-predicates. That ITE may also update the filename suffix since not all
-attestations are links.
+Several predicate types have been proposed to cover common use cases such as
+link:https://slsa.dev/provenance/[SLSA Provenance] for describing the origins of
+software artifacts,
+link:https://github.com/in-toto/attestation/blob/main/spec/predicates/spdx.md[SPDX]
+for supporting the link:https://spdx.dev[SPDX] SBOM standard, and
+link:https://github.com/in-toto/attestation/blob/main/spec/predicates/link.md[link]
+as a drop-in replacement for existing in-toto link metadata. This ITE is
+accompanied by other ITEs that describe how new attestation types can be
+introduced to the in-toto community, and update the in-toto layout schema to
+verify in-toto attestations.
 
 === Example
 
-The following new-style attestation:
+The following in-toto attestation containing a link predicate:
 
 ```json
 {
@@ -104,7 +117,7 @@ The following new-style attestation:
 }
 ```
 
-is equivalent to the following old-style link:
+is equivalent to the following old-style in-toto link:
 
 ```json
 {
@@ -121,18 +134,23 @@ is equivalent to the following old-style link:
 [[motivation]]
 == Motivation
 
+This ITE was developed jointly by the in-toto maintainers, the
+link:https://cloud.google.com/binary-authorization[Binary Authorization]
+team, and what later became the link:https://slsa.dev[SLSA] team. The framework
+aligns with the link:https://slsa.dev/attestation-model[SLSA Attestation Model]
+and is officially recommended by SLSA.
+
 The two main goals of this ITE are to:
 
 *   Make it easier to author and consume arbitrary software artifact metadata.
     The existing link schema is rigidly focused on running a command that
     converts materials into products. Several types of metadata do not cleanly
     fit this model, such as:
-
-    *   Provenance of a CI/CD workflow, where there is no particular "command"
-        to run.
-    *   Code review status.
-    *   Vulnerability scan result showing known vulnerabilities.
-    *   Policy decision allowing artifact to be used in particular environment.
+    **   Provenance of a CI/CD workflow, where there is no particular "command"
+         to run.
+    **   Code review status.
+    **   Vulnerability scan result showing known vulnerabilities.
+    **   Policy decision allowing artifact to be used in particular environment.
 
 *   Build a larger ecosystem around software artifact metadata that is not
     specific to in-toto (or Binary Authorization or any other consumer). By
@@ -141,38 +159,61 @@ The two main goals of this ITE are to:
     set of attestations that can be consumed by anyone. Furthermore, this paves
     the way for in-toto to support existing formats such as SPDX or CycloneDX.
 
-Furthermore, this ITE fits within the
-link:https://slsa.dev[SLSA framework]. The provenance format in particular is
-the official SLSA recommendation.
-
 [[reasoning]]
 == Reasoning
 
-See <https://github.com/in-toto/attestation#reasoning>. That spec was designed
-specifically for this ITE.
+The in-toto Attestation Framework specification provides more details and can be
+found
+link:https://github.com/in-toto/attestation/blob/main/docs/README.md#reasoning[here].
 
 [[backwards-compatibility]]
 == Backwards Compatibility
 
-New-style link-type attestations will be supported as a drop-in replacement for
-old-style links.
+The new framework supports a drop-in replacement for in-toto link metadata,
+meaning that the types of claims supported so far can continue to be made. Link
+predicates will be supported as a drop-in replacement for old-style links in
+in-toto's workflows.
 
-Old-style links will continue to be supported.
+Separately, in-toto implementations should continue to support old-style link
+metadata alongside attestations for a transitionary period of time. Implementers
+are free to determine the specific duration of this period, but it MUST be
+communicated to the in-toto community. For example, in-toto's reference
+implementation's timeline of support for old-style links will be discussed in
+the official roadmap.
 
 [[security]]
 == Security
 
-This does not affect security because the link-type attestation is isomorphic to
-the existing link schema and can be translated freely in both directions.
+This ITE does not affect the security of in-toto because:
+
+*   the link attestation type is isomorphic to the existing link schema and can
+    be translated freely in both directions.
+*   security must be evaluated in the context of each individual attestation
+    type, which is out of scope of this ITE.
 
 [[testing]]
 == Testing
 
+As with security, each attestation type must be evaluated individually. For
+this, implementers are directed to link:../9/README.adoc[ITE-9] which describes
+the process of introducing new attestation types and how they are evaluated.
+
 [[prototype-implementation]]
 == Prototype Implementation
+
+in-toto's Go implementation has served as the testbed for the Attestation
+Framework. Popular attestation types such as SLSA Provenance have been
+implemented there and used in other applications.
 
 [[infrastructure-requirements]]
 == Infrastructure Requirements
 
+No changes.
+
 [[references]]
 == References
+
+* link:https://github.com/in-toto/attestation[in-toto Attestation Framework]
+* link:../9/README.adoc[ITE-9]
+* link:https://slsa.dev/[SLSA]
+* link:https://slsa.dev/provenance/[SLSA Provenance]
