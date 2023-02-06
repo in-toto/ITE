@@ -41,8 +41,10 @@ the in-toto Attestation Framework, a specification for generating and expressing
 verifiable claims about software supply chains. An attestation is authenticated
 metadata about software artifacts and the processes that generate them. The
 framework allows users to define custom "predicates" with arbitrary,
-context-specific schemas. Several predicate types covering common cases have already been introduced, and accompanying ITEs have been proposed to define processes
-for creating attestation types and updating in-toto layouts to verify them.
+context-specific schemas. Several predicate types covering common cases have
+already been introduced, and accompanying ITEs have been proposed to define
+processes for creating attestation types and updating in-toto layouts to verify
+them.
 
 [[specification]]
 == Specification
@@ -53,9 +55,9 @@ defined in a stand-alone specification. This ITE presents a high level overview
 of the specification, and readers should refer to the latest versions of the
 full specification for all details.
 
-An attestation is an authenticated metadata that expresses one or more claims
-about software artifacts and the supply chain producing them. This means that, as
-with traditional in-toto layout and link metadata, attestations are
+An attestation is a piece of authenticated metadata that expresses one or more
+claims about software artifacts and the supply chain producing them. This means
+that, as with traditional in-toto layout and link metadata, attestations are
 cryptographically signed and embedded in a signature envelope, such as
 link:https://github.com/secure-systems-lab/dsse[DSSE].
 
@@ -80,11 +82,11 @@ The `_type` field identifies the type of the object, which is unchanged from the
 status quo. Old-style links use the value `link`. New-style attestations use the
 value `https://in-toto.io/Statement/<VERSION>`, where `<VERSION>` identifies the
 major version of the schema. Implementations can support multiple versions
-simultaneously by inspecting the `_type`.
+simultaneously using the `_type` field.
 
 The `predicate` field contains the contextual metadata about the `subject` of
 the attestation. Predicates are identified by the `predicateType` field, which
-in-toto implementations must use to parse the contents of `predicate`.
+in-toto implementations must use to parse the contents of the `predicate` field.
 
 Several predicate types have been proposed to cover common use cases such as
 link:https://slsa.dev/provenance/[SLSA Provenance] for describing the origins of
@@ -169,9 +171,9 @@ link:https://github.com/in-toto/attestation/blob/main/docs/README.md#reasoning[h
 == Backwards Compatibility
 
 The new framework supports a drop-in replacement for in-toto link metadata,
-meaning that the types of claims supported up to this point so can continue to be made. Link
-predicates will be supported as a drop-in replacement for old-style links in
-in-toto's workflows.
+meaning that the types of claims supported up to this point can continue to be
+made. Link predicates will be supported as a drop-in replacement for old-style
+links in in-toto's workflows.
 
 Separately, in-toto implementations should continue to support old-style link
 metadata alongside attestations for a transitionary period of time. Implementers
@@ -193,7 +195,8 @@ This ITE does not affect the security of in-toto because:
 [[testing]]
 == Testing
 
-As with security, each attestation type must be evaluated individually. To learn more,implementers are directed to link:../9/README.adoc[ITE-9], which describes
+As with security, each attestation type must be evaluated individually. To learn
+more, implementers are directed to link:../9/README.adoc[ITE-9], which describes
 the process of introducing new attestation types and how they are evaluated.
 
 [[prototype-implementation]]
