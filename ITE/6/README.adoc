@@ -39,10 +39,9 @@ endif::[]
 This link:https://github.com/in-toto/ITE[in-toto enhancement (ITE)] introduces
 the in-toto Attestation Framework, a specification for generating and expressing
 verifiable claims about software supply chains. An attestation is authenticated
-metadata about software artifacts and the processes generating them. The
+metadata about software artifacts and the processes that generate them. The
 framework allows users to define custom "predicates" with arbitrary,
-context-specific schemas. Several predicate types have been introduced that
-cover common cases, and accompanying ITEs have been proposed to define processes
+context-specific schemas. Several predicate types covering common cases have already been introduced, and accompanying ITEs have been proposed to define processes
 for creating attestation types and updating in-toto layouts to verify them.
 
 [[specification]]
@@ -55,9 +54,9 @@ of the specification, and readers should refer to the latest versions of the
 full specification for all details.
 
 An attestation is an authenticated metadata that expresses one or more claims
-about software artifacts and the supply chain producing them. This means that as
+about software artifacts and the supply chain producing them. This means that, as
 with traditional in-toto layout and link metadata, attestations are
-cryptographically signed and embedded in a signature envelope such as
+cryptographically signed and embedded in a signature envelope, such as
 link:https://github.com/secure-systems-lab/dsse[DSSE].
 
 All attestations have the following general schema:
@@ -150,14 +149,14 @@ The two main goals of this ITE are to:
          to run.
     **   Code review status.
     **   Vulnerability scan result showing known vulnerabilities.
-    **   Policy decision allowing artifact to be used in particular environment.
+    **   Policy decision allowing an artifact to be used in a particular environment.
 
 *   Build a larger ecosystem around software artifact metadata that is not
     specific to in-toto (or Binary Authorization or any other consumer). By
     supporting a more generic, extensible attestation format, we allow CI/CD
     pipelines, vulnerability scanners, and other systems to generate a single
     set of attestations that can be consumed by anyone. Furthermore, this paves
-    the way for in-toto to support existing formats such as SPDX or CycloneDX.
+    the way for in-toto to support existing formats, such as SPDX or CycloneDX.
 
 [[reasoning]]
 == Reasoning
@@ -170,14 +169,14 @@ link:https://github.com/in-toto/attestation/blob/main/docs/README.md#reasoning[h
 == Backwards Compatibility
 
 The new framework supports a drop-in replacement for in-toto link metadata,
-meaning that the types of claims supported so far can continue to be made. Link
+meaning that the types of claims supported up to this point so can continue to be made. Link
 predicates will be supported as a drop-in replacement for old-style links in
 in-toto's workflows.
 
 Separately, in-toto implementations should continue to support old-style link
 metadata alongside attestations for a transitionary period of time. Implementers
 are free to determine the specific duration of this period, but it MUST be
-communicated to the in-toto community. For example, in-toto's reference
+communicated to the in-toto community. For example, the in-toto reference
 implementation's timeline of support for old-style links will be discussed in
 the official roadmap.
 
@@ -194,15 +193,14 @@ This ITE does not affect the security of in-toto because:
 [[testing]]
 == Testing
 
-As with security, each attestation type must be evaluated individually. For
-this, implementers are directed to link:../9/README.adoc[ITE-9] which describes
+As with security, each attestation type must be evaluated individually. To learn more,implementers are directed to link:../9/README.adoc[ITE-9], which describes
 the process of introducing new attestation types and how they are evaluated.
 
 [[prototype-implementation]]
 == Prototype Implementation
 
 in-toto's Go implementation has served as the testbed for the Attestation
-Framework. Popular attestation types such as SLSA Provenance have been
+Framework. Popular attestation types like SLSA Provenance have been
 implemented there and used in other applications.
 
 [[infrastructure-requirements]]
