@@ -41,15 +41,15 @@ With ITE-6, in-toto opened the door to custom attestation types rather than the 
 [[specification]]
 == Specification
 
-The in-toto attestation framework enables developers to create authenticated metadata about various software artifacts. A more detailed explanation of this framework is available in ITE-6 and the formal definition.
+The link:https://github.com/in-toto/attestation/[in-toto Attestation Framework] enables developers to create authenticated metadata about various software artifacts. A more detailed explanation of this framework is available in ITE-6 and the link:https://github.com/in-toto/attestation/tree/main/spec/v1.0-draft[formal definition].
 
 When discussing a new attestation type, what is really being defined is a new type of link:https://github.com/in-toto/attestation/tree/main/spec#predicate[predicate]. The developer(s) of this new predicate must create a formal document that specifies the predicate type, and discusses several other related aspects. The purpose and prerequisites for the new attestation type MUST be defined. The document should also include a model that describes how the various components of the predicate map to supply chain semantics, juxtaposed with detailed use cases. These use cases SHOULD include example metadata that clearly highlight how the proposed predicate addresses the shortcoming described by them. Including these aspects will aid readers and future adopters understand the why and how of a particular attestation type.
 
-The specification MUST contain a detailed schema of the fields that make up the predicate. This schema MUST define unambiguously a unique predicateType following the rules defined by the attestation framework. The schema must also clearly define the types of every field, with ranges for values where applicable. Further, the specification MUST contain rules for parsing the fields, as well as make recommendations for handling edge cases. For example, it may be preferable in some cases to silently allow extra, undefined fields, while in other cases such metadata should be rejected.
+The specification MUST contain a detailed schema of the fields that make up the predicate. This schema MUST define unambiguously a unique `predicateType` following the rules defined by the attestation framework. The schema must also clearly define the types of every field, with ranges for values where applicable. Further, the specification MUST contain rules for parsing the fields, as well as make recommendations for handling edge cases, where parsing or handling of fields would deviate from the standard link:https://github.com/in-toto/attestation/tree/main/spec/v1.0-draft#parsing-rules[parsing rules]. For example, it may be preferable in some cases to silently allow extra, undefined fields, while in other cases such metadata should be rejected.
 
-Since this process is designed to promote use of new attestation types across ecosystems and organizations, it is important to actually communicate the proposal to the broader in-toto community. The developers of the new type are encouraged to use the next community meeting, the mailing list, as well as other communication channels like Slack and IRC where the in-toto community has a presence to discuss the new document. This is a necessary step to list the new attestation type in the in-toto library of attestation types.
+Since this process is designed to promote use of new attestation types across ecosystems and organizations, it is important to actually communicate the proposal to the broader in-toto community. The developers of the new type are encouraged to use the next community meeting, the mailing list, as well as other communication channels like Slack and IRC where the in-toto community has a presence to discuss the new document. This is a necessary step to list the new attestation type in the in-toto library of community reviewed attestation types.
 
-ITE-6 established the in-toto/attestation repository where the specification for attestations is defined. This repository can be used to maintain a library of attestation types as a starting point, at least until the number of types requires a stand-alone home for them. A group of community members must be selected to curate and generally maintain this library of attestations, and they can be selected through the in-toto community meeting.
+ITE-6 established the in-toto/attestation repository where the specification for attestations is defined. This repository is also used to maintain a library of community reviewed predicate types. A group of link:https://github.com/in-toto/attestation/blob/main/MAINTAINERS.md[community members] has been selected to curate and generally maintain this library of attestations. This library of attestations provides peer-reviewed definitions of predicate types. These types are not mandated or endorsed, however we encourage use and refinement of the predicates in the library. Consistent adoption of standardised predicates helps achieve the in-toto Attestation Framework's goal of building an ecosystem around software artifact metadata.
 
 === Document Format
 
@@ -65,11 +65,11 @@ This section must discuss at least one concrete use case that will be covered by
 
 ==== Prerequisites
 
-New attestation types may be very specific to a particular technology or specification, which must be detailed in the prerequisites section. The in-toto attestation framework is likely a necessary prerequisite for all attestation types, but it SHOULD be explicitly mentioned to err on the side of caution.
+New attestation types may be very specific to a particular technology or specification, which must be detailed in the prerequisites section. The in-toto Attestation Framework is likely a necessary prerequisite for all attestation types, but it SHOULD be explicitly mentioned to err on the side of caution.
 
 ==== Model
 
-The in-toto attestation framework was designed with software supply chain specific metadata in mind. However, supply chains are vast and composed of many different components and phases. Therefore, it is important for the attestation type to declare at a high level the steps and functionaries (in the generic) it is relevant to.
+The in-toto Attestation Framework was designed with software supply chain specific metadata in mind. However, supply chains are vast and composed of many different components and phases. Therefore, it is important for the attestation type to declare at a high level the steps and functionaries (in the generic) it is relevant to.
 
 ==== Schema
 
@@ -78,10 +78,11 @@ The schema of the attestation type is the core part of the document. It defines 
 ===== Parsing Rules
 
 Parsing rules are important to define explicitly to ensure implementations can handle example attestations correctly. For example, this section can discuss how the attestation types are versioned, how non-specified fields must be handled, and so on.
+Attestations definitions MUST use this section to define how the parsing rules differ from the framework's general link:https://github.com/in-toto/attestation/tree/main/spec/v1.0-draft#parsing-rules[parsing rules].
 
 ===== Fields
 
-This subsection defines the fields that make up the new attestation type. At this point, it is important to remember that when introducing a new attestation type really means introducing a new predicate type. As such, this subsection MUST only define the predicate and not any fields external to it, such as the Statement.
+This subsection defines the fields that make up the new attestation type. At this point, it is important to remember that introducing a new attestation type really means introducing a new Predicate type. As such, this subsection MUST only define the Predicate and not any fields external to it, such as the Statement.
 
 The fields must be listed with their names, the type of information they can hold, whether they are required or not, and a textual description of their expected contents. If the legal values for a field are known, or belong in a range, this must be specified in the description.
 
