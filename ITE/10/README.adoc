@@ -45,163 +45,153 @@ over ITE-6 attestations.
 [[specification]]
 == Specification
 
-The in-toto specification describes the following schema for layouts.
+Note: this document assumes the reader is familiar with ITE-6 and the in-toto
+Attestation Framework.
 
-```json
-{
-    "_type": "layout",
-    "expires": "<EXPIRES>",
-    "readme": "<README>",
-    "keys": {
-        "<KEYID>": "<PUBKEY_OBJECT>"
-    },
-    "steps": ["<STEP>", "..."],
-    "inspect": ["<INSPECTION>", "..."]
-}
+in-toto layouts have two key mechanisms for specifying policies: steps and
+inspections. Steps are used to reason about and express constraints regarding
+operations performed as part of the supply chain. Constraints are currently
+expressed using in-toto artifact rules against the materials and products of a
+step. Each step definition also declares the set of functionaries authorized to
+perform the step and the required number of functionaries that need to sign off
+on the step.
+
+Inspections, on the other hand, are executed during the verification workflow to
+complement in-toto's step verifications with extra checks. Typically,
+inspections invoke external commands or scripts shipped with the layout. They
+may also use artifact rules. Currently, inspections are used for constraints
+in-toto layouts do not support. For example, in-toto links can record arbitrary
+information in their opaque environment and byproducts fields. To validate their
+contents, supply chain owners must rely on custom verification scripts invoked
+as inspections.
+
+=== Classifying Predicates
+
+Prior to ITE-6, all steps were validated against in-toto links. Inspection
+executions also resulted in the generation of in-toto links that were then
+validated. With the introduction of the in-toto Attestation Framework, it is
+necessary to rework the layout to support verifying a variety of _predicates_.
+As the framework is designed to generate claims pertaining to how software is
+produced, each predicate type can be mapped to a step in the software supply
+chain. However, it is first necessary to understand the nature of each step, and
+therefore its predicate type. in-toto was originally designed with the
+assumption that a step in the software supply chain affects in some manner the
+artifacts that constitute the supply chain. ITE-6 showed that some steps do not
+fit the materials and products model. This is a factor in _verifying_ such
+predicates using in-toto layouts.
+
+Therefore, all predicates supported for verification in an in-toto layout must
+categorized as one of two types:
+
+* the link type: these are based on classic in-toto links for steps that affect
+  artifacts in some manner. They consume some artifacts as materials and produce
+  others as products. The subject of such attestations indicate the products of
+  the step. Eg. in-toto links, SLSA Provenance.
+* the attribute type: these predicates record contextual attributes about one or
+  more artifacts. The operations they represent consume artifacts as materials
+  (recorded as the subject of such attestations) and produce attributes about
+  them as the outcome. Eg. test results, reviews.
+
+Note that predicates that fit the first category may also record certain
+attributes. For example, the environment field in in-toto links can include such
+attribute information.
+
+With this representation of different predicate types, step declarations in
+layouts can _chain_ different operations represented by distinct predicate types
+together, a fundamental feature of in-toto. For example, a code review step
+represented by a review predicate type that follows a checkout step that fetches
+source code represented by an in-toto link can use in-toto's artifact rules to
+ensure the review was performed against the sources fetched by the checkout
+step.
+
+=== Constraints
+
+As noted before, current in-toto layouts constraints are expressed via artifact
+rules. As the previous in-toto verification model primarily focused on steps
+that affected artifacts, constraints on custom attributes recorded in opaque
+fields such as environment and byproducts were left to inspections. With the
+rise of attribute focused predicates, in-toto layouts must support setting
+constraints on their contents.
+
+As such, this ITE proposes the following schema for step declarations.
+
+```yaml
+name: string
+command: string
+predicates: list of TypeURIs
+expectedMaterials: list of constraints
+expectedProducts: list of constraints
+expectedAttributes: list of constraints
+functionaries: list of strings
+threshold: int
 ```
 
-An in-toto layout provides two semantics for software supply chain owners to
-define policies: steps and inspections. Steps are used to reason about and
-express constraints regarding operations _already_ performed as part of the
-supply chain. The verification is focused on ensuring authorized functionaries
-performed each step and validating the integrity of artifacts as they move from
-one step to the next. Inspections are executed _during_ verification to perform
-any other checks that are defined as external scripts.
+Each entry in `expectedMaterials`, `expectedProducts`, and `expectedAttributes`
+corresponds to one rule, similar to the current in-toto layouts. However, along
+with in-toto artifact rules, other DSLs may be used to specify attribute
+specific constraints. Languages such as Rego, CUE, and CEL have been designed to
+enable such schema and data validation. Each constraint must identify the DSL
+used to ensure the verification engine can appropriately handle the rules. In
+some cases, the actual rules may need to be encoded in some form prior to
+embedding in the layout. The verification engine uses the information about the
+language to identify how to parse the rule.
 
-TODO: this pass does not revise artifact rules for steps.
-
-This ITE primarily updates the schema and capabilities for inspections. As it
-stands, the inspections semantic can already be used to apply arbitrary
-constraints to data captured in in-toto links. Similarly, they can apply
-constraints to attestations as well. We update in-toto inspections with more
-capabilities so that they do not necessarily have to be executed as separate
-scripts. This is achieved by providing multiple options for the domain specific
-language used to express constraints. Currently, inspections only support using
-in-toto's artifact rules. With this ITE, this will remain an option, but
-inspections can also be written to not execute separate shell scripts and use
-artifact rules, and instead express data constraints using DSLs like Rego or
-Cue. The current inspection schema is as follows:
-
-```json
-{
-    "_type": "inspection",
-    "name": "<NAME>",
-    "expected_materials": [
-        [ "<ARTIFACT_RULE>" ],
-        "..."
-    ],
-    "expected_products": [
-        [ "<ARTIFACT_RULE>" ],
-        "..."
-    ],
-    "run": "<COMMAND>"
-}
+```yaml
+language: string
+rule: object
 ```
 
-The above schema can also be expressed using the following generalization that
-allows for multiple DSLs. Note that several fields are optional.
+=== Verification Workflow
 
+After verifying the layout and attestation signatures (including thresholds
+where applicable), attestations must be parsed to identify the materials and
+products of the step they represent. In link type predicates, the materials are
+found within the predicate and products are recorded as the attestation's
+subject. Note that alongside these artifacts, other predicate fields excluding
+the materials must also be parsed in as part of the products to enable policies
+on their contents.  For attribute type predicates, the materials are the
+attestation's subject and products are exclusively the attributes recorded
+within the predicate.
 
-```json
-{
-    "_type": "inspection",
-    "name": "<NAME>",
-    "functionaries": ["<KEYID>", "..."],
-    "threshold": "<THRESHOLD>",
-    "subject": ["<SUBJECT>", "..."],
-    "policyLanguage": "<POLICY_LANGUAGE>",
-    "policy": "<POLICY>",
-    "run": "<COMMAND>"
-}
+With this internal representation of all attestations created, each step's
+material policies are applied against the material artifacts. If an error is
+encountered, the verification workflow is terminated. If not, the workflow
+proceeds to the product policies.
+
+=== Role of Inspections
+
+Inspections are primarily used at verification time to examine the final 
+products and their in-toto metadata. They may be of two types. In the first,
+inspections largely function like they do in the current in-toto specification.
+They are used as a mechanism to execute custom checks during the verification
+workflow. Their materials and products fields are similarly enhanced with
+support for policy languages alongside in-toto artifact rules. By default,
+inspections are expected to generate in-toto links. However, the inspection
+declaration may specify an alternative predicate the check may result in.
+
+```yaml
+name: string
+command: string
+predicates: list of TypeURIs
+expectedMaterials: list of constraints
+expectedProducts: list of constraints
+expectedAttributes: list of constraints
 ```
 
-Currently supported inspections _always_ execute a command or script and
-generate link metadata. As this is during verification, they are not signed. As
-such, to support the current model, `functionaries` and `threshold` are
-optional. Similarly, `subject` is also unnecessary. `policyLanguage` is used to
-indicate the policy is expressed as in-toto artifact rules and `policy` contains
-the actual rules currently expressed as `expected_materials` and
-`expected_products`.
+The second type of inspections do not execute a command or script to perform
+some check. Instead, they are used to apply constraints on the _subjects_ of
+in-toto attestations for a supply chain. Instead of `command`, the schema has a
+`subject` field that accepts one or more patterns. The claims from all
+attestations part of the verification whose subjects match the specified
+patterns are collated. The inspection's constraints are then applied to the
+claims pertaining to the subjects.
 
-However, this model provides a lot of flexibility when it comes to other DSLs.
-Consider the following subset of the block above:
-
-```json
-{
-    "_type": "inspection",
-    "name": "<NAME>",
-    "functionaries": ["<KEYID>", "..."],
-    "threshold": "<THRESHOLD>",
-    "subject": ["<SUBJECT>", "..."],
-    "policyLanguage": "<POLICY_LANGUAGE>",
-    "policy": "<POLICY>",
-}
+```yaml
+name: string
+subject: list of patterns
+predicates: list of TypeURIs
+expectedAttributes: list of constraints
 ```
-
-Only `run` is removed as in this example, an external command or script is not
-invoked. Instead, the `policyLanguage` used is a logic programming language and
-the `policy` expresses directly the checks that previously needed to be a
-separate script. Here, `subject` is used to identify the sets of attestations
-the policy is applied against. Further, the `functionaries` and `threshold`
-fields can be used to directly check the source of the claims being verified by
-the policy. In the current model, as inspections reason about link metadata
-generated for the execution of the inspection itself, any inspection that
-used a script to check contents of link metadata from some prior step also
-needed to verify the functionary signing the metadata in the script--in-toto's
-semantics are not used directly.
-
-TODO: the last bit of the paragraph is very convoluted. What I'm trying to say
-is that inspection scripts must also reason about and verify any prior metadata
-they're looking at is signed by the right keys, with the right threshold, and so
-on. They cannot just verify the claims themselves. This is important because:
-1. you may have link metadata that was signed by the wrong functionary, rejected
-   during verification of the step, but the threshold was still met. Claims made
-   by this metadata shouldn't be trusted by inspections.
-2. you may have link metadata with differing attributes for the same step by
-   design. One example: reproducible builds with one piece of metadata generated
-   by an isolated environment. The inspection here should be able to reason
-   about which metadata has these claims and if it's from the right environment.
-
-Note that a policy specified in an inspection block is not applied to some
-specified set of attestation types. Policies apply to _subjects_ of the supply
-chain, whether artifacts or other processes captured using ITE-4 semantics.
-During the verification workflow, all attestations are parsed to represent their
-claims in the context of the subjects they apply to. So, all available
-information for a subject is available along with the functionaries signing for
-each individual claim, and this representation of attestation claims is used to
-apply policies. Attestations must not be parsed if their signatures cannot be
-verified using functionary information available in the layout.
-
-=== Specifying Policies
-
-In general, each unit policy applies one constraint. For example, a policy might
-mirror in-toto's artifact rules, ensuring that all the materials and products of
-some step in the supply chain are as expected. Alternatively, a policy can apply
-a property-oriented constraint to an artifact or step, such as validating the
-Provenance of an artifact or that its build process was performed in an isolated
-and hermetic build environment. Note that all of these types of policies can
-coexist and successful verification is contingent on all policy validations
-succeeding.
-
-This indicates that developers need a great deal of flexibility in specifying
-policies _and_ that any domain-specific language chosen or created to express
-policies must have the necessary capabilities to fit these requirements.
-
-Prior literature has explored the use of logic based languages and their
-derivatives for specifying and validating policies. Policies, at their core, are
-logic programs that are applied against a set of claims, expressed here as
-in-toto attestations. This ITE uses languages such as Rego and CUE as examples
-of such languages, but leaves the specific choices to the in-toto community and
-adopters. The new layout schema proposed above includes a `<POLICY_LANGUAGE>`
-attribute for each policy to enable this variety in choice.
-
-=== Validating Policies
-
-The in-toto verification workflow is updated to support different types of
-inspections as defined in this ITE. For new style inspection blocks, the
-verification workflow uses the `policyLanguage` field to decide which policy
-engine to use. If `run` is specified, the workflow executes the command or
-script as it does now.
 
 [[motivation]]
 == Motivation
@@ -219,40 +209,26 @@ directly reason about the sources of claims made in them.
 [[reasoning]]
 == Reasoning
 
+This ITE presents certain changes that necessitate further reasoning.
+
+=== Predicate Classification
+
+One of in-toto's key properties is the ability to chain different steps
+together, and therefore verifying every step used the right artifacts. By
+classifying predicates based on the type of step they represent, we gain the
+ability to place attestations that exclusively contain claims about artifacts in
+the steps graph.
+
+=== New Policy Languages
+
 The intent of ITE-6 and the in-toto Attestation framework is to enable software
 producers to emit a wide range of contextual information pertaining to their
 supply chain. The intent of this ITE is to extend ITE-6 with policy definitions
 such that attestation producers can validate the information in ITE-6
 attestations. It is clear from ITE-6 that there is not a one-size-fits-all
 solution to policy definitions. Therefore, to support a wide variety of use
-cases, this ITE proposes the use of existing policy languages such as Rego and
-CUE.
-
-=== Rego
-
-Rego is a declarative policy language that is part of Open Policy Agent (OPA).
-Rego policies are composed of assertion queries that are applied against some
-specified data. If the data does not meet every assertion specified for it, the
-policy fails.
-
-Within the context of in-toto attestations, Rego can be used to define a set of
-rules for the data contained within predicates. If every assertion passes for
-some presented attestation, the in-toto verification workflow considers the
-property corresponding to the policy as met.
-
-The use of Rego over in-toto attestations is not new. Witness, an in-toto
-implementation by TestifySec supports the use of Rego policies.
-
-=== CUE
-
-CUE is a data validation language that can be used to validate data and schemas.
-It can be used to define constraints for some input data, and validation fails
-if the input data does not meet the specified constraints. As with Rego, CUE can
-be used to define rules for the data contained within in-toto predicates. During
-verification, if some attestation is presented that does not meet all the
-specified constraints, verification is unsuccessful. On the other hand, if all
-the constraints specified for a property's policy are met by the attestation,
-verification of that property is successful.
+cases, this ITE proposes the use of existing policy languages such as Rego, CUE,
+and CEL.
 
 [[backwards-compatibility]]
 == Backwards Compatibility
@@ -286,3 +262,4 @@ None yet.
 
 * link:https://www.openpolicyagent.org/docs/latest/policy-language/[Rego: Open Policy Agent's Policy Language]
 * link:https://cuelang.org/docs/about/[CUE]
+* link:https://github.com/google/cel-spec[CEL]
