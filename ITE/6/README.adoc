@@ -43,8 +43,8 @@ metadata about software artifacts and the processes that generate them. The
 framework allows users to define custom "predicates" with arbitrary,
 context-specific schemas. Several predicate types covering common cases have
 already been introduced, and accompanying ITEs have been proposed to define
-processes for creating attestation types and updating in-toto layouts to verify
-them.
+processes for creating predicate types and with new in-toto layout schemas that
+can verify them.
 
 [[specification]]
 == Specification
@@ -95,7 +95,7 @@ link:https://github.com/in-toto/attestation/blob/main/spec/predicates/spdx.md[SP
 for supporting the link:https://spdx.dev[SPDX] SBOM standard, and
 link:https://github.com/in-toto/attestation/blob/main/spec/predicates/link.md[link]
 as a drop-in replacement for existing in-toto link metadata. This ITE is
-accompanied by other ITEs that describe how new attestation types can be
+accompanied by other ITEs that describe how new predicate types can be
 introduced to the in-toto community, and update the in-toto layout schema to
 verify in-toto attestations.
 
@@ -105,7 +105,7 @@ The following in-toto attestation containing a link predicate:
 
 ```json
 {
-  "_type": "https://in-toto.io/Statement/v0.1",
+  "_type": "https://in-toto.io/Statement/v1",
   "subject": [{"name": "out.bin", "digest": {"sha256": "fedc9876..."}}],
   "predicateType": "https://in-toto.io/Link/v0.2",
   "predicate": {
@@ -185,26 +185,34 @@ the official roadmap.
 [[security]]
 == Security
 
-This ITE does not affect the security of in-toto because:
+This ITE impacts the security of in-toto in a way that cannot be clearly defined
+here because security must be evaluated in the context of each individual
+predicate type. This is out of scope of this ITE and is delegated to each type.
 
-*   the link attestation type is isomorphic to the existing link schema and can
-    be translated freely in both directions.
-*   security must be evaluated in the context of each individual attestation
-    type, which is out of scope of this ITE.
+Consider also that each additional predicate type supported adds complexity to
+implementations and thus adds some amount of residual risk due to the increased
+attack surface. Given that signatures are verified before predicate type parsing
+is performed, this risk increase should be from trusted parties who are acting
+malicious (e.g., insider attacks). Security weaknesses due to a predicate type
+are thus likely to result in a malicious functionary or sublayout creator being
+able to mask malicious behavior or escalate the trust in their role.
+
+Note that the link predicate type is isomorphic to the existing link schema and
+can be translated freely in both directions.
 
 [[testing]]
 == Testing
 
-As with security, each attestation type must be evaluated individually. To learn
+As with security, each predicate type must be evaluated individually. To learn
 more, implementers are directed to link:../9/README.adoc[ITE-9], which describes
-the process of introducing new attestation types and how they are evaluated.
+the process of introducing new predicate types and how they are evaluated.
 
 [[prototype-implementation]]
 == Prototype Implementation
 
 in-toto's Go implementation has served as the testbed for the Attestation
-Framework. Popular attestation types like SLSA Provenance have been
-implemented there and used in other applications.
+Framework. Popular predicate types like SLSA Provenance have been implemented
+there and used in other applications.
 
 [[infrastructure-requirements]]
 == Infrastructure Requirements
