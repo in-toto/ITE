@@ -7,10 +7,10 @@
 * [ITE-3: Real-world example of combining TUF and in-toto for packaging Datadog Agent integrations](ITE/3/README.adoc)
 * [ITE-4: Generic URI Schemes for in-toto](ITE/4/README.adoc)
 * [ITE-5: Disassociate signature envelope specification from in-toto](ITE/5/README.adoc)
+* [ITE-6: Enabling contextual in-toto attestations](ITE/6/README.adoc)
 
 ## Draft
 
-* [ITE-6: Enabling contextual in-toto attestations](ITE/6/README.adoc)
 * [ITE-7: Signing & Verification With X509](ITE/7/README.adoc)
 * [ITE-9: Introducing new in-toto Attestation types](ITE/9/README.adoc)
 
