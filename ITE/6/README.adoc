@@ -23,7 +23,7 @@ endif::[]
 | link:https://github.com/santiagotorres[Santiago Torres]
 
 | Status
-| Draft
+| Accepted
 
 | Type
 | Standards
