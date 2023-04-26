@@ -74,23 +74,23 @@ necessary to rework the layout to support verifying a variety of _predicates_.
 As the framework is designed to generate claims pertaining to how software is
 produced, each predicate type can be mapped to a step in the software supply
 chain. However, it is first necessary to understand the nature of each step, and
-therefore its predicate type. in-toto was originally designed with the
+therefore its predicate types. in-toto was originally designed with the
 assumption that a step in the software supply chain affects in some manner the
 artifacts that constitute the supply chain. ITE-6 showed that some steps do not
 fit the materials and products model. This is a factor in _verifying_ such
 predicates using in-toto layouts.
 
 Therefore, all predicates supported for verification in an in-toto layout must
-categorized as one of two types:
+categorized as one of two classes:
 
-* the link type: these are based on classic in-toto links for steps that affect
-  artifacts in some manner. They consume some artifacts as materials and produce
-  others as products. The subject of such attestations indicate the products of
-  the step. Eg. in-toto links, SLSA Provenance.
-* the attribute type: these predicates record contextual attributes about one or
-  more artifacts. The operations they represent consume artifacts as materials
-  (recorded as the subject of such attestations) and produce attributes about
-  them as the outcome. Eg. test results, reviews.
+* the link class: these are based on classic in-toto links for steps that
+  transform artifacts in some manner. They consume some artifacts as materials
+  and produce others as products. The subject of such attestations indicate the
+  products of the step. Eg. in-toto links, SLSA Provenance.
+* the attribute class: these predicates record contextual attributes about one
+  or more artifacts. The operations they represent consume artifacts as
+  materials (recorded as the subject of such attestations) and produce
+  attributes about them as the outcome. Eg. test results, reviews.
 
 Note that predicates that fit the first category may also record certain
 attributes. For example, the environment field in in-toto links can include such
@@ -145,18 +145,20 @@ rule: object
 
 After verifying the layout and attestation signatures (including thresholds
 where applicable), attestations must be parsed to identify the materials and
-products of the step they represent. In link type predicates, the materials are
+products of the step they represent. In link class predicates, the materials are
 found within the predicate and products are recorded as the attestation's
 subject. Note that alongside these artifacts, other predicate fields excluding
 the materials must also be parsed in as part of the products to enable policies
-on their contents.  For attribute type predicates, the materials are the
+on their contents. For attribute class predicates, the materials are the
 attestation's subject and products are exclusively the attributes recorded
 within the predicate.
 
 With this internal representation of all attestations created, each step's
-material policies are applied against the material artifacts. If an error is
-encountered, the verification workflow is terminated. If not, the workflow
-proceeds to the product policies.
+`expectedMaterial` policies are applied against the material artifacts. If an
+error is encountered, the verification workflow is terminated. Similarly, the
+policies recorded for `expectedProducts` are applied against product artifacts
+and finally, policies in `expectedAttributes` are applied against all other
+claims.
 
 === Role of Inspections
 
@@ -164,8 +166,9 @@ Inspections are primarily used at verification time to examine the final
 products and their in-toto metadata. They may be of two types. In the first,
 inspections largely function like they do in the current in-toto specification.
 They are used as a mechanism to execute custom checks during the verification
-workflow. Their materials and products fields are similarly enhanced with
-support for policy languages alongside in-toto artifact rules. By default,
+workflow. Their `expectedMaterials` and `expectedProducts` fields are similarly
+enhanced with support for policy languages alongside in-toto artifact rules, and
+they're joined by `expectedAttributes` like step definitions. By default,
 inspections are expected to generate in-toto links. However, the inspection
 declaration may specify an alternative predicate the check may result in.
 
@@ -181,10 +184,12 @@ expectedAttributes: list of constraints
 The second type of inspections do not execute a command or script to perform
 some check. Instead, they are used to apply constraints on the _subjects_ of
 in-toto attestations for a supply chain. Instead of `command`, the schema has a
-`subject` field that accepts one or more patterns. The claims from all
+`subject` field that accepts one or more patterns that are applied against the
+subjects of all attestations in the bundle being verified. The claims from all
 attestations part of the verification whose subjects match the specified
 patterns are collated. The inspection's constraints are then applied to the
-claims pertaining to the subjects.
+claims pertaining to the subjects. As these are applied against subjects rather
+than steps, only `expectedAttributes` is supported.
 
 ```yaml
 name: string
