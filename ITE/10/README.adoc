@@ -141,25 +141,6 @@ language: string
 rule: object
 ```
 
-=== Verification Workflow
-
-After verifying the layout and attestation signatures (including thresholds
-where applicable), attestations must be parsed to identify the materials and
-products of the step they represent. In link class predicates, the materials are
-found within the predicate and products are recorded as the attestation's
-subject. Note that alongside these artifacts, other predicate fields excluding
-the materials must also be parsed in as part of the products to enable policies
-on their contents. For attribute class predicates, the materials are the
-attestation's subject and products are exclusively the attributes recorded
-within the predicate.
-
-With this internal representation of all attestations created, each step's
-`expectedMaterial` policies are applied against the material artifacts. If an
-error is encountered, the verification workflow is terminated. Similarly, the
-policies recorded for `expectedProducts` are applied against product artifacts
-and finally, policies in `expectedAttributes` are applied against all other
-claims.
-
 === Role of Inspections
 
 Inspections are primarily used at verification time to examine the final 
@@ -197,6 +178,40 @@ subject: list of patterns
 predicates: list of TypeURIs
 expectedAttributes: list of constraints
 ```
+
+=== Verification Workflow
+
+As with the current in-toto specification, the verification workflow is
+presented with a root layout, public keys to verify the layout's signatures, and
+a bundle of in-toto attestations. The workflow, at a high level, can be
+described as follows:
+
+.   The layout's signatures are verified using the provided keys.
+.   The layout is parsed and its validity, i.e. the expiration date, is
+    checked.
+.   For each step in the layout, the corresponding attestations are loaded. The
+    attestations must match the expected predicate types. As each attestation
+    is loaded, its signatures are first verified against expected signers for
+    the step. Also, a threshold of attestations are loaded where specified.
+..  If the step specifies a sublayout, the verification workflow is recursively
+    applied against the corresponding layout.
+..  Else, after the attestations are loaded with corresponding mapping for
+    materials (and products if it's a link class attestation), the constraints
+    specified in `expectedMaterials`, `expectedProducts`, and
+    `expectedAttributes` are verified respectively.
+.   For each inspection:
+..  If the inspection expects a command run, the command is executed and a link
+    class attestation is generated. Then, the `expectedMaterials`,
+    `expectedProducts`, and `expectedAttributes` are applied against the
+    contents of the attestation.
+..  Else, the inspection applies against one or more subjects. The patterns
+    specified are against all subjects in every attestation in the bundle. The
+    attestations that match the patterns are parsed to extract their claims. If
+    the attestations signatures weren't verified already when verifying steps,
+    the signatures are verified now. Each claim is associated with the subject
+    it applies to, the predicate type of the claiming attestation, and the
+    functionary that signed the attestation. Finally, the `expectedAttributes`
+    constraints are applied against the collection of claims.
 
 [[motivation]]
 == Motivation
