@@ -65,6 +65,10 @@ information in their opaque environment and byproducts fields. To validate their
 contents, supply chain owners must rely on custom verification scripts invoked
 as inspections.
 
+In this ITE, the layout is updated to support a third type of policy
+specification, against attestation subjects. The updated layout schema can be
+found link:layout.proto[here].
+
 === Classifying Predicates
 
 Prior to ITE-6, all steps were validated against in-toto links. Inspection
@@ -104,21 +108,30 @@ source code represented by an in-toto link can use in-toto's artifact rules to
 ensure the review was performed against the sources fetched by the checkout
 step.
 
-=== Constraints
+=== Step Constraints
 
 As noted before, current in-toto layouts constraints are expressed via artifact
 rules. As the previous in-toto verification model primarily focused on steps
 that affected artifacts, constraints on custom attributes recorded in opaque
 fields such as environment and byproducts were left to inspections. With the
 rise of attribute focused predicates, in-toto layouts must support setting
-constraints on their contents.
+constraints on their contents. Further, while in-toto layouts always supported
+verifying multiple attestations for a step via the threshold functionality, they
+must now support verifying attestations of different predicate types generated
+during the execution of a single step.
 
 As such, this ITE proposes the following schema for step declarations.
 
 ```yaml
 name: string
 command: string
-predicates: list of TypeURIs
+expectedPredicates: list of ExpectedStepPredicates
+```
+
+Each `ExpectedStepPredicate` object has the following schema.
+
+```yaml
+predicateTypes: list of TypeURIs
 expectedMaterials: list of constraints
 expectedProducts: list of constraints
 expectedAttributes: list of constraints
@@ -141,17 +154,49 @@ language: string
 rule: object
 ```
 
-=== Role of Inspections
+=== Subject Constraints
 
-Inspections are primarily used at verification time to examine the final 
-products and their in-toto metadata. They may be of two types. In the first,
-inspections largely function like they do in the current in-toto specification.
-They are used as a mechanism to execute custom checks during the verification
-workflow. Their `expectedMaterials` and `expectedProducts` fields are similarly
-enhanced with support for policy languages alongside in-toto artifact rules, and
-they're joined by `expectedAttributes` like step definitions. By default,
-inspections are expected to generate in-toto links. However, the inspection
-declaration may specify an alternative predicate the check may result in.
+An alternative approach to applying policies for a software supply chain is
+against the artifacts of the supply chain. Every in-toto attestation is created
+against one or more artifacts recorded as that attestation's `subject`. So, a
+new top-level (alongside steps) capability is proposed to verify claims that
+apply to attestation subjects.
+
+```yaml
+subject: string
+expectedPredicates: list of ExpectedSubectPredicates
+```
+
+The `subject` can be a pattern that is applied against all attestations in the
+bundle. Every attestation that contains a subject matching the pattern is parsed
+to extract the claims made. `ExpectedSubjectPredicate` is a condensed version of
+`ExpectedStepPredicate`.
+
+```yaml
+predicateTypes: list of TypeURIs
+expectedAttributes: list of constraints
+functionaries: list of strings
+threshold: int
+```
+
+The set of attestations collected for the subject may include those of a
+predicate type not explicitly required in the `expectedPredicates`
+field--they're silently ignored. Attribute policies specified for each expected
+predicate is applied to the corresponding attestation. The verification workflow
+fails if a required attestation (that matches predicate type and threshold of
+signers) is unavailable or if a constraint fails.
+
+=== Inspections
+
+Inspections are primarily used at verification time to examine the final
+products and their in-toto metadata. Inspections largely function like they do
+in the current in-toto specification. They are used as a mechanism to execute
+custom checks during the verification workflow. Their `expectedMaterials` and
+`expectedProducts` fields are similarly enhanced with support for policy
+languages alongside in-toto artifact rules, and they're joined by
+`expectedAttributes` like step definitions. By default, inspections are expected
+to generate in-toto links. However, the inspection declaration may specify an
+alternative predicate the check may result in.
 
 ```yaml
 name: string
@@ -162,33 +207,19 @@ expectedProducts: list of constraints
 expectedAttributes: list of constraints
 ```
 
-The second type of inspections do not execute a command or script to perform
-some check. Instead, they are used to apply constraints on the _subjects_ of
-in-toto attestations for a supply chain. Instead of `command`, the schema has a
-`subject` field that accepts one or more patterns that are applied against the
-subjects of all attestations in the bundle being verified. The claims from all
-attestations part of the verification whose subjects match the specified
-patterns are collated. The inspection's constraints are then applied to the
-claims pertaining to the subjects. As these are applied against subjects rather
-than steps, only `expectedAttributes` is supported.
-
-```yaml
-name: string
-subject: list of patterns
-predicates: list of TypeURIs
-expectedAttributes: list of constraints
-```
-
 === Verification Workflow
 
 As with the current in-toto specification, the verification workflow is
 presented with a root layout, public keys to verify the layout's signatures, and
-a bundle of in-toto attestations. The workflow, at a high level, can be
-described as follows:
+a bundle of in-toto attestations. As the verifier expects a certain set of
+predicate types, it is also expected to be aware of the class of each predicate.
+The workflow, at a high level, can be described as follows:
 
 .   The layout's signatures are verified using the provided keys.
 .   The layout is parsed and its validity, i.e. the expiration date, is
     checked.
+.   The layout's contents are validated: at least one of `steps`, `subjects`,
+    and `inspections` must be specified.
 .   For each step in the layout, the corresponding attestations are loaded. The
     attestations must match the expected predicate types. As each attestation
     is loaded, its signatures are first verified against expected signers for
@@ -199,19 +230,67 @@ described as follows:
     materials (and products if it's a link class attestation), the constraints
     specified in `expectedMaterials`, `expectedProducts`, and
     `expectedAttributes` are verified respectively.
-.   For each inspection:
-..  If the inspection expects a command run, the command is executed and a link
-    class attestation is generated. Then, the `expectedMaterials`,
-    `expectedProducts`, and `expectedAttributes` are applied against the
-    contents of the attestation.
-..  Else, the inspection applies against one or more subjects. The patterns
-    specified are against all subjects in every attestation in the bundle. The
-    attestations that match the patterns are parsed to extract their claims. If
-    the attestations signatures weren't verified already when verifying steps,
-    the signatures are verified now. Each claim is associated with the subject
-    it applies to, the predicate type of the claiming attestation, and the
-    functionary that signed the attestation. Finally, the `expectedAttributes`
-    constraints are applied against the collection of claims.
+.   For each subject in the layout, the pattern is applied against the
+    attestations bundle. The attestations that match the patterns are parsed to
+    extract their claims. Each claim is associated with the subject it applies
+    to, the predicate type of the claiming attestation, and the functionary that
+    signed the attestation (a threshold of signatures is verified). Finally, the
+    `expectedAttributes` constraints are applied against the collection of
+    claims.
+.   For each inspection in the layout, the command is executed and an
+    attestation is generated. Then, the `expectedMaterials`,`expectedProducts`,
+    and `expectedAttributes` are applied against the contents of the
+    attestation.
+
+This workflow may be encoded as follows.
+
+```go
+func Verify(layoutEnvelope, layoutKeys, attestations, now) {
+    verifyLayoutSignatures(layoutEnvelope, layoutKeys)
+
+    layout := layoutEnvelope.Payload
+    verifyLayoutExpiry(layout, now)
+
+    if layout.Steps == nil && layout.Subjects == nil && layout.Inspections == nil {
+        panic
+    }
+
+    for _, step := range layout.Steps {
+        stepAttestations := attestationsForStep(step.Name, attestations)
+        for _, predicate := range step.ExpectedPredicates {
+            predicateAttestations := attestationsForStepPredicate(predicate.Type, stepAttestations)
+            if predicate.Type == LAYOUT {
+                Verify(predicateAttestations[0], predicate.Functionaries, predicateAttestations[1:], now)
+            } else {
+                verifyAttestationSignatures(predicate.Functionaries, predicate.Threshold, predicateAttestations)
+                for _, attestation := range predicateAttestations {
+                    applyMaterialRules(predicate.ExpectedMaterials, attestation)
+                    applyProductRules(predicate.ExpectedProducts, attestation)
+                    applyAttributeRules(predicate.ExpectedAttributes, attestation)
+                }
+            }
+        }
+    }
+
+    for _, subject := range layout.Subjects {
+        subjectAttestations := attestationsForSubject(subject.Pattern, attestations)
+        for _, predicate := range subject.ExpectedPredicates {
+            predicateAttestations := attestationsForSubjectPredicate(predicate.Type, subjectAttestations) // DRY
+            verifyAttestationSignatures(predicate.Functionaries, predicate.Threshold, predicateAttestations)
+            for _, attestation := range predicateAttestations {
+                verifyAttributeRules(predicate.ExpectedAttributes, attestation)
+            }
+        }
+    }
+
+    for _, inspection := range layout.Inspections {
+        attestation := executeInspection(inspection.Command, inspection.PredicateType)
+        applyMaterialRules(inspection.ExpectedMaterials, attestation)
+        applyProductRules(inspection.ExpectedProducts, attestation)
+        applyAttributeRules(inspection.ExpectedAttributes, attestation)
+    }
+}
+```
 
 [[motivation]]
 == Motivation

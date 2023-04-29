@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+import "google/protobuf/timestamp.proto";
+
+package in_toto.layout;
+
+option go_package = "github.com/in-toto/ite";
+
+message Functionary {
+    string type = 1;
+    string scheme = 2;
+    string value = 3;
+}
+
+message Constraint {
+    string type = 1;
+    string policy = 2;
+}
+
+message ExpectedStepPredicate {
+    repeated string predicate_types = 1; // supports oneof equivalent predicate types
+    repeated Constraint expected_materials = 2;
+    repeated Constraint expected_products = 3;
+    repeated Constraint expected_attributes = 4;
+    repeated string functionaries = 5;
+    int32 threshold = 6;
+}
+
+message Step {
+    string name = 1;
+    string command = 2;
+    repeated ExpectedStepPredicate expected_predicates = 3;
+}
+
+message ExpectedSubjectPredicate {
+    repeated string predicate_types = 1; // supports oneof equivalent predicate types
+    repeated Constraint expected_attributes = 2;
+    repeated string functionaries = 3;
+    int32 threshold = 4;
+}
+
+message Subject {
+    string name = 1;
+    string subject = 2;
+    repeated ExpectedSubjectPredicate expected_predicates = 3;
+}
+
+message Inspection {
+    string name = 1;
+    string command = 2;
+    repeated string predicates = 3;
+    repeated Constraint expected_materials = 4;
+    repeated Constraint expected_products = 5;
+    repeated Constraint expected_attributes = 6;
+}
+
+message Layout {
+    google.protobuf.Timestamp expires = 1;
+    string readme = 2;
+    map<string, Functionary> functionaries = 3;
+    repeated Step steps = 4;
+    repeated Subject subjects = 5;
+    repeated Inspection inspections = 6;
+}
