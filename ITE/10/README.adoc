@@ -342,10 +342,20 @@ their timeline of support for the old-style inspection definitions.
 [[security]]
 == Security
 
+This ITE does not significantly affect the security of in-toto layouts. It
+preserves all of the existing capabilities of layouts. That said, as the ITE
+allows for using externally created languages to write constraints executed at
+verification time, implementers of the ITE are urged to choose the languages
+they support carefully. Each language must be evaluated on a case-by-case basis
+to ensure it does not introduce undesirable capabilities such as the ability to
+execute arbitrary code into verification environments. Indeed, by allowing for
+such limited capability languages, the hope is to reduce in-toto's dependence
+on inspection scripts that have no such limitations.
 
 [[infrastructure-requirements]]
 == Infrastructure Requirements
 
+None.
 
 [[prototype-implementation]]
 == Prototype Implementation
@@ -355,6 +365,9 @@ None yet.
 [[testing]]
 == Testing
 
+Implementations of this layout schema and the accompanying verification
+workflow must be thoroughly tested to ensure their backwards compatibility with
+old layouts.
 
 [[references]]
 == References
