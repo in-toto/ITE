@@ -164,7 +164,7 @@ apply to attestation subjects.
 
 ```yaml
 subject: string
-expectedPredicates: list of ExpectedSubectPredicates
+expectedPredicates: list of ExpectedSubjectPredicates
 ```
 
 The `subject` can be a pattern that is applied against all attestations in the
