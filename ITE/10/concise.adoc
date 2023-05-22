@@ -1,0 +1,275 @@
+= ITE-10: Supporting Contextual in-toto Attestations in Layouts
+:source-highlighter: pygments
+:toc: preamble
+:toclevels: 2
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| ITE
+| 10
+
+| Title
+| Supporting Contextual in-toto Attestations in Layouts
+
+| Sponsor
+| link:https://github.com/adityasaky[Aditya Sirish A Yelgundhalli]
+
+| Status
+| Draft
+
+| Type
+| Standards
+
+| Created
+| 2023-01-07
+
+|===
+
+[[abstract]]
+== Abstract
+
+TODO
+
+[[specification]]
+== Specification
+
+Note: this document assumes the reader is familiar with ITE-6 and the in-toto
+Attestation Framework.
+
+To support different predicate types in an in-toto layout's steps and
+inspections, it is first necessary to recognize that there are two broad classes
+of predicates.
+
+=== Classifying Predicates
+
+Prior to ITE-6, all steps were validated against in-toto links. Inspection
+executions also resulted in the generation of in-toto links that were then
+verified. With the introduction of the in-toto Attestation Framework, it is
+necessary to rework the layout to support verifying a variety of _predicates_.
+As the framework is designed to generate claims pertaining to how software is
+produced, each predicate type can be mapped to a step in the software supply
+chain. However, it is first necessary to understand the nature of each step, and
+therefore its predicate types. in-toto was originally designed with the
+assumption that a step in the software supply chain affects in some manner the
+artifacts that constitute the supply chain. ITE-6 showed that some steps do not
+fit the materials and products model. This is a factor in _verifying_ such
+predicates using in-toto layouts.
+
+Therefore, all predicates supported for verification in an in-toto layout must
+categorized as one of two classes:
+
+* transformational predicates: these are based on classic in-toto links for
+  steps that transform artifacts in some manner. They consume some artifacts as
+  materials and produce others as products. The subject of such attestations
+  indicate the products of the step. Eg. in-toto links, SLSA Provenance.
+* informational predicates: these predicates record contextual attributes about
+  one or more artifacts. The operations they represent consume artifacts as
+  materials (recorded as the subject of such attestations) and produce
+  attributes about them as the outcome. Eg. test results, reviews.
+
+Note that transformational predicates may also record certain information about
+certain attributes. For example, the environment field in in-toto links can
+include such information.
+
+With this representation of different predicate types, step declarations in
+layouts can _chain_ different operations represented by distinct predicate types
+together, a fundamental feature of in-toto. For example, a code review step
+represented by a review predicate type that follows a checkout step that fetches
+source code represented by an in-toto link can use in-toto's artifact rules to
+ensure the review was performed against the sources fetched by the checkout
+step.
+
+=== Setting Predicate Type Expectations for Steps and Inspections
+
+Currently, step declarations have the following schema.
+
+```yaml
+name: string
+threshold: int
+expectedMaterials: list of artifact rules
+expectedProducts: list of artifact rules
+pubkeys: list of authorized key IDs
+expectedCommand: list of strings
+```
+
+This ITE proposes updating this schema to incorporate predicate types.
+
+```yaml
+name: string
+command: list of strings
+expectedMaterials: list of artifact rules
+expectedPredicates: list of expectedStepPredicates
+```
+
+Each `expectedStepPredicate` object has the following schema.
+
+```yaml
+predicateType: string
+expectedProducts: list of artifact rules
+functionaries: list of authorized functionary key IDs
+threshold: int
+```
+
+The `predicateType` field identifies the type of predicate expected for the
+step. `expectedProducts` is moved to being predicate specific as informational
+predicates may be generated alongside transformational predicates for the same
+step. This means that product rules do not generalize across all of the step's
+predicates. However, `expectedMaterials` is retained at the step level as all
+predicates generated for a step are expected to be for the same set of
+artifacts. `pubkeys` is updated to `functionaries` to generalize signing
+semantics. Finally, `threshold` applies per predicate type rather than the step
+as a whole.
+
+Similarly, inspections are also updated to support generating different
+predicate types.
+
+```yaml
+name: string
+command: list of strings
+expectedMaterials: list of artifact rules
+expectedPredicates: list of expectedInspectionPredicates
+```
+
+Each `expectedInspectionPredicate` object has the following schema.
+
+```yaml
+predicateType: string
+expectedProducts: list of artifact rules
+```
+
+As the attestations generated during inspection executions are not signed,
+`functionaries` and `threshold` are omitted.
+
+=== Supporting Sublayouts
+
+The in-toto specification has support for sublayouts which are steps in a layout
+that have not links but a bundle of another layout and links which are
+recursively verified first. To support this semantic, this ITE proposes making
+sublayout declarations explicit. Therefore, a step declaration declares that it
+expects a layout and identifies it. This layout is then verified recursively
+before verification continues at the original layout.
+
+=== Verifying Artifact Rules
+
+The verification workflow in the in-toto specification matches links to use by
+the name of the step and the key ID used to sign it. This part of the workflow
+is updated to support matching on predicate types as well.
+
+```go
+func Verify(layoutEnvelope, layoutKeys, attestations, now) {
+    verifyLayoutSignatures(layoutEnvelope, layoutKeys)
+
+    layout := layoutEnvelope.Payload
+    verifyLayoutExpiry(layout, now)
+
+    if layout.Steps == nil && layout.Inspections == nil {
+        panic
+    }
+
+    for _, step := range layout.Steps {
+        stepAttestations := attestationsForStep(step.Name, attestations)
+        for _, predicate := range step.ExpectedPredicates {
+            predicateAttestations := attestationsForStepPredicate(predicate.Type, stepAttestations)
+            if predicate.Type == LAYOUT {
+                Verify(predicateAttestations[0], predicate.Functionaries, predicateAttestations[1:], now)
+            } else {
+                verifyAttestationSignatures(predicate.Functionaries, predicate.Threshold, predicateAttestations)
+                for _, attestation := range predicateAttestations {
+                    applyMaterialRules(step.ExpectedMaterials, attestation.Materials, attestations)
+                    applyProductRules(predicate.ExpectedProducts, attestation.Products, attestations)
+                }
+            }
+        }
+    }
+
+    for _, inspection := range layout.Inspections {
+        expectedPredicateTypes := []string{}
+        for _, expectedPredicate := range inspection.ExpectedPredicates {
+            expectedPredicateTypes = append(expectedPredicateTypes, expectedPredicate.PredicateType)
+        }
+        inspectionAttestations := executeInspection(inspection.Command, expectedPredicateTypes) // {predicateType: attestation}
+        allAttestations := combineAttestations(inspectionAttestations, attestations)
+        for _, expectedPredicate := range inspection.ExpectedPredicates {
+            attestation := inspectionAttestations[expectedPredicate.PredicateType]
+            applyMaterialRules(inspection.ExpectedMaterials, attestation.Materials, allAttestations)
+            applyProductRules(expectedPredicate.ExpectedProducts, attestation.Products, allAttestations)
+        }
+    }
+}
+```
+
+[[motivation]]
+== Motivation
+
+The original in-toto specification defined only one type of metadata that was to
+be captured during supply chain operations. As such, it had a uniform
+verification workflow and provided supply chain owners the semantics, i.e.
+artifact rules, to verify the flow of artifacts in their supply chains. ITE-6
+expanded the metadata formats to support the generation of custom attestations
+that have context-specific schemas. Current in-toto layouts as defined in the
+in-toto specification and artifact rules cannot be used to verify artifacts
+recorded in ITE-6 predicates.
+
+[[reasoning]]
+== Reasoning
+
+This ITE presents certain changes that necessitate further reasoning.
+
+=== Predicate Classification
+
+One of in-toto's key properties is the ability to chain different steps
+together, and therefore verifying every step used the right artifacts. By
+classifying predicates based on the type of step they represent, we gain the
+ability to place attestations that exclusively contain claims about artifacts in
+the steps graph.
+
+[[backwards-compatibility]]
+== Backwards Compatibility
+
+All the capabilities currently enabled by in-toto inspections are retained in
+the changes proposed here. As such, there is no regression in capabilities.
+
+However, new layouts following the scheme specified here cannot be verified
+using older in-toto implementations. Implementations adopting the changes
+proposed in this ITE are encouraged to support legacy layouts for some period of
+time communicated to their users, allowing them to transition their layouts.
+
+[[security]]
+== Security
+
+This ITE does not significantly affect the security of in-toto layouts. It
+preserves all of the existing capabilities of in-toto layouts, meaning no
+existing properties are lost. It presents a consistent way to handle contextual
+predicates in artifact rules, meaning in-toto's powerful step-chaining
+properties can apply to the Attestation Framework.
+
+[[infrastructure-requirements]]
+== Infrastructure Requirements
+
+None.
+
+[[prototype-implementation]]
+== Prototype Implementation
+
+None yet.
+
+[[testing]]
+== Testing
+
+Implementations of this layout schema and the accompanying verification
+workflow must be thoroughly tested to ensure their backwards compatibility with
+old layouts.
+
+[[references]]
+== References
+
+* link:https://github.com/in-toto/docs/blob/master/in-toto-spec.md[in-toto Specification]
+* link:https://github.com/in-toto/attestation[in-toto Attestation Framework]
