@@ -1,0 +1,286 @@
+= ITE-11: Verifying Attributes in in-toto Attestations
+:source-highlighter: pygments
+:toc: preamble
+:toclevels: 2
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| ITE
+| 11
+
+| Title
+| Verifying Attributes in in-toto Attestations
+
+| Sponsor
+| link:https://github.com/adityasaky[Aditya Sirish A Yelgundhalli]
+
+| Status
+| Active :smile:
+
+| Type
+| Process
+
+| Created
+| 2023-01-07
+
+|===
+
+[[abstract]]
+== Abstract
+
+TODO
+
+[[specification]]
+== Specification
+
+This ITE proposes embedding attribute verification capabilities within in-toto
+layouts. Specifically, it proposes a new step and inspection specific field
+called `expectedAttributes` that will live alongside the existing
+`expectedMaterials` and `expectedProducts` fields. Unlike those fields,
+`expectedAttributes` will not support artifact rules but will instead evaluate
+each rule using the Common Expression Language (CEL).
+
+If this ITE is applied to the original in-toto layout, the schema for each step
+would look as follows.
+
+```yaml
+name: string
+threshold: int
+expectedMaterials: list of artifact rules
+expectedProducts: list of artifact rules
+expectedAttributes: list of CEL expressions
+pubkeys: list of authorized key IDs
+expectedCommand: list of strings
+```
+
+If instead the ITE is applied to layouts with support for the in-toto
+Attestation Framework, the resultant step schema is as follows.
+
+```yaml
+name: string
+command: list of strings
+expectedMaterials: list of artifact rules
+expectedPredicates: list of expectedStepPredicates
+```
+
+Each `expectedStepPredicate` object has the following schema.
+
+```yaml
+predicateType: string
+expectedProducts: list of artifact rules
+expectedAttributes: list of CEL expressions
+functionaries: list of authorized functionary key IDs
+threshold: int
+```
+
+Similarly, inspections in legacy layouts are updated to the following schema.
+
+```yaml
+name: string
+expectedMaterials: list of artifact rules
+expectedProducts: list of artifact rules
+expectedAttributes: list of CEL expressions
+run: list of strings
+```
+
+And inspections in layouts with support for the Attestation Framework will have
+the following schema.
+
+```yaml
+name: string
+command: list of strings
+expectedMaterials: list of artifact rules
+expectedPredicates: list of expectedInspectionPredicates
+```
+
+Each `expectedInspectionPredicate` object has the following schema.
+
+```yaml
+predicateType: string
+expectedProducts: list of artifact rules
+expectedAttributes: list of CEL expressions
+```
+
+=== Verifying Attribute Constraints
+
+An in-toto implementation supporting these checks must support the evaluation of
+CEL expressions. During the in-toto verification workflow, after applying rules
+from `expectedMaterials` and `expectedProducts`, each rule is evaluated against
+the attestation it applies to. If the rule expression evaluates to true, the
+rule passes and verification proceeds. If the expression evaluates to false,
+verification is aborted with an error indicating the failing rule.
+
+[[motivation]]
+== Motivation
+
+in-toto attestations, whether links from the original in-toto specification or
+contextual metadata from the Attestation Framework, contain various claims. The
+link metadata format has two opaque fields, `environment` and `byproducts`, that
+can hold arbitrary information. Contextual predicates also record various
+software supply chain specific attributes, though in predefined fields rather
+than in an arbitrary manner in opaque fields. In the current in-toto
+specification, the only way to verify these attributes are through inspections
+that require executing commands or scripts during verification. If invoked via
+scripts, they need to be communicated alongside layouts to the verifier and
+there are no in-toto specific guarantees as to their integrity or if they were
+issued by the authors of the layout. Further, these scripts can be complicated
+as they need to load attestations, once again verify their signatures using keys
+in the layout, before they can actually validate the attributes in question.
+
+=== Example: Verifying Result of a Test Run
+
+The in-toto Attestation Framework has a vetted predicate capturing the results
+of test runs. To verify that the test result attestation indicates a successful
+test run, the following CEL rule can be used.
+
+```yaml
+...
+expectedAttributes:
+    - "result == 'PASSED'"
+...
+```
+
+=== Example: Verifying SLSA Provenance Attributes
+
+SLSA Provenance predicates record various attributes such as the identity of the
+builder, source repository, and various other parameters. These attributes can
+be verified in in-toto layouts as follows.
+
+```yaml
+...
+expectedAttributes:
+    - "runDetails.builder.id == '<expected value>'"
+    - "externalParameters.repository == '<expected value>'"
+    - "externalParameters.ref == '<expected value>'"
+...
+```
+
+=== Example: Verifying Build Isolation via Runtime Trace Attestation
+
+This vetted predicate is used to record a trace of some supply chain step, such
+as the build step. It can be used to verify that the builder made no network
+calls. But first, it is necessary to verify that the monitor was of an expected
+type and that its trace policy included tracking network calls.
+
+```yaml
+...
+expectedAttributes:
+    - "monitor.type == 'https://github.com/cilium/tetragon'"
+    - "monitor.tracePolicy.policies.exists(p, p['Name'] == 'connect')"
+    - "size(monitorLog.network) == 0"
+...
+```
+
+=== Example: Verifying Contents of Opaque Fields in in-toto Links
+
+As noted above, in-toto links have an opaque `byproducts` field that records
+additional information pertaining to the step performed. in-toto's verification
+workflow does not verify its contents by default. However, the changes proposed
+here can be used to add checks for its contents as well as those of the other
+opaque field, `environment`.
+
+```yaml
+...
+expectedAttributes:
+    - "size(byproducts['stderr']) == 0"
+    - "byproducts['return-value'] == 0"
+    - "environment['<key>'] == '<expected value>'"
+...
+```
+
+[[reasoning]]
+== Reasoning
+
+This ITE presents certain changes that necessitate further reasoning.
+
+=== Use of CEL
+
+CEL is a lightweight language designed for expression evaluations. One of its
+key applications is for security policies, making it a good fit for specifying
+attribute rules in in-toto layouts. CEL expressions are evaluated in linear time
+and the language is not Turing-complete, mitigating concerns about arbitrary
+executions during verification.
+
+Another feature making CEL a good fit for in-toto layout attribute checks is
+that it was designed to be embedded in other applications. Indeed, in-toto is
+not the first system to support embedded CEL expressions--Kubernetes also
+supports using CEL to declare various constraints as does Envoy in its Role
+Based Access Control policies.
+
+=== Supporting Other Languages
+
+Other policy specific languages such as Open Policy Agent's Rego and CUE are
+alternatives to using CEL. Supporting them (and identifying the language used
+for a rule) is an open discussion point. CEL is simpler to write and embed into
+in-toto layouts but is also less powerful. That said, the focus is on setting
+constraints on attributes recorded in in-toto attestations, which CEL is capable
+enough for. This may change if use cases emerge that CEL cannot express
+constraints for. It's also worth noting that for niche scenarios, the original
+method of writing custom inspections also remains an option.
+
+[[backwards-compatibility]]
+== Backwards Compatibility
+
+This ITE is entirely backwards compatible with both the original layout schema
+and the updated one with support for the in-toto Attestation Framework. It adds
+one field to step and inspection declarations. Old in-toto implementations can
+safely ignore this field with the impact being the lack of attribute
+verification. This does not weaken in any way the security properties of such
+scenarios.
+
+[[security]]
+== Security
+
+There are two aspects to the security implications of this ITE. The first is the
+addition of a substantial surface--the in-toto specification is at least in part
+dependent on the CEL specification, and implementations are similarly dependent
+on the CEL engine. TODO: flesh this out some more.
+
+On the other hand, by moving straightforward attribute checks into the in-toto
+layout, adopters no longer have to write convoluted scripts that can load
+layouts, load attestations, verify their signatures, before actually performing
+the attribute checks. As in-toto implementations have to perform these
+operations anyway (and in a well defined manner per the specification), such
+complicated scripts can be retired. Further, in-toto verifiers shell out and
+execute these inspection scripts in the _verification environment_. As layouts
+do not perform any integrity checks for these scripts (though in-toto's sister
+project TUF can be leveraged via ITE-2), in-toto cannot provide guarantees of
+the code being executed.
+
+[[infrastructure-requirements]]
+== Infrastructure Requirements
+
+None.
+
+[[prototype-implementation]]
+== Prototype Implementation
+
+None yet.
+
+[[testing]]
+== Testing
+
+Implementations of this layout schema and the accompanying verification
+workflow must be thoroughly tested to ensure their backwards compatibility with
+old layouts. Further, layouts with CEL rules must be used to test the dependency
+on the CEL engine.
+
+[[references]]
+== References
+
+* link:https://github.com/google/cel-spec[CEL]
+* link:https://github.com/in-toto/docs/blob/master/in-toto-spec.md[in-toto Specification]
+* link:https://github.com/in-toto/attestation[in-toto Attestation Framework]
+* link:https://kubernetes.io/docs/reference/using-api/cel/[CEL in Kubernetes]
+* link:https://www.openpolicyagent.org/docs/latest/policy-language/[Rego: Open Policy Agent's Policy Language]
+* link:https://cuelang.org/docs/about/[CUE]
+* link:https://www.envoyproxy.io/docs/envoy/latest/intro/arch_overview/security/rbac_filter[CEL in Envoy]
+* link:../2/README.adoc[ITE-2]
