@@ -13,6 +13,7 @@
 
 * [ITE-7: Signing & Verification With X509](ITE/7/README.adoc)
 * [ITE-9: Introducing new in-toto Attestation types](ITE/9/README.adoc)
+* [ITE-10: Supporting Contextual in-toto Attestations in Layouts](ITE/10/README.adoc)
 
 ## License
 
