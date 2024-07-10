@@ -99,15 +99,16 @@ checkout step.
 
 === Setting Predicate Type Expectations for Steps and Inspections
 
-Currently, step declarations have the following schema.
+Currently (in-toto v1.0.0), step declarations have the following
+link:https://github.com/in-toto/specification/blob/v1.0/in-toto-spec.md#431-steps[schema]:
 
 ```
 name: string
 threshold: int
-expectedMaterials: list of artifact rules
-expectedProducts: list of artifact rules
+expected_materials: list of artifact rules
+expected_products: list of artifact rules
 pubkeys: list of authorized key IDs
-expectedCommand: list of strings
+expected_command: list of strings
 ```
 
 This ITE proposes updating this schema to incorporate predicate types.
@@ -115,9 +116,9 @@ This ITE proposes updating this schema to incorporate predicate types.
 ```
 name: string
 command: list of strings
-expectedMaterials: list of artifact rules
-expectedProducts: list of artifact rules
-expectedPredicates: list of expectedStepPredicates
+expected_materials: list of artifact rules
+expected_products: list of artifact rules
+expected_predicates: list of expectedStepPredicates
 ```
 
 Each `expectedStepPredicate` object has the following schema.
