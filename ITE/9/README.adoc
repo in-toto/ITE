@@ -23,7 +23,7 @@ endif::[]
 | Aditya Sirish A Yelgundhalli (@adityasaky)
 
 | Status
-| Draft
+| Accepted
 
 | Type
 | Process
