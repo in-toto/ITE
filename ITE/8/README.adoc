@@ -1,0 +1,232 @@
+= ITE-8: Policy as Code: Provide an in-toto-library to store CUE and OPA Policies
+:source-highlighter: pygments
+:toc: preamble
+:toclevels: 2
+ifdef::env-github[]
+:tip-caption: :bulb:
+:note-caption: :information_source:
+:important-caption: :heavy_exclamation_mark:
+:caution-caption: :fire:
+:warning-caption: :warning:
+endif::[]
+
+.Metadata
+[cols="2"]
+|===
+| ITE
+| 8
+
+| Title
+| Policy as Code: Provide an in-toto-library to store CUE and OPA policies
+
+| Sponsor
+| link:https://github.com/Dentrax[Furkan], https://github.com/developer-guy[Batuhan], https://github.com/erkanzileli[Erkan]
+
+| Status
+| Active :smile:
+
+| Type
+| Process
+
+| Created
+| 2021-09-10
+
+|===
+
+
+[[abstract]]
+== Abstract
+
+This ITE proposes creating a new repository called `in-toto-library` under `in-toto` organization. This would allow
+storing _CUE_ and _OPA_ policies. This policies enforce correctness and truth of link:https://github.com/in-toto/attestation/[Attestation]
+formats against pre-defined policies by running data format validating tools.
+
+**OPA**, provides a high-level declarative language that lets you specify policy as code and
+simple APIs to offload policy decision-making from your software.
+**CUE**, an open-source data validation language and inference engine with its roots in logic programming.
+
+This ITE defines the scheme for overall structure of repository
+and provides a description for each policy.
+
+[[specification]]
+== Specification
+
+The specification text here. Describe in depth the feature that you may want to
+integrate.
+
+[[motivation]]
+== Motivation
+
+Whereas link:https://github.com/in-toto/in-toto/[in-toto] provides end-to-end implementations using several programming languages as follows:
+
+. link:https://github.com/in-toto/in-toto-rs/[in-toto-rs]
+. link:https://github.com/in-toto/in-toto-golang/[in-toto-golang]
+. link:https://github.com/in-toto/in-toto-java/[in-toto-java]
+
+Whereas in-toto provides end-to-end implementations using several programming languages, it requires responsibility
+to maintain across different languages as you know. It _may_ take a lot of time to get specs up-to-date and requires constantly follow-up.
+
+We cherish the in-toto! Aforementioned consideration might be one of the concerns why we had better to provide sustainable policies to developers.
+
+=== Use Case 1: Policy as Code
+
+link:https://www.accurics.com/resources/glossary/policy-as-code/[Policy as Code], is a general term that often refers to writing code in a high-level declarative language which describes policies.
+The purpose of Policy as Code is to codify policy definitions in software, which allows for consistent, automated assessment of policy compliance in modern software development practices.
+
+Increased security with reusable patterns and code snippets for creating additional policies.
+in-toto-library will allow the projects to move fast yet still keep information secure. By doing so, we can trust this library.
+
+=== Use Case 2: Providing Community-Owned Library of Policies
+
+link:https://github.com/open-policy-agent/gatekeeper-library[gatekeeper-library], would be a good benchmark for this use-case.
+Creating public library would allow us to manage policies easier and evaluating policies against different attestations using policy engines. We do not
+have to download policies.
+
+We can create a _source-of-truth_ by structuring information models and associated data schema such that every data element is mastered in only one place.
+
+=== Use Case 3: Verifying Attestations (OCI Registry)
+
+link:https://github.com/sigstore/cosign[cosign], is a container signing and verification tool, owned by link:https://github.com/sigstore/[sigstore]. Cosign also has built-in support for in-toto attestations.
+From the link:https://github.com/sigstore/cosign/issues/259[Support in-toto attestations] discussion, cosign got a new link:https://github.com/sigstore/cosign/pull/458[attest command].
+We able to create and sign local predicate files, and, also link:https://github.com/sigstore/cosign/blob/main/cmd/cosign/cli/verify_attestation.go[have ability] to verify them! It link:https://github.com/sigstore/cosign/pull/504/files[supports to generate]
+well-known attestation specs (i.e., SPDX, Provenance, Link). Our next steps would be [determinate attestation formats for link:https://github.com/sigstore/cosign/issues/442[vuln scans].
+We have been link:https://github.com/in-toto/attestation/issues/58[tracking] the aforementioned issue in the attestation repository.
+
+Verifying attestation formats using policies is quite link:https://github.com/sigstore/cosign/issues/512[new idea]. We link:https://github.com/sigstore/cosign/pull/641/[implemented] the attestation validation against CUE policies.
+This is the demo where this idea is coming from, and why this proposal should have created!
+
+> This is really new and exciting for all of the in-toto space!link:https://github.com/sigstore/cosign/pull/641#issuecomment-916970111/[*] -Dan Lorenc
+
+After short demonstration of how in-toto fits into cosign, we can extend the usability of in-toto attestation for different projects and tools.
+This is why in-toto will have critical role for the supply chain security world!
+
+
+[[reasoning]]
+== Reasoning
+
+Policy as Code eliminates the need for manual implementation with regard to sustaining and maintaining projects in in-toto.
+It also removes human error, increases efficiency at the organizational level, allows for a large number of policies or changes, and protects systems from threats and disruptions.
+It is also a bit easy to create and to extend policies for due to the presence of a large number of standard attestation specs.
+
+[[security]]
+== Security
+
+N/A
+
+[[infrastructure-requirements]]
+== Infrastructure requirements
+
+N/A
+
+[[backwards-compatibility]]
+== Backwards compatibility
+
+N/A
+
+[[testing]]
+== Testing
+
+In an in-toto-library repository conforming to this ITE, it is important to test:
+
+- that given attestation spec must be up-to-date
+- that all the attestation specs against _allowed_ policies (happy path)
+- that all the attestation specs against _disallowed_ policies (unhappy path)
+- that both of _required_ and _optional_ fields should be covered by test policies
+
+[[prototype-implementation]]
+== Prototype Implementation
+
+**Example Repository Structure**
+
+```
+.
+├──􀀂  predicates
+│  ├──􀀂  slsaprovenance
+│  │  └──􀀂  v0.1.1
+│  │     ├──􀀂  cue
+│  │     │  └──􀀀  schema.cue
+│  │     ├──􀀂  opa
+│  │     │  └──􀋀  schema.rego
+│  │     └──􀀂  samples
+│  │        ├──􀀂  alloweds
+│  │        │  ├──􀆄  valid.json
+│  │        │  ├──􀆄  valid_predicate.json
+│  │        │  └──􀆄  valid_predicate_materials.json
+|  |        |  ...
+│  │        ├──􀀂  disalloweds
+│  │        │  ├──􀆄  invalid.json
+│  │        │  ├──􀆄  invalid_predicate.json
+│  │        │  └──􀆄  invalid_predicate_builder.json
+|  |        |  ...
+│  │        └──􀆄  sample.json
+│  └──􀀂  spdx
+│     └──􀀂  v1.0.0
+│        ├──􀀂  cue
+│        │  └──􀀀  scheme.cue
+│        └──􀀂  opa
+│           └──􀋀  scheme.rego
+└──􀀂  test
+   └──􀀀  test.sh
+```
+
+
+*   `predicates`: stores all predicates
+    **   `<PREDICATE>`: which predicate name
+        ***   `<VERSION>`: which predicate version
+            ****   `/cue`: storing CUE schemas
+            ****   `/opa`: storing OPA schemas
+            ****   `/samples`: for testing purposes: we will evaluate these in tests
+                *****  `sample.json`: indicates a full JSON example of target predicate
+                *****  `/alloweds`: evaluations should be passed
+                *****  `/disalloweds`: evaluations should NOT be passed
+*   `test`: for testing purposes
+    **   `test.sh`: entrypoint of test infra
+
+We can find more examples at OPA link:https://github.com/aavarghese/opa-schema-examples/[schema validating repository].
+
+We can run the tests using link:https://github.com/bats-core/bats-core[bats].
+
+[[pseudocode]]
+=== Testing
+
+Implementations should process the policy check as follows:
+
+Inputs:
+
+*   `predicates`: all predicate types
+*   `policies`: both of OPA and CUE policies
+*   `schemas`: both of allowed and disallowed schemas
+
+Outputs:
+
+*   `success`: should exit with `0`
+
+Steps:
+
+*   for `predicate` in `$PREDICATES`; do
+    **   for `version` in `predicate`; do
+        ***   for `policies` in `version`; do
+            **** for `valid` in `policies/samples/alloweds/valid_*.yaml`; do
+                ***** `$ opa test $src $test`
+                ***** `$ cue test $src $test`
+            **** for `invalid` in `policies/samples/disalloweds/invalid_*.yaml`; do
+                ***** `$ opa test $src $test`
+                ***** `$ cue test $src $test`
+*   `$ echo $?`: `0`
+
+
+
+[[furthermore]]
+== Furthermore
+
+As you can see in the _Prototype Implementation_ section, we did only consider whole scheme and contract validation.
+Additionally, we can create policies for each object we defined in the `predicate` field. (i.e., asserting values and data type)
+
+[[references]]
+== References
+
+* link:https://cuelang.org/[CUE]
+* link:https://www.openpolicyagent.org/[Open Policy Agent]
+* link:https://github.com/sigstore/cosign[cosign]
+* link:https://github.com/open-policy-agent/gatekeeper-library/[gatekeeper-library]
+* link:https://www.accurics.com/resources/glossary/policy-as-code/[Policy as Code]
